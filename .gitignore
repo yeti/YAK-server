@@ -1,0 +1,11 @@
+*.pyc
+*.pyo
+*.db
+.DS_Store
+.coverage
+local_settings.py
+/static
+.idea/
+*.sqlite3
+*.egg-info
+dist

@@ -1,0 +1,3 @@
+include README.md
+include CONTRIBUTORS.md
+recursive-include rest_notifications/templates *

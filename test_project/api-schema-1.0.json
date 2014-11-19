@@ -1,0 +1,813 @@
+{
+    "urls": [
+        {
+            "url": "sign_up/",
+            "doc": "Creates a new user and returns client_id and client_secret",
+            "post": {
+                "#meta": "",
+                "doc": "Expects a base64 encoded password",
+                "request": "$signUpRequest",
+                "response": {
+                    "200+": "$signUpResponse"
+                }
+            }
+        },
+        {
+            "url": "login/",
+            "doc": "Authenticates an existing user and returns client_id and client_secret",
+            "get": {
+                "#meta": "basicauth",
+                "response": {
+                    "200+": "$loginResponse"
+                }
+            }
+        },
+        {
+            "url": "o/token/",
+            "doc": "Provides access token for authenticated calls throughout the app",
+            "post": {
+                "#meta": "",
+                "doc": "Request object must be passed with Content-Type application/x-www-form-urlencoded. grant_type should be set to 'password' and password should be the raw password",
+                "request": "$tokenRequest",
+                "response": {
+                    "200+": "$tokenResponse"
+                }
+            }
+        },
+        {
+            "url": "social_sign_up/",
+            "doc": "Creates a new user from a social account, or associates an existing user with a social account",
+            "post": {
+                "#meta": "oauth2,optional",
+                "doc": "Provider will be either 'facebook' or 'twitter'. If twitter, access_token_secret must also be provided",
+                "request": "$socialSignUpRequest",
+                "response": {
+                    "200+": "$signUpResponse"
+                }
+            }
+        },
+        {
+            "url": "pushwoosh_token/",
+            "doc": "Register a pushwoosh token with the server for push notifications",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Expects just a token received from the client device registering with Pushwoosh",
+                "request": "$pushwooshTokenRequest",
+                "response": {
+                    "200+": "$pushwooshTokenResponse"
+                }
+            }
+        },
+        {
+            "url": "videos/",
+            "get": {
+                "#meta" : "oauth2,optional",
+                "doc": "Gets a list of all videos. For videos of people you are following, type=following. For featured videos, featured=True. For videos shared with you, type=shares. For newest first, pass ordering=-created. To see videos where users clips was used (starred), pass starring=pk. To sort by popularity, pass type=popular (should not be used in conjunction w/ ordering parameter). Will return an array of contributors, which is just the user's thumbnail image and a session id to link to the session the contributed clip was part of.",
+                "parameters" : "$videoParameters",
+                "response": {
+                    "200+": "$videoResponse"
+                }
+            },
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Post a video",
+                "request": "$videoRequest",
+                "response": {
+                    "200+": "$videoResponse"
+                }
+            }
+        },
+        {
+            "url": "videos/:id/",
+            "get": {
+                "#meta" : "oauth2,optional",
+                "doc": "Gets a single video",
+                "prototype": "$videoResponse",
+                "response": {
+                    "200+": "$videoResponse"
+                }
+            },
+            "patch": {
+                "#meta": "oauth2",
+                "doc": "Update a video",
+                "request": "$videoRequest",
+                "prototype": "$videoResponse",
+                "response": {
+                    "200+": "$videoResponse"
+                }
+            },
+            "delete": {
+                "#meta": "oauth2",
+                "prototype" : "$videoResponse"
+            }
+        },
+        {
+            "url": "videos/:id/social_share/",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Share a video to facebook or twitter. Only request param is 'provider', which should be either 'facebook' or 'twitter'. Should return the string 'success'",
+                "request": "$socialShareRequest",
+                "response": {
+                    "200+": "$socialShareResponse"
+                }
+            }
+        },
+        {
+            "url": "castings/",
+            "get": {
+                "#meta" : "oauth2,optional",
+                "doc": "Gets a list of all castings. For castings of people you are following, type=following. For castings shared with you, type=shares. To order by popularity, pass type=popular. For newest first, pass ordering=-created",
+                "parameters" : "$castingParameters",
+                "response": {
+                    "200+": "$castingResponse"
+                }
+            },
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Post a casting",
+                "request": "$castingRequest",
+                "response": {
+                    "200+": "$castingResponse"
+                }
+            }
+        },
+        {
+            "url": "castings/:id/",
+            "get": {
+                "#meta": "oauth2,optional",
+                "doc": "Gets a single casting",
+                "prototype": "$castingResponse",
+                "response": {
+                    "200+": "$castingResponse"
+                }
+            },
+            "patch": {
+                "#meta": "oauth2",
+                "doc": "Update a casting",
+                "request": "$castingRequest",
+                "prototype": "$castingResponse",
+                "response": {
+                    "200+": "$castingResponse"
+                }
+            },
+            "delete": {
+                "#meta": "oauth2",
+                "prototype" : "$castingResponse"
+            }
+        },
+        {
+            "url": "castings/:id/addclip/",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Add a single clip to a specific casting. Should return the string 'success'",
+                "request": "$addClipRequest",
+                "response": {
+                    "200+": "$addClipResponse"
+                }
+            }
+        },
+        {
+            "url": "castings/:id/social_share/",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Share a casting to facebook or twitter. Only request param is 'provider', which should be either 'facebook' or 'twitter'. Should return the string 'success'",
+                "request": "$socialShareRequest",
+                "response": {
+                    "200+": "$socialShareResponse"
+                }
+            }
+        },
+        {
+            "url": "sessions/",
+            "get": {
+                "#meta" : "oauth2,optional",
+                "doc": "Gets a list of all sessions. For sessions of people you are following, type=following. For newest first, pass ordering=-created. To get nearby sessions, pass latitude, longitude, and a radius in km",
+                "parameters" : "$sessionParameters",
+                "response": {
+                    "200+": "$sessionResponse"
+                }
+            },
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Create a user session. Privacy options are 'PUBLIC', 'PRIVATE', and 'FRIENDS'.",
+                "request": "$sessionRequest",
+                "response": {
+                    "200+": "$sessionResponse"
+                }
+            }
+        },
+        {
+            "url": "sessions/:id/",
+            "doc": "Gets a specific session designated by the ID in url",
+            "get": {
+                "#meta" : "oauth2,optional",
+                "doc": "Gets a single session",
+                "prototype": "$sessionResponse",
+                "response": {
+                    "200+": "$sessionResponse"
+                }
+            },
+            "patch": {
+                "#meta": "oauth2",
+                "prototype": "$sessionResponse",
+                "request": "$sessionRequest",
+                "response": {
+                    "200+": "$sessionResponse"
+                }
+            },
+            "delete": {
+                "#meta": "oauth2",
+                "prototype" : "$sessionResponse"
+            }
+        },
+        {
+            "url": "clips/",
+            "get": {
+                "#meta": "oauth2,optional",
+                "doc": "Returns clips that a user has access to. Pass type=shared to get clips shared with me. Pass type=popular to get clips ordered by popularity. Pass type=likes to get users liked clips ordered by most recently liked.",
+                "parameters": "$clipParameters",
+                "response": {
+                    "200+": "$clipResponse"
+                }
+            },
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Creates a user clip. It will automatically be assigned to the correct daily session",
+                "request": "$clipRequest",
+                "response": {
+                    "200+": "$clipResponse"
+                }
+            },
+            "put": {
+                "#meta": "oauth2",
+                "doc": "Bulk updates a list of clips.",
+                "request": "$clipRequest",
+                "response": {
+                    "200+": "$clipResponse"
+                }
+            }
+        },
+        {
+            "url": "clips/:id/",
+            "get": {
+                "#meta": "oauth2,optional",
+                "doc": "Gets a single clip",
+                "prototype": "$clipResponse",
+                "response": {
+                    "200+": "$clipResponse"
+                }
+            },
+            "patch": {
+                "#meta": "oauth2",
+                "doc": "Update a clip",
+                "request": "$clipRequest",
+                "prototype": "$clipResponse",
+                "response": {
+                    "200+": "$clipResponse"
+                }
+            },
+            "delete": {
+                "#meta": "oauth2",
+                "prototype" : "$clipResponse"
+            }
+        },
+        {
+            "url": "follows/",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Creates a user follow. The authenticated user will be the follower, and the user specified in the $followRequest will be the one followed",
+                "request": "$followRequest",
+                "response": {
+                    "200+": "$followResponse"
+                }
+            }
+        },
+        {
+            "url": "follows/bulk_create/",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Creates multiple follow objects simultaneously",
+                "request": "$followRequest",
+                "response": {
+                    "200+": "$followResponse"
+                }
+            }
+        },
+        {
+            "url": "follows/:id/",
+            "delete": {
+                "#meta": "oauth2",
+            "doc": "Deletes a user follow. Must pass the id of the follow object being deleted, not the user being un-followed",
+                "prototype": "$followResponse"
+            }
+        },
+        {
+            "url": "flag/",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Allows a user to flag a post",
+                "request": "$flagRequest",
+                "response": {
+                    "200+": "$flagResponse"
+                }
+            }
+        },
+        {
+            "url": "users/:id/following/",
+            "get": {
+                "#meta": "oauth2,optional",
+                "doc": "Returns all users that the specified user is following",
+                "parameters": "",
+                "response": {
+                    "200+": "$followResponse"
+                }
+            }
+        },
+        {
+            "url": "users/:id/followers/",
+            "get": {
+                "#meta": "oauth2,optional",
+                "doc": "Returns all users that are following the user specified with :id",
+                "parameters": "",
+                "response": {
+                    "200+": "$followResponse"
+                }
+            }
+        },
+        {
+            "url": "shares/",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Shares an object with another user",
+                "request": "$shareRequest",
+                "response": {
+                    "200+": "$shareResponse"
+                }
+            }
+        },
+        {
+            "url": "comments/",
+            "get": {
+                "#meta" : "oauth2,optional",
+                "doc": "Gets a list of all comments",
+                "response": {
+                    "200+": "$commentResponse"
+                }
+            },
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Post a video comment",
+                "request": "$commentRequest",
+                "response": {
+                    "200+": "$commentResponse"
+                }
+            }
+        },
+        {
+            "url": "likes/",
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Like an object",
+                "request": "$likeRequest",
+                "response": {
+                    "200+": "$likeResponse"
+                }
+            }
+        },
+        {
+            "url": "users/",
+            "get": {
+                "#meta": "oauth2,optional",
+                "doc": "Returns a list of all users. Can be searched to use as an autocomplete tool. Search query will search username and full name",
+                "parameters": "$userParameters",
+                "response": {
+                    "200+": "$userResponse"
+                }
+            }
+        },
+        {
+            "url": "users/me/",
+            "get": {
+                "#meta": "oauth2",
+                "doc": "Returns the currently logged in user",
+                "resource_type": "detail",
+                "response": {
+                    "200+": "$userResponse"
+                }
+            }
+        },
+        {
+            "url": "users/:id/",
+            "get": {
+                "#meta": "oauth2,optional",
+                "doc": "Returns a single user's profile",
+                "response": {
+                    "200+": "$userResponse"
+                }
+            }
+        },
+        {
+            "url": "users/:id/",
+            "patch": {
+                "#meta": "oauth2",
+                "doc": "Edit the profile of the logged in user",
+                "prototype": "$userResponse",
+                "request": "$userRequest",
+                "response": {
+                    "200+": "$userResponse"
+                }
+            }
+        },
+        {
+            "url": "users/:id/set_password",
+            "patch": {
+                "#meta": "oauth2",
+                "doc": "Change the authenticated user's password",
+                "request": "$changePasswordRequest",
+                "response": {
+                    "200+": "$changePasswordResponse"
+                }
+            }
+        },
+        {
+            "url": "notification_settings/",
+            "get": {
+                "#meta": "oauth2",
+                "doc": "See the notification settings for the logged in user",
+                "response": {
+                    "200+": "$notificationSettingResponse"
+                }
+            }
+        },
+        {
+            "url": "notification_settings/:id/",
+            "patch": {
+                "#meta": "oauth2",
+                "doc": "Update the setting for a single notification type. Encompasses push and email notifications",
+                "prototype": "$notificationSettingResponse",
+                "request": "$notificationSettingRequest",
+                "response": {
+                    "200+": "$notificationSettingResponse"
+                }
+            }
+        },
+        {
+            "url": "notifications/",
+            "get": {
+                "#meta": "oauth2",
+                "doc": "See all notifications for the authenticated user",
+                "response": {
+                    "200+": "$notificationResponse"
+                }
+            }
+        },
+        {
+            "url": "watch_video/",
+            "post": {
+                "#meta": "",
+                "doc": "Log that a video has been watched",
+                "request": "$watchVideoRequest",
+                "response": {
+                    "200+": "$watchVideoResponse"
+                }
+            }
+        },
+        {
+            "url": "locations/",
+            "get": {
+                "#meta": "oauth2,optional",
+                "doc": "See the current user's custom locations. Pass search parameter to do a filtered autocomplete",
+                "parameters": "$locationParameters",
+                "response": {
+                    "200+": "$locationResponse"
+                }
+            },
+            "post": {
+                "#meta": "oauth2",
+                "doc": "Create a new custom user location",
+                "request": "$locationRequest",
+                "response": {
+                    "200+": "$locationResponse"
+                }
+            }
+        },
+        {
+            "url": "social_friends/",
+            "get": {
+                "#meta": "oauth2",
+                "doc": "Get the user's friends from a social network that already use our app. Pass provider=facebook for facebook friends and provider=twitter for people the user follows on twitter",
+                "parameters": "$socialFriendParameters",
+                "response": {
+                    "200+": "$userResponse"
+                }
+            }
+        }
+    ],
+    "objects": [
+        {"$signUpRequest": {
+            "username": "string",
+            "email": "string",
+            "password": "string"
+        }},
+        {"$signUpResponse": {
+            "username": "string",
+            "email": "string",
+            "client_id": "string",
+            "client_secret": "string"
+        }},
+        {"$loginResponse": {
+            "client_id": "string",
+            "client_secret": "string"
+        }},
+        {"$tokenRequest": {
+            "username": "string",
+            "password": "string",
+            "client_id": "string",
+            "client_secret": "string",
+            "grant_type": "string"
+        }},
+        {"$tokenResponse": {
+            "access_token": "string",
+            "token_type": "string",
+            "expires_in": "int",
+            "refresh_token": "string",
+            "scope": "string"
+        }},
+        {"$socialSignUpRequest": {
+            "provider": "string",
+            "access_token": "string",
+            "access_token_secret": "string,optional"
+        }},
+        {"$locationRequest": {
+            "name": "string",
+            "latitude": "float",
+            "longitude": "float",
+            "facebook_id": "string,optional"
+        }},
+        {"$locationParameters": {
+            "search": "string,optional"
+        }},
+        {"$locationResponse": {
+            "id": "int,primarykey",
+            "name": "string",
+            "latitude": "float",
+            "longitude": "float",
+            "facebook_id": "string,optional",
+            "custom_location_owner": "int,optional"
+        }},
+        {"$userParameters": {
+            "search": "string,optional"
+        }},
+        {"$userResponse": {
+            "email": "string",
+            "id": "int,primarykey",
+            "username": "string",
+            "fullname": "string",
+            "thumbnail": "string",
+            "original_photo": "string",
+            "small_photo": "string",
+            "large_photo": "string",
+            "about": "string",
+            "location": "M2O,$locationResponse,optional",
+            "content_type": "int",
+            "clip": "O2O,$clipResponse,optional",
+            "user_following_count": "int",
+            "user_followers_count": "int"
+        }},
+        {"$userRequest": {
+            "email": "string,optional",
+            "username": "string,optional",
+            "fullname": "string,optional",
+            "original_photo": "string,optional",
+            "about": "string,optional",
+            "location": "int,optional",
+            "clip": "int,optional"
+        }},
+        {"$pushwooshTokenRequest": {
+            "token": "string",
+            "language": "string",
+            "hwid": "string"
+        }},
+        {"$pushwooshTokenResponse": {
+            "id": "int,primarykey",
+            "created": "datetime",
+            "token": "string",
+            "user": "M2O,$userResponse"
+        }},
+        {"$clipParameters": {
+            "type": "string,optional"
+        }},
+        {"$clipRequest": {
+            "id": "int,primarykey,optional",
+            "video_file": "string,optional",
+            "thumbnail": "string,optional",
+            "privacy": "string,optional",
+            "session": "int,optional"
+        }},
+        {"$clipResponse": {
+            "id": "int,primarykey",
+            "video_file": "string,optional",
+            "thumbnail": "string,optional",
+            "created": "datetime",
+            "privacy": "string,optional",
+            "session": "int",
+            "content_type": "int"
+        }},
+        {"$addClipRequest": {
+            "clip": "int"
+        }},
+        {"$addClipResponse": {
+            "status": "string"
+        }},
+        {"$sessionRequest": {
+            "description": "string,optional",
+            "location": "string,optional"
+        }},
+        {"$sessionResponse": {
+            "id": "int,primarykey",
+            "created": "datetime",
+            "description": "string",
+            "user": "M2O,$userResponse",
+            "location": "M2O,$locationResponse,optional",
+            "clips": "O2M,$clipResponse,optional",
+            "shared_with_user": "string,optional",
+            "content_type": "int"
+        }},
+        {"$sessionParameters": {
+            "ordering": "string,optional",
+            "search": "string,optional",
+            "user": "int,optional",
+            "type": "string,optional",
+            "description": "string,optional",
+            "user__username": "string,optional",
+            "latitude": "float,optional",
+            "longitude": "float,optional",
+            "radius": "float,optional"
+        }},
+        {"$videoRequest": {
+            "video_file": "string,optional",
+            "thumbnail": "string,optional",
+            "title": "string,optional",
+            "description": "string,optional",
+            "clips": "array,int,optional"
+        }},
+        {"$videoResponse": {
+            "id": "int,primarykey",
+            "created": "datetime",
+            "video_file": "string,optional",
+            "thumbnail": "string,optional",
+            "title": "string",
+            "description": "string,optional",
+            "user": "M2O,$userResponse",
+            "view_count": "int",
+            "likes_count": "int",
+            "comments": "O2M,$commentResponse,optional",
+            "content_type": "int",
+            "contributors": "O2M,$userResponse"
+        }},
+        {"$videoParameters": {
+            "ordering": "string,optional",
+            "search": "string,optional",
+            "user": "int,optional",
+            "starring": "int,optional",
+            "featured": "boolean,optional",
+            "type": "string,optional",
+            "description": "string,optional",
+            "user__username": "string,optional",
+            "title": "string,optional"
+        }},
+        {"$castingRequest": {
+            "video_file": "string,optional",
+            "thumbnail": "string,optional",
+            "description": "string,optional",
+            "clips": "array,int,optional",
+            "location": "string,optional",
+            "is_active": "boolean"
+        }},
+        {"$castingResponse": {
+            "id": "int,primarykey",
+            "created": "datetime",
+            "video_file": "string,optional",
+            "thumbnail": "string,optional",
+            "description": "string,optional",
+            "user": "M2O,$userResponse",
+            "clips": "M2M,$clipResponse,optional",
+            "is_active": "boolean",
+            "content_type": "int"
+        }},
+        {"$castingParameters": {
+            "type": "string,optional",
+            "user": "int,optional",
+            "search": "string,optional",
+            "ordering": "string,optional",
+            "is_active": "boolean,optional",
+            "description": "string,optional",
+            "user__username": "string,optional",
+            "location": "string,optional"
+        }},
+        {"$commentResponse": {
+            "user": "M2O,$userResponse",
+            "id": "int,primarykey",
+            "created": "datetime",
+            "content_type": "int",
+            "object_id": "int",
+            "description": "string"
+        }},
+        {"$commentRequest": {
+            "content_type": "int",
+            "object_id": "int",
+            "description": "string"
+        }},
+        {"$followResponse": {
+            "follower": "M2O,$userResponse",
+            "following": "M2O,$userResponse",
+            "id": "int,primarykey",
+            "created": "datetime",
+            "content_type": "int",
+            "object_id": "int"
+        }},
+        {"$followRequest": {
+            "content_type": "int",
+            "object_id": "int"
+        }},
+        {"$shareResponse": {
+            "user": "M2O,$userResponse",
+            "id": "int,primarykey",
+            "created": "datetime",
+            "content_type": "int",
+            "object_id": "int",
+            "shared_with": "array,int"
+        }},
+        {"$shareRequest": {
+            "content_type": "int",
+            "object_id": "int",
+            "shared_with": "array,int"
+        }},
+        {"$flagResponse": {
+            "user": "M2O,$userResponse",
+            "id": "int,primarykey",
+            "created": "datetime",
+            "content_type": "int",
+            "object_id": "int"
+        }},
+        {"$flagRequest": {
+            "content_type": "int",
+            "object_id": "int"
+        }},
+        {"$likeResponse": {
+            "user": "M2O,$userResponse",
+            "id": "int,primarykey",
+            "created": "datetime",
+            "content_type": "int",
+            "object_id": "int"
+        }},
+        {"$likeRequest": {
+            "content_type": "int",
+            "object_id": "int"
+        }},
+        {"$tagResponse": {
+            "name": "string",
+            "id": "int,primarykey"
+        }},
+        {"$notificationSettingResponse": {
+            "id": "int,primarykey",
+            "notification_type": "int",
+            "allow_push": "boolean",
+            "allow_email": "boolean"
+        }},
+        {"$notificationSettingRequest": {
+            "allow_push": "boolean",
+            "allow_email": "boolean"
+        }},
+        {"$notificationResponse": {
+            "created": "datetime",
+            "name": "string",
+            "message": "string",
+            "reporter": "M2O,$userResponse"
+        }},
+        {"$socialShareRequest": {
+            "provider": "string"
+        }},
+        {"$socialShareResponse": {
+            "status": "string"
+        }},
+        {"$watchVideoRequest": {
+            "video": "int"
+        }},
+        {"$watchVideoResponse": {
+            "id": "int,primarykey",
+            "created": "datetime",
+            "video": "int"
+        }},
+        {"$socialFriendParameters": {
+            "provider": "string"
+        }},
+        {"$changePasswordRequest": {
+            "old_password": "string",
+            "password": "string"
+        }},
+        {"$changePasswordResponse": {
+            "status": "string"
+        }}
+    ]
+}
