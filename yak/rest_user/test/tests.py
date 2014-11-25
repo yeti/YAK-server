@@ -1,16 +1,14 @@
 import base64
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from yak.rest_core.test import ManticomTestCase
+from yak.rest_core.test import SchemaTestCase
 from yak.rest_user.test.factories import UserFactory
-
-__author__ = 'baylee'
 
 
 User = get_user_model()
 
 
-class UserTests(ManticomTestCase):
+class UserTests(SchemaTestCase):
     def setUp(self):
         super(UserTests, self).setUp()
         self.user = User.objects.create_user(username='tester1', email='tester1@yeti.co', password='password')
@@ -24,7 +22,7 @@ class UserTests(ManticomTestCase):
         frank = UserFactory(username="frank")
         UserFactory(username="mindy")
         parameters = {"search": "fra"}
-        response = self.assertManticomGETResponse(url, parameters, "$userResponse", bob)
+        response = self.assertSchemaGet(url, parameters, "$userResponse", bob)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(response.data["results"][0]["username"], frank.username)
 
@@ -37,15 +35,15 @@ class UserTests(ManticomTestCase):
             "fullname": "Hodor"
         }
         # Unauthenticated user can't update a user's profile
-        self.assertManticomPATCHResponse(url, "$userRequest", "$userResponse", data, None, unauthorized=True)
+        self.assertSchemaPatch(url, "$userRequest", "$userResponse", data, None, unauthorized=True)
         self.assertEqual(User.objects.get(pk=me.pk).fullname, None)
 
         # Stranger can't update another user's profile
-        self.assertManticomPATCHResponse(url, "$userRequest", "$userResponse", data, stranger, unauthorized=True)
+        self.assertSchemaPatch(url, "$userRequest", "$userResponse", data, stranger, unauthorized=True)
         self.assertEqual(User.objects.get(pk=me.pk).fullname, None)
 
         # User can update their own profile
-        self.assertManticomPATCHResponse(url, "$userRequest", "$userResponse", data, me)
+        self.assertSchemaPatch(url, "$userRequest", "$userResponse", data, me)
         self.assertEqual(User.objects.get(pk=me.pk).fullname, "Hodor")
 
     def test_get_logged_in_user(self):
@@ -53,7 +51,7 @@ class UserTests(ManticomTestCase):
         UserFactory()
 
         url = reverse("users-me")
-        response = self.assertManticomGETResponse(url, None, "$userResponse", me)
+        response = self.assertSchemaGet(url, None, "$userResponse", me)
         self.assertEqual(response.data["id"], me.pk)
 
     def test_user_can_sign_up(self):
@@ -64,7 +62,7 @@ class UserTests(ManticomTestCase):
             "email": "tester@yetihq.com",
             "password": password
         }
-        self.assertManticomPOSTResponse(url, "$signUpRequest", "$signUpResponse", data, None)
+        self.assertSchemaPost(url, "$signUpRequest", "$signUpResponse", data, None)
         user = User.objects.filter(username="tester")
         self.assertEqual(user.count(), 1)
 
@@ -142,17 +140,16 @@ class UserTests(ManticomTestCase):
             "password": base64.encodestring("felicia")
         }
         # Unauthenticated user can't change password
-        self.assertManticomPATCHResponse(url, "$changePasswordRequest", "$changePasswordResponse", data, None,
-                                         unauthorized=True)
+        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, None, unauthorized=True)
         self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
 
         # Stranger can't change another user's password
-        self.assertManticomPATCHResponse(url, "$changePasswordRequest", "$changePasswordResponse", data, stranger,
-                                         unauthorized=True)
+        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, stranger,
+                               unauthorized=True)
         self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
 
         # User can change their own password
-        self.assertManticomPATCHResponse(url, "$changePasswordRequest", "$changePasswordResponse", data, felicia)
+        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, felicia)
         self.assertTrue(User.objects.get(pk=felicia.pk).check_password("felicia"))
 
     def test_user_can_get_token(self):

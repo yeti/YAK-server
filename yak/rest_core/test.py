@@ -2,13 +2,10 @@ import json
 from rest_framework.test import APITestCase
 from django.conf import settings
 
-__author__ = 'baylee'
-
 
 class APITestCaseWithAssertions(APITestCase):
     """
-    Taken from Tastypie's tests (https://github.com/toastdriven/django-tastypie/blob/master/tastypie/test.py)
-    to improve readability
+    Taken from Tastypie's tests to improve readability
     """
     def assertHttpOK(self, resp):
         """
@@ -78,9 +75,10 @@ class APITestCaseWithAssertions(APITestCase):
 
     def assertHttpNotAllowed(self, resp):
         """
-        Depending on how we purposefully reject a call (e.g., limiting methods, using permission classes, etc.,
-        we may have a few different HTTP response codes. Bundling these together into a single assertion so that
-        Manticom tests can be more flexible.
+        Depending on how we purposefully reject a call (e.g., limiting
+        methods, using permission classes, etc.), we may have a few different
+        HTTP response codes. Bundling these together into a single assertion
+        so that schema tests can be more flexible.
         """
         return self.assertIn(resp.status_code, [401, 403, 404, 405])
 
@@ -132,9 +130,9 @@ class APITestCaseWithAssertions(APITestCase):
         self.assertTrue(resp['Content-Type'].startswith('application/json'))
 
 
-class ManticomTestCase(APITestCaseWithAssertions):
+class SchemaTestCase(APITestCaseWithAssertions):
     def setUp(self):
-        super(ManticomTestCase, self).setUp()
+        super(SchemaTestCase, self).setUp()
 
         # Parse schema objects for use later
         self.schema_objects = {}
@@ -145,8 +143,8 @@ class ManticomTestCase(APITestCaseWithAssertions):
 
     def check_schema_keys(self, data_object, schema_fields):
         """
-            `data_object` is the actual JSON being sent or received
-            `schema_fields` is the expected JSON based on the schema file
+        `data_object` is the actual JSON being sent or received
+        `schema_fields` is the expected JSON based on the schema file
         """
         required_fields = []
 
@@ -193,6 +191,11 @@ class ManticomTestCase(APITestCaseWithAssertions):
         self.assertTrue(set(data_object).issubset(set(schema_fields)))
 
     def add_credentials(self, user):
+        """
+        Adds OAuth2.0 authentication as specified in `rest_user`
+        If no user is specified, clear any existing credentials (allows us to
+        check unauthorized requests)
+        """
         if user:
             token = user.accesstoken_set.first()
             self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token.token)
@@ -214,16 +217,15 @@ class ManticomTestCase(APITestCaseWithAssertions):
 
         self.check_schema_keys(results_data, self.schema_objects[response_object_name])
 
-    def assertManticomGETResponse(
+    def assertSchemaGet(
             self,
             url,
             parameters,
             response_object_name,
             user,
-            unauthorized=False
-    ):
+            unauthorized=False):
         """
-        Runs a GET request and checks the GET parameters and results match the manticom schema
+        Checks GET parameters and results match the schema
         """
         self.add_credentials(user)
         response = self.client.get(url, parameters)
@@ -235,7 +237,7 @@ class ManticomTestCase(APITestCaseWithAssertions):
 
         return response
 
-    def assertManticomPOSTResponse(
+    def assertSchemaPost(
             self,
             url,
             request_object_name,
@@ -244,10 +246,12 @@ class ManticomTestCase(APITestCaseWithAssertions):
             user,
             format="json",
             unauthorized=False,
-            status_OK=False,
-    ):
+            status_OK=False):
         """
-        Runs a POST request and checks the POST data and results match the manticom schema
+        Checks POST data and results match schema
+
+        status_OK: used for non-standard POST requests that do not return 201,
+            e.g. if creating a custom route that uses POST
         """
         if isinstance(data, list):  # Check first object if this is a bulk create
             self.check_schema_keys(data[0], self.schema_objects[request_object_name])
@@ -267,17 +271,17 @@ class ManticomTestCase(APITestCaseWithAssertions):
 
         return response
 
-    def assertManticomPATCHResponse(self,
+    def assertSchemaPatch(
+            self,
             url,
             request_object_name,
             response_object_name,
             data,
             user,
             format="json",
-            unauthorized=False
-    ):
+            unauthorized=False):
         """
-        Runs a POST request and checks the POST data and results match the manticom schema
+        Checks PATCH data and results match schema
         """
         self.check_schema_keys(data, self.schema_objects[request_object_name])
 
@@ -286,13 +290,13 @@ class ManticomTestCase(APITestCaseWithAssertions):
         if unauthorized:
             self.assertHttpNotAllowed(response)
         else:
-            self.assertHttpOK(response)
-            self.assertTrue(response['Content-Type'].startswith('application/json'))
+            self.assertValidJSONResponse(response)
             self.check_response_data(response, response_object_name)
 
         return response
 
-    def assertManticomPUTResponse(self,
+    def assertSchemaPut(
+            self,
             url,
             request_object_name,
             response_object_name,
@@ -300,11 +304,12 @@ class ManticomTestCase(APITestCaseWithAssertions):
             user,
             format="json",
             unauthorized=False,
-            forbidden=False
-    ):
+            forbidden=False):
         """
-        Runs a PUT request and checks the PUT data and results match the manticom schema for bulk updates.
-        Assumes that all objects sent in a bulk update are identical, and hence only checks that the first one
+        Assumes PUT is used for bulk updates, not single updates.
+        Runs a PUT request and checks the PUT data and results match the
+        schema for bulk updates. Assumes that all objects sent in a bulk
+        update are identical, and hence only checks that the first one
         matches the schema.
         """
         self.check_schema_keys(data[0], self.schema_objects[request_object_name])
@@ -319,16 +324,19 @@ class ManticomTestCase(APITestCaseWithAssertions):
         elif unauthorized:
             self.assertHttpUnauthorized(response)
         else:
-            self.assertHttpOK(response)
-            self.assertTrue(response['Content-Type'].startswith('application/json'))
+            self.assertValidJSONResponse(response)
             self.check_response_data(response, response_object_name)
 
         return response
 
-    def assertManticomDELETEResponse(self,
-                                     url,
-                                     user,
-                                     unauthorized=False):
+    def assertSchemaDelete(
+            self,
+            url,
+            user,
+            unauthorized=False):
+        """
+        Checks DELETE
+        """
         self.add_credentials(user)
         response = self.client.delete(url)
 
@@ -351,14 +359,14 @@ class ManticomTestCase(APITestCaseWithAssertions):
             path_to_thumbnail,
             related_media_model=None,
             related_name=None,
-            extra_http=None,
             unauthorized=False
     ):
         """
-            Checks that the video is uploaded and saved
-            If the model being 'updated' is not the model that actually stores files (e.g., there is a Media model that
-            has a relation to the model being updated), pass that model and the keyword field on that model that relates
-            to the model being updated
+        Checks that the video is uploaded and saved
+        If the model being 'updated' is not the model that actually stores
+        files (e.g., there is a Media model that has a relation to the model
+        being updated), pass that model and the keyword field on that model
+        that relates to the model being updated
         """
         self.add_credentials(user)
         kwargs = {

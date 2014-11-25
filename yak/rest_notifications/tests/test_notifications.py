@@ -5,14 +5,12 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from mock import MagicMock
 from yak.rest_core.utils import get_class
-from yak.rest_core.test import ManticomTestCase
+from yak.rest_core.test import SchemaTestCase
 from yak.rest_notifications.models import create_notification, Notification, NotificationSetting
 from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient
 from yak.rest_social.models import Comment
 from yak.rest_social.utils import get_social_model
 from yak.rest_user.test.factories import UserFactory
-
-__author__ = 'baylee'
 
 
 User = get_user_model()
@@ -20,7 +18,7 @@ SocialModel = get_social_model()
 SocialFactory = get_class(settings.SOCIAL_MODEL_FACTORY)
 
 
-class NotificationsTestCase(ManticomTestCase):
+class NotificationsTestCase(SchemaTestCase):
     def setUp(self):
         super(NotificationsTestCase, self).setUp()
         self.social_obj = SocialFactory()
@@ -35,11 +33,10 @@ class NotificationsTestCase(ManticomTestCase):
             "language": "en",
             "hwid": "XYZ456"
         }
-        self.assertManticomPOSTResponse(url, "$pushwooshTokenRequest", "$pushwooshTokenResponse", data, self.receiver)
+        self.assertSchemaPost(url, "$pushwooshTokenRequest", "$pushwooshTokenResponse", data, self.receiver)
 
         # Non-authenticated users can't create a token
-        self.assertManticomPOSTResponse(url, "$pushwooshTokenRequest", "$pushwooshTokenResponse", data, None,
-                                        unauthorized=True)
+        self.assertSchemaPost(url, "$pushwooshTokenRequest", "$pushwooshTokenResponse", data, None, unauthorized=True)
 
         # Can't create token if write-only language and hwid data is missing
         bad_data = {
@@ -102,7 +99,7 @@ class NotificationsTestCase(ManticomTestCase):
         create_notification(self.receiver, self.reporter, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
         create_notification(self.reporter, self.receiver, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
         url = reverse("notifications")
-        response = self.assertManticomGETResponse(url, None, "$notificationResponse", self.receiver)
+        response = self.assertSchemaGet(url, None, "$notificationResponse", self.receiver)
         self.assertEqual(response.data["count"], self.receiver.notifications_received.count())
 
     def test_comment_creates_notification(self):
@@ -113,7 +110,7 @@ class NotificationsTestCase(ManticomTestCase):
             "object_id": self.social_obj.pk,
             "description": "Yeti are cool"
         }
-        self.assertManticomPOSTResponse(url, "$commentRequest", "$commentResponse", data, self.reporter)
+        self.assertSchemaPost(url, "$commentRequest", "$commentResponse", data, self.reporter)
         notification_count = Notification.objects.filter(user=self.social_obj.user,
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(SocialModel),
@@ -127,7 +124,7 @@ class NotificationsTestCase(ManticomTestCase):
             "content_type": content_type.pk,
             "object_id": self.receiver.pk,
         }
-        self.assertManticomPOSTResponse(url, "$followRequest", "$followResponse", data, self.reporter)
+        self.assertSchemaPost(url, "$followRequest", "$followResponse", data, self.reporter)
         notification_count = Notification.objects.filter(user=self.receiver,
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(User),
@@ -142,7 +139,7 @@ class NotificationsTestCase(ManticomTestCase):
             "object_id": self.social_obj.pk,
             "shared_with": [self.receiver.pk]
         }
-        self.assertManticomPOSTResponse(url, "$shareRequest", "$shareResponse", data, self.reporter)
+        self.assertSchemaPost(url, "$shareRequest", "$shareResponse", data, self.reporter)
         notification_count = Notification.objects.filter(user=self.receiver,
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(SocialModel),
@@ -156,7 +153,7 @@ class NotificationsTestCase(ManticomTestCase):
             "content_type": content_type.pk,
             "object_id": self.social_obj.pk,
         }
-        self.assertManticomPOSTResponse(url, "$likeRequest", "$likeResponse", data, self.reporter)
+        self.assertSchemaPost(url, "$likeRequest", "$likeResponse", data, self.reporter)
         notification_count = Notification.objects.filter(user=self.social_obj.user,
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(SocialModel),
@@ -174,7 +171,7 @@ class NotificationsTestCase(ManticomTestCase):
             "object_id": SocialFactory().pk,
             "description": "@{} look at my cool comment!".format(self.social_obj.user.username)
         }
-        self.assertManticomPOSTResponse(url, "$commentRequest", "$commentResponse", data, self.reporter)
+        self.assertSchemaPost(url, "$commentRequest", "$commentResponse", data, self.reporter)
         notification_count = Notification.objects.filter(user=self.social_obj.user,
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(Comment),
