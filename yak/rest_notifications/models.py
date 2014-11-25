@@ -5,7 +5,7 @@ from django.db import models
 from django.template.loader import render_to_string
 from celery.task import task
 from model_utils import Choices
-from rest_core.models import CoreModel
+from yak.rest_core.models import CoreModel
 
 __author__ = 'rudy'
 

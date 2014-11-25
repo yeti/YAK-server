@@ -5,9 +5,9 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
-from rest_core.permissions import IsOwnerOrReadOnly
-from rest_user.permissions import IsAuthenticatedOrCreate
-from rest_user.serializers import SignUpSerializer, UserSerializer, LoginSerializer, PasswordSerializer
+from yak.rest_core.permissions import IsOwnerOrReadOnly
+from yak.rest_user.permissions import IsAuthenticatedOrCreate
+from yak.rest_user.serializers import SignUpSerializer, UserSerializer, LoginSerializer, PasswordSerializer
 
 __author__ = 'baylee'
 

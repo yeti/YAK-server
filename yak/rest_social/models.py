@@ -10,8 +10,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import post_save
 from model_utils import Choices
-from rest_core.models import CoreModel
-from rest_user.models import AbstractYeti
+from yak.rest_core.models import CoreModel
+from yak.rest_user.models import AbstractYeti
 
 
 class FollowableModel():

@@ -1,8 +1,8 @@
 import base64
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from rest_core.test import ManticomTestCase
-from rest_user.test.factories import UserFactory
+from yak.rest_core.test import ManticomTestCase
+from yak.rest_user.test.factories import UserFactory
 
 __author__ = 'baylee'
 

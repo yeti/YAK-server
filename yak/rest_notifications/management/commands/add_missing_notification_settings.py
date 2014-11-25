@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
-from rest_notifications.models import Notification, NotificationSetting
+from yak.rest_notifications.models import Notification, NotificationSetting
 
 __author__ = 'rudolphmutter'
 

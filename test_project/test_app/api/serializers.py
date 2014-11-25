@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_core.serializers import BaseModelSerializer
-from rest_user.serializers import AuthSerializerMixin
+from yak.rest_core.serializers import BaseModelSerializer
+from yak.rest_user.serializers import AuthSerializerMixin
 
 
 User = get_user_model()

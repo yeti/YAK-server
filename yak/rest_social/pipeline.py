@@ -2,7 +2,7 @@ from social.apps.django_app.default.models import UserSocialAuth
 import urllib
 from urllib2 import URLError
 from django.core.files import File
-from rest_core.utils import retry_cloudfiles
+from yak.rest_core.utils import retry_cloudfiles
 
 
 def social_auth_user(strategy, uid, user=None, *args, **kwargs):

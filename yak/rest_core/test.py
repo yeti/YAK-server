@@ -1,6 +1,6 @@
 import json
 from rest_framework.test import APITestCase
-import settings
+from django.conf import settings
 
 __author__ = 'baylee'
 

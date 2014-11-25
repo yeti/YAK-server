@@ -1,4 +1,4 @@
-from rest_social.views import SocialUserViewSet
+from yak.rest_social.views import SocialUserViewSet
 from test_project.test_app.api.serializers import ProjectUserSerializer
 
 

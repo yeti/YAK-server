@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url, include
 from rest_framework import routers
-from rest_notifications.views import NotificationSettingViewSet, NotificationView, \
+from yak.rest_notifications.views import NotificationSettingViewSet, NotificationView, \
     NotificationFollowViewSet, NotificationLikeViewSet, NotificationShareViewSet, NotificationCommentViewSet, \
     PushwooshTokenView
 

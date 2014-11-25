@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.pagination import PaginationSerializer
-from rest_social.models import Tag, Comment, Follow, Flag, Share, Like
-from rest_user.serializers import UserSerializer, LoginSerializer
+from yak.rest_social.models import Tag, Comment, Follow, Flag, Share, Like
+from yak.rest_user.serializers import UserSerializer, LoginSerializer
 
 __author__ = 'baylee'
 

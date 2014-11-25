@@ -41,9 +41,9 @@ INSTALLED_APPS = (
     'rest_framework',
     'social.apps.django_app.default',
 
-    'rest_user',
-    'rest_social',
-    'rest_notifications',
+    'yak.rest_user',
+    'yak.rest_social',
+    'yak.rest_notifications',
     'test_app',
 )
 
@@ -88,17 +88,14 @@ AUTH_USER_MODEL = "{}.{}".format(USER_APP_LABEL, USER_MODEL.capitalize())
 USER_SERIALIZER = "test_app.api.serializers.ProjectUserSerializer"
 
 PACKAGES_TO_TEST = ['test_project',
-                    'rest_core',
-                    'rest_social',
-                    'rest_notifications',
-                    'rest_user']
+                    'yak']
 
 API_SCHEMA = 'test_project/api-schema-1.0.json'
 
 AUTHENTICATION_BACKENDS = (
     "social.backends.facebook.Facebook2OAuth2",
     "social.backends.twitter.TwitterOAuth",
-    "rest_user.backends.CaseInsensitiveMezzanineBackend",
+    "yak.rest_user.backends.CaseInsensitiveMezzanineBackend",
 )
 
 SOCIAL_AUTH_FACEBOOK_KEY = ''
@@ -131,7 +128,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.auth_allowed',
 
     # If used, replaces default 'social.pipeline.social_auth.social_user'
-    # 'rest_social.rest_social.pipeline.social_auth_user',
+    # 'yak.rest_social.pipeline.social_auth_user',
 
     # Checks if the current social-account is already associated in the site.
     'social.pipeline.social_auth.social_user',
@@ -161,13 +158,13 @@ SOCIAL_AUTH_PIPELINE = (
     # Update the user record with any changed info from the auth service.
     'social.pipeline.user.user_details',
 
-    'rest_social.rest_social.pipeline.save_extra_data',
-    'rest_social.rest_social.pipeline.get_profile_image',
+    'yak.rest_social.pipeline.save_extra_data',
+    'yak.rest_social.pipeline.get_profile_image',
 )
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_core.permissions.IsOwnerOrReadOnly',
+        'yak.rest_core.permissions.IsOwnerOrReadOnly',
     ),
     'PAGINATE_BY': 20,
     'DEFAULT_AUTHENTICATION_CLASSES': (

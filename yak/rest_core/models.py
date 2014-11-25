@@ -3,7 +3,7 @@ import os
 from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
-from rest_core.utils import retry_cloudfiles
+from yak.rest_core.utils import retry_cloudfiles
 from model_utils import Choices
 
 

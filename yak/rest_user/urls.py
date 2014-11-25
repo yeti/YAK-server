@@ -1,11 +1,10 @@
 from django.conf.urls import patterns, url, include
-from rest_user import views
+from yak.rest_user import views
 from rest_framework import routers
-from rest_user.views import UserViewSet
 
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet, base_name='users')
+router.register(r'users', views.UserViewSet, base_name='users')
 
 
 urlpatterns = patterns('',

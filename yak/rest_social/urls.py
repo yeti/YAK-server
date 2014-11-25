@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url, include
-from rest_social import views
+from yak.rest_social import views
 from rest_framework import routers
 
 

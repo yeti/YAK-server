@@ -9,12 +9,12 @@ from social.apps.django_app.default.models import UserSocialAuth
 from social.apps.django_app.utils import load_strategy, load_backend
 from social.backends.oauth import BaseOAuth1, BaseOAuth2
 from twython import Twython
-from rest_social.models import Tag, Comment, Follow, Flag, Share, Like
-from rest_social.serializers import TagSerializer, CommentSerializer, FollowSerializer, FlagSerializer, \
+from yak.rest_social.models import Tag, Comment, Follow, Flag, Share, Like
+from yak.rest_social.serializers import TagSerializer, CommentSerializer, FollowSerializer, FlagSerializer, \
     ShareSerializer, FollowPaginationSerializer, LikeSerializer, SocialSignUpSerializer
-from rest_social.utils import post_social_media
-from rest_user.serializers import UserSerializer
-from rest_user.views import UserViewSet, SignUp
+from yak.rest_social.utils import post_social_media
+from yak.rest_user.serializers import UserSerializer
+from yak.rest_user.views import UserViewSet, SignUp
 from django.contrib.auth import get_user_model
 
 

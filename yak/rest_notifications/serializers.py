@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from rest_notifications.models import NotificationSetting, Notification, PushwooshToken
-from rest_user.serializers import UserSerializer
+from yak.rest_notifications.models import NotificationSetting, Notification, PushwooshToken
+from yak.rest_user.serializers import UserSerializer
 
 __author__ = 'baylee'
 

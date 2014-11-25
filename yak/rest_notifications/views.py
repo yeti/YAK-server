@@ -4,12 +4,12 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.viewsets import GenericViewSet
 from pypushwoosh import client, constants
 from pypushwoosh.command import RegisterDeviceCommand
-from rest_core.permissions import IsOwner
-from rest_notifications.models import NotificationSetting, Notification, create_notification, \
+from yak.rest_core.permissions import IsOwner
+from yak.rest_notifications.models import NotificationSetting, Notification, create_notification, \
     PushwooshToken
-from rest_notifications.serializers import NotificationSettingSerializer, NotificationSerializer, \
+from yak.rest_notifications.serializers import NotificationSettingSerializer, NotificationSerializer, \
     PushwooshTokenSerializer
-from rest_social.views import CommentViewSet, FollowViewSet, ShareViewSet, LikeViewSet
+from yak.rest_social.views import CommentViewSet, FollowViewSet, ShareViewSet, LikeViewSet
 
 __author__ = 'baylee'
 

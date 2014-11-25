@@ -1,6 +1,6 @@
 import factory
-from rest_social.utils import get_social_model
-from rest_user.test.factories import UserFactory
+from yak.rest_social.utils import get_social_model
+from yak.rest_user.test.factories import UserFactory
 
 
 Post = get_social_model()

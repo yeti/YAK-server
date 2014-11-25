@@ -10,7 +10,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='yak-server',
     version='0.1',
-    packages=['rest_core', 'rest_user', 'rest_social', 'rest_notifications'],
+    packages=['yak'],
     include_package_data=True,
     license='BSD License',
     description='Server-side implementation of Yeti App Kit built on Django',

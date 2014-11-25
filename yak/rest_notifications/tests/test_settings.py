@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from rest_core.test import ManticomTestCase
-from rest_user.test.factories import UserFactory
+from yak.rest_core.test import ManticomTestCase
+from yak.rest_user.test.factories import UserFactory
 
 __author__ = 'baylee'
 

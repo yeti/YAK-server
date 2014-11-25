@@ -26,9 +26,9 @@ ap1_v1 = patterns('',
     url('^', include('social.apps.django_app.urls', namespace='social')),
 
     # Library views
-    url(r'^', include('rest_user.urls')),
-    url(r'^', include('rest_social.urls')),
-    url(r'^', include('rest_notifications.urls')),
+    url(r'^', include('yak.rest_user.urls')),
+    url(r'^', include('yak.rest_social.urls')),
+    url(r'^', include('yak.rest_notifications.urls')),
 )
 
 

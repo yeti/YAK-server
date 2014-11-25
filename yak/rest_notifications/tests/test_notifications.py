@@ -4,13 +4,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.urlresolvers import reverse
 from mock import MagicMock
-from rest_core.utils import get_class
-from rest_core.test import ManticomTestCase
-from rest_notifications.models import create_notification, Notification, NotificationSetting
-from rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient
-from rest_social.models import Comment
-from rest_social.utils import get_social_model
-from rest_user.test.factories import UserFactory
+from yak.rest_core.utils import get_class
+from yak.rest_core.test import ManticomTestCase
+from yak.rest_notifications.models import create_notification, Notification, NotificationSetting
+from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient
+from yak.rest_social.models import Comment
+from yak.rest_social.utils import get_social_model
+from yak.rest_user.test.factories import UserFactory
 
 __author__ = 'baylee'
 
