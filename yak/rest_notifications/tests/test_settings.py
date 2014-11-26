@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_user.test.factories import UserFactory
+from yak.settings import yak_settings
 
 
 class NotificationSettingsTestCase(SchemaTestCase):
@@ -10,7 +11,7 @@ class NotificationSettingsTestCase(SchemaTestCase):
         UserFactory()
         url = reverse("notification_settings-list")
         response = self.assertSchemaGet(url, None, "$notificationSettingResponse", user)
-        self.assertEqual(response.data["count"], len(settings.NOTIFICATION_TYPES))
+        self.assertEqual(response.data["count"], len(yak_settings.NOTIFICATION_TYPES))
 
     def test_can_only_update_own_settings(self):
         user = UserFactory()

@@ -1,6 +1,7 @@
 import json
 from rest_framework.test import APITestCase
 from django.conf import settings
+from yak.settings import yak_settings
 
 
 class APITestCaseWithAssertions(APITestCase):
@@ -136,7 +137,7 @@ class SchemaTestCase(APITestCaseWithAssertions):
 
         # Parse schema objects for use later
         self.schema_objects = {}
-        with open(settings.API_SCHEMA) as file:
+        with open(yak_settings.API_SCHEMA) as file:
             schema_data = json.loads(file.read())
             for schema_obj in schema_data["objects"]:
                 self.schema_objects.update(schema_obj)
@@ -176,7 +177,7 @@ class SchemaTestCase(APITestCaseWithAssertions):
 
                 new_data_object = data_object[schema_field]
                 if is_list:
-                    # If our new object to check is a list of these objects, continue if we don't have any daa
+                    # If our new object to check is a list of these objects, continue if we don't have any data
                     # Else grab the first one in the list
                     if len(new_data_object) == 0:
                         continue

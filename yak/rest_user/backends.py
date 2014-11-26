@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class CaseInsensitiveMezzanineBackend(ModelBackend):
+class CaseInsensitiveBackend(ModelBackend):
     """
     From Mezzanine:
         Extends Django's ``ModelBackend`` to allow login via username,

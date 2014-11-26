@@ -10,6 +10,7 @@ from yak.rest_notifications.models import NotificationSetting, Notification, cre
 from yak.rest_notifications.serializers import NotificationSettingSerializer, NotificationSerializer, \
     PushwooshTokenSerializer
 from yak.rest_social.views import CommentViewSet, FollowViewSet, ShareViewSet, LikeViewSet
+from yak.settings import yak_settings
 
 __author__ = 'baylee'
 
@@ -23,7 +24,7 @@ class PushwooshTokenView(generics.CreateAPIView):
         obj.user = self.request.user
 
         push_client = client.PushwooshClient()
-        command = RegisterDeviceCommand(settings.PUSHWOOSH_APP_CODE, obj.hwid, constants.PLATFORM_IOS, obj.language,
+        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, obj.hwid, constants.PLATFORM_IOS, obj.language,
                                         obj.token)
         response = push_client.invoke(command)
 

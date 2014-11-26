@@ -4,18 +4,17 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.urlresolvers import reverse
 from mock import MagicMock
-from yak.rest_core.utils import get_class
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_notifications.models import create_notification, Notification, NotificationSetting
 from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient
 from yak.rest_social.models import Comment
-from yak.rest_social.utils import get_social_model
 from yak.rest_user.test.factories import UserFactory
+from yak.settings import yak_settings
 
 
 User = get_user_model()
-SocialModel = get_social_model()
-SocialFactory = get_class(settings.SOCIAL_MODEL_FACTORY)
+SocialModel = yak_settings.SOCIAL_MODEL
+SocialFactory = yak_settings.SOCIAL_MODEL_FACTORY
 
 
 class NotificationsTestCase(SchemaTestCase):
@@ -51,7 +50,7 @@ class NotificationsTestCase(SchemaTestCase):
         send_email_notification(self.receiver, message)
 
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, settings.EMAIL_NOTIFICATION_SUBJECT)
+        self.assertEqual(mail.outbox[0].subject, yak_settings.EMAIL_NOTIFICATION_SUBJECT)
         self.assertEqual(mail.outbox[0].body, "You have a notification!")
         self.assertEqual(mail.outbox[0].alternatives, [(message, "text/html")])
 
@@ -64,26 +63,26 @@ class NotificationsTestCase(SchemaTestCase):
         notification_count = Notification.objects.count()
 
         # If receiver is the same as the reporter, a notification is not created
-        create_notification(self.receiver, self.receiver, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
+        create_notification(self.receiver, self.receiver, self.social_obj, yak_settings.NOTIFICATION_TYPES[0][0])
         self.assertEqual(notification_count, Notification.objects.count())
 
         # If the receiver and reporter are different, a notification is created
-        create_notification(self.receiver, self.reporter, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
+        create_notification(self.receiver, self.reporter, self.social_obj, yak_settings.NOTIFICATION_TYPES[0][0])
         self.assertEqual(notification_count + 1, Notification.objects.count())
 
     def test_correct_notification_type_sent(self):
-        setting = NotificationSetting.objects.get(notification_type=settings.NOTIFICATION_TYPES[0][0],
+        setting = NotificationSetting.objects.get(notification_type=yak_settings.NOTIFICATION_TYPES[0][0],
                                                   user=self.receiver)
 
         # An email and a push are sent if allow_email and allow_push are True
-        create_notification(self.receiver, self.reporter, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
+        create_notification(self.receiver, self.reporter, self.social_obj, yak_settings.NOTIFICATION_TYPES[0][0])
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(len(PushwooshClient.invoke.mock_calls), 1)
 
         # No new email is sent if allow_email is False
         setting.allow_email = False
         setting.save()
-        create_notification(self.receiver, self.reporter, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
+        create_notification(self.receiver, self.reporter, self.social_obj, yak_settings.NOTIFICATION_TYPES[0][0])
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(len(PushwooshClient.invoke.mock_calls), 2)
 
@@ -91,13 +90,13 @@ class NotificationsTestCase(SchemaTestCase):
         setting.allow_email = True
         setting.allow_push = False
         setting.save()
-        create_notification(self.receiver, self.reporter, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
+        create_notification(self.receiver, self.reporter, self.social_obj, yak_settings.NOTIFICATION_TYPES[0][0])
         self.assertEqual(len(mail.outbox), 2)
         self.assertTrue(len(PushwooshClient.invoke.mock_calls), 2)
 
     def test_can_only_see_own_notifications(self):
-        create_notification(self.receiver, self.reporter, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
-        create_notification(self.reporter, self.receiver, self.social_obj, settings.NOTIFICATION_TYPES[0][0])
+        create_notification(self.receiver, self.reporter, self.social_obj, yak_settings.NOTIFICATION_TYPES[0][0])
+        create_notification(self.reporter, self.receiver, self.social_obj, yak_settings.NOTIFICATION_TYPES[0][0])
         url = reverse("notifications")
         response = self.assertSchemaGet(url, None, "$notificationResponse", self.receiver)
         self.assertEqual(response.data["count"], self.receiver.notifications_received.count())

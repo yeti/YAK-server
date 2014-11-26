@@ -82,31 +82,34 @@ USE_L10N = True
 
 USE_TZ = True
 
-USER_APP_LABEL = 'test_app'
-USER_MODEL = 'user'
-AUTH_USER_MODEL = "{}.{}".format(USER_APP_LABEL, USER_MODEL.capitalize())
-USER_SERIALIZER = "test_app.api.serializers.ProjectUserSerializer"
+YAK = {
+    'USER_APP_LABEL': 'test_app',
+    'USER_MODEL': 'user',
+    'USER_SERIALIZER': "test_app.api.serializers.ProjectUserSerializer",
+    'API_SCHEMA': 'test_project/api-schema-1.0.json',
+    'SOCIAL_MODEL': "test_app.models.Post",
+    'SOCIAL_MODEL_FACTORY': "test_app.tests.factories.PostFactory",
+    'EMAIL_NOTIFICATION_SUBJECT': 'Notification',
+    'PUSHWOOSH_AUTH_TOKEN': "",
+    'PUSHWOOSH_APP_CODE': "",
+    'USE_FACEBOOK_OG': True,
+    'FACEBOOK_OG_NAMESPACE': "",
+}
 
-PACKAGES_TO_TEST = ['test_project',
-                    'yak']
+AUTH_USER_MODEL = "{}.{}".format(YAK['USER_APP_LABEL'], YAK['USER_MODEL'].capitalize())
 
-API_SCHEMA = 'test_project/api-schema-1.0.json'
+PACKAGES_TO_TEST = ['test_project', 'yak']
 
 AUTHENTICATION_BACKENDS = (
     "social.backends.facebook.Facebook2OAuth2",
     "social.backends.twitter.TwitterOAuth",
-    "yak.rest_user.backends.CaseInsensitiveMezzanineBackend",
+    "yak.rest_user.backends.CaseInsensitiveBackend",
 )
 
 SOCIAL_AUTH_FACEBOOK_KEY = ''
 SOCIAL_AUTH_FACEBOOK_SECRET = ''
 SOCIAL_AUTH_FACEBOOK_APP_TOKEN = ''
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', 'publish_actions', 'user_about_me', 'user_location']
-
-SOCIAL_SHARE_DELAY = 60
-
-USE_FACEBOOK_OG = True
-FACEBOOK_OG_NAMESPACE = ""
 
 SOCIAL_AUTH_TWITTER_KEY = ''
 SOCIAL_AUTH_TWITTER_SECRET = ''
@@ -185,29 +188,6 @@ OAUTH2_PROVIDER = {
 }
 
 ACCESS_TOKEN_EXPIRE_SECONDS = 7776000  # 90 days
-
-SOCIAL_MODEL = "test_app.Post"
-SOCIAL_MODEL_FACTORY = "test_app.tests.factories.PostFactory"
-
-SOCIAL_FRIEND_ACTIONS = (
-    (0, 'follow', 'is following'),
-    (1, 'like', 'favorited a post'),
-    (2, 'reply', 'replied to a post')
-)
-
-NOTIFICATION_TYPES = (
-    (0, 'follow', 'follow.html'),
-    (1, 'like', 'like.html'),
-    (2, 'comment', 'comment.html'),
-    (3, 'mention', 'mention.html'),
-    (4, 'share', 'share.html'),
-)
-EMAIL_NOTIFICATION_SUBJECT = 'Test Project Notification'
-
-PUSHWOOSH_AUTH_TOKEN = ""
-PUSHWOOSH_APP_CODE = ""
-
-USER_EXTRA_FIELDS = ['image', 'about', 'type']
 
 
 # Static files (CSS, JavaScript, Images)

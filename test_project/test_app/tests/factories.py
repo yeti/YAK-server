@@ -1,9 +1,9 @@
 import factory
-from yak.rest_social.utils import get_social_model
 from yak.rest_user.test.factories import UserFactory
+from yak.settings import yak_settings
 
 
-Post = get_social_model()
+Post = yak_settings.SOCIAL_MODEL
 
 
 class PostFactory(factory.DjangoModelFactory):

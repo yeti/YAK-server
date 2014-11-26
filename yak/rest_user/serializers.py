@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from yak.rest_core.utils import get_class
 from yak.rest_core.serializers import BaseModelSerializer
+from yak.settings import yak_settings
 
 __author__ = 'baylee'
 
@@ -64,7 +65,7 @@ class UserSerializer(AuthSerializerMixin, BaseModelSerializer):
         TODO: allow graceful failure / default if a project-specific serializer isn't defined.
         """
         super(UserSerializer, self).__init__(*args, **kwargs)
-        custom_user_serializer = get_class(settings.USER_SERIALIZER)
+        custom_user_serializer = yak_settings.USER_SERIALIZER
         self.fields = custom_user_serializer().fields
 
 

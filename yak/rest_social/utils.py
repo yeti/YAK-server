@@ -6,6 +6,7 @@ import urllib2
 from celery.task import task
 from django.conf import settings
 from twython import Twython
+from yak.settings import yak_settings
 
 
 def post_to_facebook(app_access_token, user_social_auth, message, link):
@@ -26,7 +27,7 @@ def post_to_facebook_og(app_access_token, user_social_auth, obj):
 
     url = "https://graph.facebook.com/{0}/{1}:{2}".format(
         user_social_auth.uid,
-        settings.FACEBOOK_OG_NAMESPACE,
+        yak_settings.FACEBOOK_OG_NAMESPACE,
         og_info['action'],
     )
 
@@ -44,7 +45,7 @@ def post_social_media(user_social_auth, social_obj):
     link = social_obj.url()
 
     if user_social_auth.provider == 'facebook':
-        if settings.USE_FACEBOOK_OG:
+        if yak_settings.USE_FACEBOOK_OG:
             post_to_facebook_og(settings.SOCIAL_AUTH_FACEBOOK_APP_TOKEN, user_social_auth, social_obj)
         else:
             post_to_facebook(settings.SOCIAL_AUTH_FACEBOOK_APP_TOKEN, user_social_auth, message, link)

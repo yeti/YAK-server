@@ -12,6 +12,7 @@ from django.db.models.signals import post_save
 from model_utils import Choices
 from yak.rest_core.models import CoreModel
 from yak.rest_user.models import AbstractYeti
+from yak.settings import yak_settings
 
 
 class FollowableModel():
@@ -174,7 +175,7 @@ class Share(CoreModel):
 
 
 class FriendAction(CoreModel):
-    TYPES = Choices(*settings.SOCIAL_FRIEND_ACTIONS)
+    TYPES = Choices(*yak_settings.SOCIAL_FRIEND_ACTIONS)
 
     # Unpack the list of social friend actions from the settings
     action_type = models.PositiveSmallIntegerField(choices=TYPES)
@@ -238,12 +239,12 @@ class AbstractSocialYeti(AbstractYeti):
 
     def user_following(self):
         return self.follow_set.filter(
-            content_type=ContentType.objects.get(app_label=settings.USER_APP_LABEL, model=settings.USER_MODEL)
+            content_type=ContentType.objects.get(app_label=yak_settings.USER_APP_LABEL, model=yak_settings.USER_MODEL)
         )
 
     def user_followers(self):
         return Follow.objects.filter(
-            content_type=ContentType.objects.get(app_label=settings.USER_APP_LABEL, model=settings.USER_MODEL),
+            content_type=ContentType.objects.get(app_label=yak_settings.USER_APP_LABEL, model=yak_settings.USER_MODEL),
             object_id=self.pk
         )
 

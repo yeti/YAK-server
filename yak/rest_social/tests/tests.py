@@ -1,17 +1,15 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from yak.rest_core.utils import get_class
-from yak.rest_social.utils import get_social_model
 from yak.rest_user.test.factories import UserFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_social.models import Follow, Comment, Tag
+from yak.settings import yak_settings
 
 
 User = get_user_model()
-SocialModel = get_social_model()
-SocialFactory = get_class(settings.SOCIAL_MODEL_FACTORY)
+SocialModel = yak_settings.SOCIAL_MODEL
+SocialFactory = yak_settings.SOCIAL_MODEL_FACTORY
 
 
 class BaseAPITests(SchemaTestCase):

@@ -6,12 +6,13 @@ from django.template.loader import render_to_string
 from celery.task import task
 from model_utils import Choices
 from yak.rest_core.models import CoreModel
+from yak.settings import yak_settings
 
 __author__ = 'rudy'
 
 
 class Notification(CoreModel):
-    TYPES = Choices(*settings.NOTIFICATION_TYPES)
+    TYPES = Choices(*yak_settings.NOTIFICATION_TYPES)
     PUSH = "push"
     EMAIL = "email"
 
