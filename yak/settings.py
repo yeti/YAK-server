@@ -18,7 +18,6 @@ DEFAULTS = {
     'USER_SERIALIZER': "test_app.api.serializers.ProjectUserSerializer",
     'API_SCHEMA': 'api-schema-1.0.json',
     'SOCIAL_MODEL': "test_app.models.Post",
-    'SOCIAL_MODEL_FACTORY': "test_app.tests.factories.PostFactory",
     'SOCIAL_FRIEND_ACTIONS': (
         (0, 'follow', 'is following'),
         (1, 'like', 'favorited a post'),
@@ -44,7 +43,6 @@ DEFAULTS = {
 IMPORT_STRINGS = (
     "USER_SERIALIZER",
     "SOCIAL_MODEL",
-    "SOCIAL_MODEL_FACTORY",
 )
 
 yak_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)

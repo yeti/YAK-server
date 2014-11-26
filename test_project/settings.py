@@ -44,7 +44,7 @@ INSTALLED_APPS = (
     'yak.rest_user',
     'yak.rest_social',
     'yak.rest_notifications',
-    'test_app',
+    'test_project.test_app',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,10 +85,9 @@ USE_TZ = True
 YAK = {
     'USER_APP_LABEL': 'test_app',
     'USER_MODEL': 'user',
-    'USER_SERIALIZER': "test_app.api.serializers.ProjectUserSerializer",
+    'USER_SERIALIZER': "test_project.test_app.api.serializers.ProjectUserSerializer",
     'API_SCHEMA': 'test_project/api-schema-1.0.json',
-    'SOCIAL_MODEL': "test_app.models.Post",
-    'SOCIAL_MODEL_FACTORY': "test_app.tests.factories.PostFactory",
+    'SOCIAL_MODEL': "test_project.test_app.models.Post",
     'EMAIL_NOTIFICATION_SUBJECT': 'Notification',
     'PUSHWOOSH_AUTH_TOKEN': "",
     'PUSHWOOSH_APP_CODE': "",

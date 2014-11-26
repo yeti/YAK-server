@@ -1,26 +1,24 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.urlresolvers import reverse
 from mock import MagicMock
+from test_project.test_app.models import Post
+from test_project.test_app.tests.factories import PostFactory, UserFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_notifications.models import create_notification, Notification, NotificationSetting
 from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient
 from yak.rest_social.models import Comment
-from yak.rest_user.test.factories import UserFactory
 from yak.settings import yak_settings
 
 
 User = get_user_model()
-SocialModel = yak_settings.SOCIAL_MODEL
-SocialFactory = yak_settings.SOCIAL_MODEL_FACTORY
 
 
 class NotificationsTestCase(SchemaTestCase):
     def setUp(self):
         super(NotificationsTestCase, self).setUp()
-        self.social_obj = SocialFactory()
+        self.social_obj = PostFactory()
         self.receiver = UserFactory()
         self.reporter = UserFactory()
         PushwooshClient.invoke = MagicMock(return_value={"status_code": 200})
@@ -103,7 +101,7 @@ class NotificationsTestCase(SchemaTestCase):
 
     def test_comment_creates_notification(self):
         url = reverse("comments-list")
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         data = {
             "content_type": content_type.pk,
             "object_id": self.social_obj.pk,
@@ -112,7 +110,7 @@ class NotificationsTestCase(SchemaTestCase):
         self.assertSchemaPost(url, "$commentRequest", "$commentResponse", data, self.reporter)
         notification_count = Notification.objects.filter(user=self.social_obj.user,
                                                          reporter=self.reporter,
-                                                         content_type=ContentType.objects.get_for_model(SocialModel),
+                                                         content_type=ContentType.objects.get_for_model(Post),
                                                          notification_type=Notification.TYPES.comment).count()
         self.assertEquals(notification_count, 1)
 
@@ -132,7 +130,7 @@ class NotificationsTestCase(SchemaTestCase):
 
     def test_share_creates_notification(self):
         url = reverse("shares-list")
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         data = {
             "content_type": content_type.pk,
             "object_id": self.social_obj.pk,
@@ -141,13 +139,13 @@ class NotificationsTestCase(SchemaTestCase):
         self.assertSchemaPost(url, "$shareRequest", "$shareResponse", data, self.reporter)
         notification_count = Notification.objects.filter(user=self.receiver,
                                                          reporter=self.reporter,
-                                                         content_type=ContentType.objects.get_for_model(SocialModel),
+                                                         content_type=ContentType.objects.get_for_model(Post),
                                                          notification_type=Notification.TYPES.share).count()
         self.assertEquals(notification_count, 1)
 
     def test_like_creates_notification(self):
         url = reverse("likes-list")
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         data = {
             "content_type": content_type.pk,
             "object_id": self.social_obj.pk,
@@ -155,7 +153,7 @@ class NotificationsTestCase(SchemaTestCase):
         self.assertSchemaPost(url, "$likeRequest", "$likeResponse", data, self.reporter)
         notification_count = Notification.objects.filter(user=self.social_obj.user,
                                                          reporter=self.reporter,
-                                                         content_type=ContentType.objects.get_for_model(SocialModel),
+                                                         content_type=ContentType.objects.get_for_model(Post),
                                                          notification_type=Notification.TYPES.like).count()
         self.assertEquals(notification_count, 1)
 
@@ -164,10 +162,10 @@ class NotificationsTestCase(SchemaTestCase):
         User receives a notification when their username is @mentioned, even if they are not the owner of the post
         """
         url = reverse("comments-list")
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         data = {
             "content_type": content_type.pk,
-            "object_id": SocialFactory().pk,
+            "object_id": PostFactory().pk,
             "description": "@{} look at my cool comment!".format(self.social_obj.user.username)
         }
         self.assertSchemaPost(url, "$commentRequest", "$commentResponse", data, self.reporter)
@@ -177,3 +175,46 @@ class NotificationsTestCase(SchemaTestCase):
                                                          notification_type=Notification.TYPES.mention).count()
 
         self.assertEquals(notification_count, 1)
+
+
+class NotificationSettingsTestCase(SchemaTestCase):
+    def test_can_only_see_own_notification_settings(self):
+        user = UserFactory()
+        UserFactory()
+        url = reverse("notification_settings-list")
+        response = self.assertSchemaGet(url, None, "$notificationSettingResponse", user)
+        self.assertEqual(response.data["count"], len(yak_settings.NOTIFICATION_TYPES))
+
+    def test_can_only_update_own_settings(self):
+        user = UserFactory()
+        other_user = UserFactory()
+        url = reverse("notification_settings-detail", args=[user.notification_settings.first().pk])
+        data = {
+            "allow_push": False,
+            "allow_email": False
+        }
+
+        # A user can update their own settings
+        response = self.assertSchemaPatch(url, "$notificationSettingRequest", "$notificationSettingResponse", data,
+                                          user)
+        self.assertEqual(response.data["id"], user.notification_settings.first().pk)
+        self.assertFalse(response.data["allow_push"])
+        self.assertFalse(response.data["allow_email"])
+
+        # A user cannot update someone else's settings
+        other_url = reverse("notification_settings-detail", args=[other_user.notification_settings.first().pk])
+        self.assertSchemaPatch(other_url, "$notificationSettingRequest", "$notificationSettingResponse", data, user,
+                               unauthorized=True)
+
+    def test_settings_only_updated_or_listed(self):
+        # Cannot be created or destroyed
+        user = UserFactory()
+        create_url = reverse("notification_settings-list")
+        delete_url = reverse("notification_settings-detail", args=[user.notification_settings.first().pk])
+        data = {
+            "allow_push": False,
+            "allow_email": False
+        }
+        self.assertSchemaPost(create_url, "$notificationSettingRequest", "$notificationSettingResponse", data, user,
+                              unauthorized=True)
+        self.assertSchemaDelete(delete_url, user, unauthorized=True)

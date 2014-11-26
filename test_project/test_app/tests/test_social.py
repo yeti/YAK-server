@@ -1,15 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from yak.rest_user.test.factories import UserFactory
+from test_project.test_app.models import Post
+from test_project.test_app.tests.factories import UserFactory, PostFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_social.models import Follow, Comment, Tag
-from yak.settings import yak_settings
 
 
 User = get_user_model()
-SocialModel = yak_settings.SOCIAL_MODEL
-SocialFactory = yak_settings.SOCIAL_MODEL_FACTORY
 
 
 class BaseAPITests(SchemaTestCase):
@@ -21,11 +19,11 @@ class BaseAPITests(SchemaTestCase):
 class FlagTestCase(BaseAPITests):
     def test_users_can_flag_content(self):
         test_user = UserFactory()
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         flag_url = reverse('flag')
         data = {
             'content_type': content_type.pk,
-            'object_id': SocialFactory().pk
+            'object_id': PostFactory().pk
         }
         self.assertSchemaPost(flag_url, "$flagRequest", "$flagResponse", data, test_user)
 
@@ -33,11 +31,11 @@ class FlagTestCase(BaseAPITests):
 class ShareTestCase(BaseAPITests):
     def test_users_can_share_content(self):
         test_user = UserFactory()
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         shares_url = reverse('shares-list')
         data = {
             'content_type': content_type.pk,
-            'object_id': SocialFactory().pk,
+            'object_id': PostFactory().pk,
             'shared_with': [test_user.pk]
         }
         self.assertSchemaPost(shares_url, "$shareRequest", "$shareResponse", data, self.dev_user)
@@ -45,28 +43,28 @@ class ShareTestCase(BaseAPITests):
 
 class LikeTestCase(BaseAPITests):
     def test_users_can_like_content(self):
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         likes_url = reverse('likes-list')
         data = {
             'content_type': content_type.pk,
-            'object_id': SocialFactory().pk,
+            'object_id': PostFactory().pk,
         }
         self.assertSchemaPost(likes_url, "$likeRequest", "$likeResponse", data, self.dev_user)
 
 
 class CommentTestCase(BaseAPITests):
     def test_users_can_comment_on_content(self):
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         comments_url = reverse('comments-list')
         data = {
             'content_type': content_type.pk,
-            'object_id': SocialFactory().pk,
+            'object_id': PostFactory().pk,
             'description': 'This is a user comment.'
         }
         self.assertSchemaPost(comments_url, "$commentRequest", "$commentResponse", data, self.dev_user)
 
     def test_comment_related_tags(self):
-        content_type = ContentType.objects.get_for_model(SocialModel)
+        content_type = ContentType.objects.get_for_model(Post)
         Comment.objects.create(content_type=content_type,
                                object_id=1,
                                description='Testing of a hashtag. #django',

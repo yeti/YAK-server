@@ -1,8 +1,8 @@
 import base64
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from test_project.test_app.tests.factories import UserFactory
 from yak.rest_core.test import SchemaTestCase
-from yak.rest_user.test.factories import UserFactory
 
 
 User = get_user_model()
