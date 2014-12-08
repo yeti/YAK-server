@@ -47,9 +47,9 @@ class UserViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['patch'])
     def password(self, request, pk=None):
         user = self.get_object()
-        if not user.check_password(base64.decodestring(request.DATA['old_password'])):
+        if not user.check_password(base64.decodestring(request.data['old_password'])):
             raise APIException("Old password does not match")
-        serializer = PasswordSerializer(data=request.DATA)
+        serializer = PasswordSerializer(data=request.data)
         if serializer.is_valid():
             user.set_password(base64.decodestring(serializer.data['password']))
             user.save()

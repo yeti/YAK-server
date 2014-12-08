@@ -4,11 +4,11 @@ from rest_framework import serializers
 __author__ = 'baylee'
 
 
-class BaseModelSerializer(serializers.ModelSerializer):
+class YAKModelSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
-        super(BaseModelSerializer, self).__init__(*args, **kwargs)
-        self.fields['content_type'] = serializers.SerializerMethodField('get_content_type')
+        super(YAKModelSerializer, self).__init__(*args, **kwargs)
+        self.fields['content_type'] = serializers.SerializerMethodField()
 
     def get_content_type(self, obj):
         return ContentType.objects.get_for_model(obj).pk

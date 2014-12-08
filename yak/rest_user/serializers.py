@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from yak.rest_core.utils import get_class
-from yak.rest_core.serializers import BaseModelSerializer
+from yak.rest_core.serializers import YAKModelSerializer
 from yak.settings import yak_settings
 
 __author__ = 'baylee'
@@ -14,25 +14,45 @@ User = get_user_model()
 
 
 class AuthSerializerMixin(object):
-    def restore_object(self, attrs, instance=None):
-        if attrs.get("username", None):
-            attrs["username"] = attrs["username"].lower()
-        if attrs.get("email", None):
-            attrs["email"] = attrs["email"].lower()
-        if attrs.get("password", None):
-            attrs["password"] = make_password(base64.decodestring(attrs["password"]))
+    def create(self, validated_data):
+        if validated_data.get("username", None):
+            validated_data["username"] = validated_data["username"].lower()
+        if validated_data.get("email", None):
+            validated_data["email"] = validated_data["email"].lower()
+        if validated_data.get("password", None):
+            validated_data["password"] = make_password(base64.decodestring(validated_data["password"]))
 
-        return super(AuthSerializerMixin, self).restore_object(attrs, instance)
+        return super(AuthSerializerMixin, self).create(validated_data)
 
-    def validate_password(self, attrs, source):
-        if len(attrs[source]) < 6:
+    def update(self, instance, validated_data):
+        if validated_data.get("username", None):
+            validated_data["username"] = validated_data["username"].lower()
+        if validated_data.get("email", None):
+            validated_data["email"] = validated_data["email"].lower()
+        if validated_data.get("password", None):
+            validated_data["password"] = make_password(base64.decodestring(validated_data["password"]))
+
+        return super(AuthSerializerMixin, self).update(instance, validated_data)
+
+    def validate_username(self, value):
+        if User.objects.filter(username__iexact=value).exists():
+            raise serializers.ValidationError("That username is taken")
+        return value
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError("An account already exists with that email")
+        return value
+
+    def validate_password(self, value):
+        if len(value) < 6:
             raise serializers.ValidationError("Password must be at least 6 characters")
-        return attrs
+        return value
 
 
 class LoginSerializer(AuthSerializerMixin, serializers.ModelSerializer):
-    client_id = serializers.SerializerMethodField('get_client_id')
-    client_secret = serializers.SerializerMethodField('get_client_secret')
+    client_id = serializers.SerializerMethodField()
+    client_secret = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -51,7 +71,7 @@ class SignUpSerializer(LoginSerializer):
         write_only_fields = ('password',)
 
 
-class UserSerializer(AuthSerializerMixin, BaseModelSerializer):
+class UserSerializer(AuthSerializerMixin, YAKModelSerializer):
     class Meta:
         model = User
         # exclude = ('last_login', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'groups', 'user_permissions')
@@ -66,14 +86,14 @@ class UserSerializer(AuthSerializerMixin, BaseModelSerializer):
         """
         super(UserSerializer, self).__init__(*args, **kwargs)
         custom_user_serializer = yak_settings.USER_SERIALIZER
-        self.fields = custom_user_serializer().fields
+        self._fields = custom_user_serializer().fields
 
 
 class PasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
 
-    def validate_password(self, attrs, source):
-        if len(attrs[source]) < 6:
+    def validate_password(self, value):
+        if len(value) < 6:
             raise serializers.ValidationError("Password must be at least 6 characters")
-        return attrs
+        return value

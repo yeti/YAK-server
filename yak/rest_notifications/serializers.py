@@ -6,7 +6,7 @@ __author__ = 'baylee'
 
 
 class PushwooshTokenSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
     hwid = serializers.CharField(write_only=True)
     language = serializers.CharField(write_only=True)
 
@@ -22,8 +22,7 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-    message = serializers.SerializerMethodField('get_message')
-    name = serializers.Field()
+    message = serializers.SerializerMethodField()
     reporter = UserSerializer(read_only=True)
 
     class Meta:

@@ -7,16 +7,19 @@ anyjson==0.3.3
 billiard==3.3.0.19
 celery==3.1.16
 django-braces==1.4.0
+django-filter==0.8
 django-model-utils==2.2
 django-oauth-toolkit==0.7.2
-djangorestframework==2.4.4
+djangorestframework==3.0.0
 ecdsa==0.10
+facebook-sdk==0.4.0
 factory-boy==2.4.1
 futures==2.2.0
 kombu==3.0.24
 mock==1.0.1
 oauthlib==0.7.2
 paramiko==1.12.2
+-e git://github.com/Pushwoosh/pushwoosh-python-lib.git@15ba670a0278d1547088ae88a62a2bd24aadc3b8#egg=pyPushwoosh-master
 pycrypto==2.6.1
 python-openid==2.2.5
 python-social-auth==0.2.1
@@ -32,4 +35,4 @@ virtualenv==1.11.6
 virtualenv-clone==0.2.5
 virtualenvwrapper==4.3
 wsgiref==0.1.2
-yak-server==0.1
+-e git+git@github.com:yeti/YAK-server.git@19fa2db6e811ccaa21a902ef94de45ec063154f7#egg=yak_server-master

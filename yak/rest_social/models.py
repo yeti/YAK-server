@@ -171,7 +171,7 @@ class Share(CoreModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     class Meta:
-        unique_together = (("user", "content_type", "object_id", "id"),)
+        unique_together = (("user", "content_type", "object_id"),)
 
 
 class FriendAction(CoreModel):

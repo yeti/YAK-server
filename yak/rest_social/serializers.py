@@ -26,10 +26,11 @@ class CommentSerializer(serializers.ModelSerializer):
         The `user` field is added here to help with recursive import issues mentioned in rest_user.serializers
         """
         super(CommentSerializer, self).__init__(*args, **kwargs)
-        self.fields["user"] = UserSerializer(read_only=True)
+        self.fields["user"] = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     follower = UserSerializer(read_only=True, source="user")
     following = serializers.SerializerMethodField('get_user_follow')
 
@@ -44,14 +45,14 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class ShareSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Share
 
 
 class LikeSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Like
@@ -63,7 +64,7 @@ class PaginatedFollowSerializer(PaginationSerializer):
 
 
 class FlagSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Flag

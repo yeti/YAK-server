@@ -33,24 +33,29 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
-    def pre_save(self, obj):
-        obj.user = self.request.user
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class FollowViewSet(viewsets.ModelViewSet):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
 
-    def pre_save(self, obj):
-        obj.user = self.request.user
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
     @list_route(methods=['post'])
     def bulk_create(self, request):
-        serializer = self.get_serializer(data=request.DATA, many=True)
+        serializer = self.get_serializer(data=request.data, many=True)
         if serializer.is_valid():
-            [self.pre_save(obj) for obj in serializer.object]
-            self.object = serializer.save(force_insert=True)
-            [self.post_save(obj, created=True) for obj in self.object]
+            serializer.save()
+            # [self.perform_create(obj) for obj in serializer.validated_data]
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -60,16 +65,22 @@ class ShareViewSet(viewsets.ModelViewSet):
     queryset = Share.objects.all()
     serializer_class = ShareSerializer
 
-    def pre_save(self, obj):
-        obj.user = self.request.user
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
 
-    def pre_save(self, obj):
-        obj.user = self.request.user
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class FlagView(generics.CreateAPIView):
@@ -104,11 +115,11 @@ class SocialSignUp(SignUp):
     serializer_class = SocialSignUpSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            provider = request.DATA['provider']
+            provider = request.data['provider']
 
             # If this request was made with an authenticated user, try to associate this social account with it
             user = request.user if not request.user.is_anonymous() else None
@@ -118,11 +129,11 @@ class SocialSignUp(SignUp):
 
             if isinstance(backend, BaseOAuth1):
                 token = {
-                    'oauth_token': request.DATA['access_token'],
-                    'oauth_token_secret': request.DATA['access_token_secret'],
+                    'oauth_token': request.data['access_token'],
+                    'oauth_token_secret': request.data['access_token_secret'],
                 }
             elif isinstance(backend, BaseOAuth2):
-                token = request.DATA['access_token']
+                token = request.data['access_token']
 
             user = backend.do_auth(token, user=user)
             serializer.object = user
@@ -142,12 +153,12 @@ class SocialShareMixin(object):
     @detail_route(methods=['post'])
     def social_share(self, request, pk):
         try:
-            user_social_auth = UserSocialAuth.objects.get(user=request.user, provider=request.DATA['provider'])
+            user_social_auth = UserSocialAuth.objects.get(user=request.user, provider=request.data['provider'])
             social_obj = self.get_object()
             post_social_media(user_social_auth, social_obj)
             return Response({'status': 'success'})
         except UserSocialAuth.DoesNotExist:
-            raise AuthenticationFailed("User is not authenticated with {}".format(request.DATA['provider']))
+            raise AuthenticationFailed("User is not authenticated with {}".format(request.data['provider']))
 
 
 class SocialFriends(generics.ListAPIView):
@@ -156,7 +167,7 @@ class SocialFriends(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        provider = self.request.QUERY_PARAMS.get('provider', None)
+        provider = self.request.query_params.get('provider', None)
         if provider == 'facebook':
             # TODO: what does it look like when a user has more than one social auth for a provider? Is this a thing
             # that can happen? How does it affect SocialShareMixin? The first one is the oldest--do we actually want

@@ -20,16 +20,19 @@ class PushwooshTokenView(generics.CreateAPIView):
     serializer_class = PushwooshTokenSerializer
     permission_classes = (IsOwner,)
 
-    def pre_save(self, obj):
-        obj.user = self.request.user
+    def perform_create(self, serializer):
+        hwid = serializer.validated_data.pop("hwid")
+        language = serializer.validated_data.pop("language")
 
         push_client = client.PushwooshClient()
-        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, obj.hwid, constants.PLATFORM_IOS, obj.language,
-                                        obj.token)
+        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, hwid, constants.PLATFORM_IOS, language,
+                                        serializer.validated_data["token"])
         response = push_client.invoke(command)
 
         if response["status_code"] != 200:
             raise AuthenticationFailed("Authentication with notification service failed")
+
+        serializer.save(user=self.request.user)
 
 
 class NotificationSettingViewSet(mixins.UpdateModelMixin,
@@ -39,8 +42,8 @@ class NotificationSettingViewSet(mixins.UpdateModelMixin,
     serializer_class = NotificationSettingSerializer
     permission_classes = (IsOwner,)
 
-    def pre_save(self, obj):
-        obj.user = self.request.user
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
@@ -56,25 +59,25 @@ class NotificationView(generics.ListAPIView):
 
 
 class NotificationCommentViewSet(CommentViewSet):
-    def post_save(self, obj, created=False):
-        if created:
-            create_notification(obj.content_object.user, obj.user, obj.content_object, Notification.TYPES.comment)
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        create_notification(obj.content_object.user, obj.user, obj.content_object, Notification.TYPES.comment)
 
 
 class NotificationFollowViewSet(FollowViewSet):
-    def post_save(self, obj, created=False):
-        if created:
-            create_notification(obj.content_object, obj.user, obj.content_object, Notification.TYPES.follow)
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        create_notification(obj.content_object, obj.user, obj.content_object, Notification.TYPES.follow)
 
 
 class NotificationShareViewSet(ShareViewSet):
-    def post_save(self, obj, created=False):
-        if created:
-            for receiver in obj.shared_with.all():
-                create_notification(receiver, obj.user, obj.content_object, Notification.TYPES.share)
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        for receiver in obj.shared_with.all():
+            create_notification(receiver, obj.user, obj.content_object, Notification.TYPES.share)
 
 
 class NotificationLikeViewSet(LikeViewSet):
-    def post_save(self, obj, created=False):
-        if created:
-            create_notification(obj.content_object.user, obj.user, obj.content_object, Notification.TYPES.like)
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        create_notification(obj.content_object.user, obj.user, obj.content_object, Notification.TYPES.like)
