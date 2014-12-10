@@ -1,114 +1,23 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
 import facebook
+from rest_framework import status, generics
+from rest_framework.decorators import detail_route
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import viewsets, status, generics
-from rest_framework.decorators import detail_route, list_route
+from social.apps.django_app import load_strategy
 from social.apps.django_app.default.models import UserSocialAuth
-from social.apps.django_app.utils import load_strategy, load_backend
+from social.apps.django_app.utils import load_backend
 from social.backends.oauth import BaseOAuth1, BaseOAuth2
 from twython import Twython
-from yak.rest_social.models import Tag, Comment, Follow, Flag, Share, Like
-from yak.rest_social.serializers import TagSerializer, CommentSerializer, FollowSerializer, FlagSerializer, \
-    ShareSerializer, FollowPaginationSerializer, LikeSerializer, SocialSignUpSerializer
-from yak.rest_social.utils import post_social_media
+from yak.rest_social_auth.serializers import SocialSignUpSerializer
+from yak.rest_social_auth.utils import post_social_media
 from yak.rest_user.serializers import UserSerializer
-from yak.rest_user.views import UserViewSet, SignUp
-from django.contrib.auth import get_user_model
-
-
-__author__ = 'baylee'
+from yak.rest_user.views import SignUp
 
 
 User = get_user_model()
-
-
-class TagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-
-
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-class FollowViewSet(viewsets.ModelViewSet):
-    queryset = Follow.objects.all()
-    serializer_class = FollowSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
-
-    @list_route(methods=['post'])
-    def bulk_create(self, request):
-        serializer = self.get_serializer(data=request.data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            # [self.perform_create(obj) for obj in serializer.validated_data]
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShareViewSet(viewsets.ModelViewSet):
-    queryset = Share.objects.all()
-    serializer_class = ShareSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-class LikeViewSet(viewsets.ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-class FlagView(generics.CreateAPIView):
-    queryset = Flag.objects.all()
-    serializer_class = FlagSerializer
-
-    def pre_save(self, obj):
-        obj.user = self.request.user
-
-
-class SocialUserViewSet(UserViewSet):
-    serializer_class = UserSerializer
-
-    @detail_route(methods=['get'])
-    def following(self, request, pk):
-        requested_user = User.objects.get(pk=pk)
-        following = requested_user.user_following()
-        page = self.paginate_queryset(following)
-        serializer = FollowPaginationSerializer(instance=page)
-        return Response(serializer.data)
-
-    @detail_route(methods=['get'])
-    def followers(self, request, pk):
-        requested_user = User.objects.get(pk=pk)
-        follower = requested_user.user_followers()
-        page = self.paginate_queryset(follower)
-        serializer = FollowPaginationSerializer(instance=page)
-        return Response(serializer.data)
 
 
 class SocialSignUp(SignUp):

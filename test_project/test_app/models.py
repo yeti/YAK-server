@@ -5,8 +5,8 @@ from django.db.models.signals import post_save
 from django.utils.baseconv import base62
 from yak.rest_core.models import resize_model_photos
 from yak.rest_notifications.models import create_notification_settings
-from yak.rest_social.models import AbstractSocialYeti, FollowableModel, BaseSocialModel, Like, Flag, Share, Tag, \
-    Comment, relate_tags, mentions
+from yak.rest_social_network.models import FollowableModel, BaseSocialModel, Like, Flag, Share, Tag, \
+    Comment, relate_tags, mentions, AbstractSocialYeti
 from yak.rest_user.utils import create_auth_client
 
 

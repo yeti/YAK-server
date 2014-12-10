@@ -1,4 +1,7 @@
+from django.core import validators
 from django.db import models
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 
@@ -22,14 +25,24 @@ class UserManager(BaseUserManager):
 
 
 class AbstractYeti(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=80, unique=True)
+    username = models.CharField(_('username'), max_length=30, unique=True,
+        help_text=_('Required. 30 characters or fewer. Letters, digits and '
+                    '@/./+/-/_ only.'),
+        validators=[
+            validators.RegexValidator(r'^[\w.@+-]+$', _('Enter a valid username.'), 'invalid')
+        ])
     # Field name should be `fullname` instead of `full_name` for python-social-auth
     fullname = models.CharField(max_length=80, blank=True, null=True)
     email = models.EmailField(blank=True, null=True, unique=True)
     about = models.TextField(blank=True, null=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(_('active'), default=True,
+        help_text=_('Designates whether this user should be treated as '
+                    'active. Unselect this instead of deleting accounts.'))
     is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
+    is_staff = models.BooleanField(_('staff status'), default=False,
+        help_text=_('Designates whether the user can log into this admin '
+                    'site.'))
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     SIZES = {
         'thumbnail': {'height': 60, 'width': 60},

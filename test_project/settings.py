@@ -42,7 +42,8 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
 
     'yak.rest_user',
-    'yak.rest_social',
+    'yak.rest_social_auth',
+    'yak.rest_social_network',
     'yak.rest_notifications',
     'test_project.test_app',
 )
@@ -130,7 +131,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.auth_allowed',
 
     # If used, replaces default 'social.pipeline.social_auth.social_user'
-    # 'yak.rest_social.pipeline.social_auth_user',
+    # 'yak.rest_social_auth.pipeline.social_auth_user',
 
     # Checks if the current social-account is already associated in the site.
     'social.pipeline.social_auth.social_user',

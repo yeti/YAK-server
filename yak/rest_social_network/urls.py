@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url, include
-from yak.rest_social import views
+from yak.rest_social_network import views
 from rest_framework import routers
 
 
@@ -18,6 +18,4 @@ router.register(r'tags', views.TagViewSet, base_name='tags')
 urlpatterns = patterns('',
     url(r'^', include(router.urls)),
     url(r'^flag/$', views.FlagView.as_view(), name="flag"),
-    url(r'^social_sign_up/$', views.SocialSignUp.as_view(), name="social_sign_up"),
-    url(r'^social_friends/$', views.SocialFriends.as_view(), name="social_friends"),
 )

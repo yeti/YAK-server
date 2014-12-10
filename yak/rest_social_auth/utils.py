@@ -1,5 +1,3 @@
-from django.core.exceptions import ImproperlyConfigured
-from django.apps import apps
 import requests
 import urllib
 import urllib2
@@ -69,16 +67,3 @@ def post_social_media(user_social_auth, social_obj):
             safe_message = full_message_url
 
         twitter.update_status(status=safe_message, wrap_links=True)
-
-
-def get_social_model():
-    """
-    Returns the social model that is active in this project.
-    """
-    try:
-        return apps.get_model(settings.SOCIAL_MODEL)
-    except ValueError:
-        raise ImproperlyConfigured("SOCIAL_MODEL must be of the form 'app_label.model_name'")
-    except LookupError:
-        raise ImproperlyConfigured(
-            "SOCIAL_MODEL refers to model '%s' that has not been installed" % settings.SOCIAL_MODEL)

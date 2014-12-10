@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework import mixins, generics
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.viewsets import GenericViewSet
@@ -9,7 +8,7 @@ from yak.rest_notifications.models import NotificationSetting, Notification, cre
     PushwooshToken
 from yak.rest_notifications.serializers import NotificationSettingSerializer, NotificationSerializer, \
     PushwooshTokenSerializer
-from yak.rest_social.views import CommentViewSet, FollowViewSet, ShareViewSet, LikeViewSet
+from yak.rest_social_network.views import CommentViewSet, FollowViewSet, ShareViewSet, LikeViewSet
 from yak.settings import yak_settings
 
 __author__ = 'baylee'

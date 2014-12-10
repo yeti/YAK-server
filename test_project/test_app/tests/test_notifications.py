@@ -8,7 +8,7 @@ from test_project.test_app.tests.factories import PostFactory, UserFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_notifications.models import create_notification, Notification, NotificationSetting
 from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient
-from yak.rest_social.models import Comment
+from yak.rest_social_network.models import Comment
 from yak.settings import yak_settings
 
 

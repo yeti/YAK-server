@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from test_project.test_app.models import Post
 from test_project.test_app.tests.factories import UserFactory, PostFactory
 from yak.rest_core.test import SchemaTestCase
-from yak.rest_social.models import Follow, Comment, Tag
+from yak.rest_social_network.models import Follow, Comment, Tag
 
 
 User = get_user_model()

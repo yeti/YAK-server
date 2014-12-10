@@ -27,7 +27,8 @@ ap1_v1 = patterns('',
 
     # Library views
     url(r'^', include('yak.rest_user.urls')),
-    url(r'^', include('yak.rest_social.urls')),
+    url(r'^', include('yak.rest_social_auth.urls')),
+    url(r'^', include('yak.rest_social_network.urls')),
     url(r'^', include('yak.rest_notifications.urls')),
 )
 

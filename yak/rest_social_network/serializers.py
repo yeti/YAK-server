@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.pagination import PaginationSerializer
-from yak.rest_social.models import Tag, Comment, Follow, Flag, Share, Like
-from yak.rest_user.serializers import UserSerializer, LoginSerializer
+from yak.rest_social_network.models import Tag, Comment, Follow, Flag, Share, Like
+from yak.rest_user.serializers import UserSerializer
 
 __author__ = 'baylee'
 
@@ -86,9 +86,3 @@ class FollowPaginationSerializer(PaginationSerializer):
         self.fields[results_field] = object_serializer(source='object_list',
                                                        many=True,
                                                        **context_kwarg)
-
-
-class SocialSignUpSerializer(LoginSerializer):
-    class Meta(LoginSerializer.Meta):
-        fields = ('email', 'username', 'client_id', 'client_secret')
-        read_only_fields = ('username',)
