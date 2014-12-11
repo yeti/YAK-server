@@ -36,13 +36,13 @@ class Tag(CoreModel):
     name = models.CharField(max_length=75, unique=True)
 
     def identifier(self):
-        return u"#%s" % self.name
+        return u"#{}".format(self.name)
 
     def type(self):
         return u"tag"
 
     def __unicode__(self):
-        return u"%s" % self.name
+        return u"{}".format(self.name)
 
 FollowableModel.register(Tag)
 
@@ -229,7 +229,7 @@ class AbstractSocialYeti(AbstractYeti):
         return self.user_followers().count()
 
     def identifier(self):
-        return u"%s" % self.username
+        return u"{}".format(self.username)
 
     def type(self):
         return u"user"

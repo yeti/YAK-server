@@ -103,8 +103,8 @@ AUTH_USER_MODEL = "{}.{}".format(YAK['USER_APP_LABEL'], YAK['USER_MODEL'].capita
 PACKAGES_TO_TEST = ['test_project', 'yak']
 
 AUTHENTICATION_BACKENDS = (
-    "social.backends.facebook.Facebook2OAuth2",
-    "social.backends.twitter.TwitterOAuth",
+    "yak.rest_social_auth.backends.facebook.Facebook",
+    "yak.rest_social_auth.backends.twitter.Twitter",
     "yak.rest_user.backends.CaseInsensitiveBackend",
 )
 
@@ -163,8 +163,8 @@ SOCIAL_AUTH_PIPELINE = (
     # Update the user record with any changed info from the auth service.
     'social.pipeline.user.user_details',
 
-    'yak.rest_social.pipeline.save_extra_data',
-    'yak.rest_social.pipeline.get_profile_image',
+    'yak.rest_social_auth.pipeline.save_extra_data',
+    'yak.rest_social_auth.pipeline.save_profile_image',
 )
 
 REST_FRAMEWORK = {
