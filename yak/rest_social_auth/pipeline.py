@@ -39,7 +39,10 @@ def save_extra_data(strategy, details, response, uid, user, social, *args, **kwa
     if user is None:
         return
 
-    kwargs['backend'].save_extra_data(response, user)
+    try:  # Basically, check the backend is one of ours
+        kwargs['backend'].save_extra_data(response, user)
+    except AttributeError:
+        pass
 
 
 def save_profile_image(strategy, details, response, uid, user, social, is_new=False, *args, **kwargs):
@@ -48,8 +51,13 @@ def save_profile_image(strategy, details, response, uid, user, social, is_new=Fa
     if user is None:
         return
 
-    image_url = kwargs['backend'].get_profile_image(strategy, details, response, uid, user, social, is_new=False, *args,
-                                                    **kwargs)
+    try:  # Basically, check the backend is one of ours
+        image_url = kwargs['backend'].get_profile_image(strategy, details, response, uid, user, social, is_new=False,
+                                                        *args,
+                                                        **kwargs)
+    except AttributeError:
+        return
+
     if image_url:
         try:
             result = urllib.urlretrieve(image_url)
