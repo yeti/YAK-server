@@ -39,37 +39,19 @@ def save_extra_data(strategy, details, response, uid, user, social, *args, **kwa
     if user is None:
         return
 
-    if kwargs['backend'].name == "facebook":
-
-        if 'email' in response:
-            user.email = response['email']
-
-        # TODO: better placement of Location model. What do we do with Twitter or other locations?
-        # if 'location' in response:
-        #     if not user.location:
-        #         Location.objects.create(name=response["location"]["name"], facebook_id=response["location"]["id"])
-        #     else:
-        #         location = user.location
-        #         location.name = response['location']['name']
-        #         location.facebook_id = response['location']['id']
-
-        if 'bio' in response:
-            user.about = response['bio']
-
-    user.save()
+    kwargs['backend'].save_extra_data(response, user)
 
 
-def get_profile_image(strategy, details, response, uid, user, social, is_new=False, *args, **kwargs):
+def save_profile_image(strategy, details, response, uid, user, social, is_new=False, *args, **kwargs):
     """Attempt to get a profile image for the User"""
 
-    # If we don't have a user then just return
     if user is None:
         return
 
-    # Save photo from FB
-    if kwargs['backend'].name == "facebook":
+    image_url = kwargs['backend'].get_profile_image(strategy, details, response, uid, user, social, is_new=False, *args,
+                                                    **kwargs)
+    if image_url:
         try:
-            image_url = "https://graph.facebook.com/%s/picture?type=large" % uid
             result = urllib.urlretrieve(image_url)
 
             def save_image(user, uid, result):
@@ -77,18 +59,5 @@ def get_profile_image(strategy, details, response, uid, user, social, is_new=Fal
                 user.save(update_fields=['original_photo'])
 
             retry_cloudfiles(save_image, user, uid, result)
-        except URLError:
-            pass
-    elif kwargs['backend'].name == "twitter" and social:
-        try:
-            # Get profile image to save
-            if response['profile_image_url'] != '':
-                image_result = urllib.urlretrieve(response['profile_image_url'])
-
-                def save_image(user, uid, image_result):
-                    user.original_photo.save("%s.jpg" % uid, File(open(image_result[0])))
-                    user.save(update_fields=['original_photo'])
-
-                retry_cloudfiles(save_image, user, uid, image_result)
         except URLError:
             pass

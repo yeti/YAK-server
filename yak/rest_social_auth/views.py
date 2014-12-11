@@ -24,37 +24,38 @@ class SocialSignUp(SignUp):
     serializer_class = SocialSignUpSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        Override `create` instead of `perform_create` to access request
+        request is necessary for `load_strategy`
+        """
         serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if serializer.is_valid():
-            self.pre_save(serializer.object)
-            provider = request.data['provider']
+        provider = request.data['provider']
 
-            # If this request was made with an authenticated user, try to associate this social account with it
-            user = request.user if not request.user.is_anonymous() else None
+        # If this request was made with an authenticated user, try to associate this social account with it
+        user = request.user if not request.user.is_anonymous() else None
 
-            strategy = load_strategy(request)
-            backend = load_backend(strategy=strategy, name=provider, redirect_uri=None)
+        strategy = load_strategy(request)
+        backend = load_backend(strategy=strategy, name=provider, redirect_uri=None)
 
-            if isinstance(backend, BaseOAuth1):
-                token = {
-                    'oauth_token': request.data['access_token'],
-                    'oauth_token_secret': request.data['access_token_secret'],
-                }
-            elif isinstance(backend, BaseOAuth2):
-                token = request.data['access_token']
+        if isinstance(backend, BaseOAuth1):
+            token = {
+                'oauth_token': request.data['access_token'],
+                'oauth_token_secret': request.data['access_token_secret'],
+            }
+        elif isinstance(backend, BaseOAuth2):
+            token = request.data['access_token']
 
-            user = backend.do_auth(token, user=user)
-            serializer.object = user
+        user = backend.do_auth(token, user=user)
 
-            if user and user.is_active:
-                self.post_save(serializer.object, created=True)
-                headers = self.get_success_headers(serializer.data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-            else:
-                return Response({"errors": "Error with social authentication"}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if user and user.is_active:
+            # Set instance since we are not calling `serializer.save()`
+            serializer.instance = user
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({"errors": "Error with social authentication"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SocialShareMixin(object):
