@@ -6,6 +6,7 @@ amqp==1.4.6
 anyjson==0.3.3
 billiard==3.3.0.19
 celery==3.1.16
+coverage==3.7.1
 django-braces==1.4.0
 django-filter==0.8
 django-model-utils==2.2
@@ -21,6 +22,7 @@ oauthlib==0.7.2
 paramiko==1.12.2
 -e git://github.com/Pushwoosh/pushwoosh-python-lib.git@15ba670a0278d1547088ae88a62a2bd24aadc3b8#egg=pyPushwoosh-master
 pycrypto==2.6.1
+pyflakes==0.8.1
 python-openid==2.2.5
 python-social-auth==0.2.1
 python-swiftclient==2.3.1

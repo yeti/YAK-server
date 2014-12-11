@@ -26,6 +26,8 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SITE_ID = 1
+
 
 # Application definition
 
@@ -194,8 +196,3 @@ ACCESS_TOKEN_EXPIRE_SECONDS = 7776000  # 90 days
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-
-try:
-    from local_settings import *
-except ImportError:
-    pass
