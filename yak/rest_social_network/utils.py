@@ -13,4 +13,4 @@ def get_social_model():
         raise ImproperlyConfigured("SOCIAL_MODEL must be of the form 'app_label.model_name'")
     except LookupError:
         raise ImproperlyConfigured(
-            "SOCIAL_MODEL refers to model '%s' that has not been installed" % settings.SOCIAL_MODEL)
+            "SOCIAL_MODEL refers to model '{}' that has not been installed".format(settings.SOCIAL_MODEL))

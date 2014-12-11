@@ -55,7 +55,7 @@ def save_profile_image(strategy, details, response, uid, user, social, is_new=Fa
             result = urllib.urlretrieve(image_url)
 
             def save_image(user, uid, result):
-                user.original_photo.save("%s.jpg" % uid, File(open(result[0])))
+                user.original_photo.save("{}.jpg".format(uid), File(open(result[0])))
                 user.save(update_fields=['original_photo'])
 
             retry_cloudfiles(save_image, user, uid, result)

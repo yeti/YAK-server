@@ -24,5 +24,5 @@ class Facebook(ExtraDataAbstractMixin, Facebook2OAuth2):
 
     @staticmethod
     def get_profile_image(strategy, details, response, uid, user, social, is_new=False, *args, **kwargs):
-        image_url = "https://graph.facebook.com/%s/picture?type=large" % uid
+        image_url = "https://graph.facebook.com/{}/picture?type=large".format(uid)
         return image_url

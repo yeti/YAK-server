@@ -42,7 +42,7 @@ class Post(BaseSocialModel):
         return self.comments.count()
 
     def identifier(self):
-        return u"%s" % self.title
+        return u"{}".format(self.title)
 
     def __unicode__(self):
         return u"{}".format(self.title) if self.title else "Untitled"
@@ -59,9 +59,9 @@ class Post(BaseSocialModel):
 
         # TODO: Sending of messages to post on social media is broken and convoluted at this point, need to refactor
         if provider == "twitter":
-            return "%s" % message.encode('utf-8')
+            return "{}".format(message.encode('utf-8'))
         else:
-            return "%s %s" % (message.encode('utf-8'), self.url())
+            return "{} {}".format(message.encode('utf-8'), self.url())
 
 post_save.connect(relate_tags, sender=Post)
 post_save.connect(mentions, sender=Post)

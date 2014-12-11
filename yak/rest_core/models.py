@@ -11,7 +11,7 @@ class CoreModel(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __repr__(self):
-        return '<%s:%s %s>' % (self.__class__.__name__, self.pk, str(self))
+        return '<{}:{} {}>'.format(self.__class__.__name__, self.pk, str(self))
 
     class Meta:
         abstract = True
@@ -94,7 +94,7 @@ def process_thumbnail(instance, original_file, sizes, crop=False):
                 clip_amount = int((int(height * original_ratio) - width) / 2)
                 im = im.crop((clip_amount, 0, width + clip_amount, height))
 
-        name = "%s.jpg" % filename
+        name = "{}.jpg".format(filename)
         tempfile_io = StringIO.StringIO()
         if im.mode != "RGB":
             im = im.convert("RGB")

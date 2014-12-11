@@ -8,7 +8,7 @@ from yak.settings import yak_settings
 
 
 def post_to_facebook(app_access_token, user_social_auth, message, link):
-    url = "https://graph.facebook.com/%s/feed" % user_social_auth.uid
+    url = "https://graph.facebook.com/{}/feed".format(user_social_auth.uid)
 
     params = {
         'access_token': app_access_token,
