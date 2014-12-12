@@ -32,12 +32,13 @@ class Media(CoreModel):
         abstract = True
 
 
-def resize_model_photos(instance, force_update):
+def resize_model_photos(instance, force_insert, force_update):
     """
     Requires the model to have one field to hold the original file and a constant called SIZES
     Expects the sender to have an attribute `original_file` or to define an alternate with `original_file_name`
     """
-    if not force_update:  # Without this check, the function is called one too many times and errors on the last call
+    # Without this check, the function is called one too many times and errors on the last call
+    if not force_insert and not force_update:
         return
 
     original_file_field_name = getattr(instance, "original_file_name", "original_file")
