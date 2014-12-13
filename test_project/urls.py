@@ -5,16 +5,12 @@ from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.conf.urls import url, include
 from rest_framework import routers
-from test_app.api.views import ProjectUserViewSet
+from test_app.api.views import ProjectUserViewSet, PostViewSet
 
 
 router = routers.DefaultRouter()
-# router.register(r'clips', ClipViewSet, base_name='clips')
-# router.register(r'sessions', SessionViewSet, base_name='sessions')
-# router.register(r'videos', VideoViewSet, base_name='videos')
-# router.register(r'castings', CastingViewSet, base_name='castings')
 router.register(r'users', ProjectUserViewSet, base_name='users')
-# router.register(r'locations', LocationViewSet, base_name='locations')
+router.register(r'posts', PostViewSet, base_name='posts')
 
 ap1_v1 = patterns('',
 

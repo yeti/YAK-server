@@ -10,6 +10,7 @@ from social.apps.django_app import load_strategy
 from social.apps.django_app.default.models import UserSocialAuth
 from social.apps.django_app.utils import load_backend
 from social.backends.oauth import BaseOAuth1, BaseOAuth2
+from social.backends.utils import get_backend
 from twython import Twython
 from yak.rest_social_auth.serializers import SocialSignUpSerializer
 from yak.rest_social_auth.utils import post_social_media
@@ -78,28 +79,13 @@ class SocialFriends(generics.ListAPIView):
 
     def get_queryset(self):
         provider = self.request.query_params.get('provider', None)
-        if provider == 'facebook':
-            # TODO: what does it look like when a user has more than one social auth for a provider? Is this a thing
-            # that can happen? How does it affect SocialShareMixin? The first one is the oldest--do we actually want
-            # the last one?
-            user_social_auth = self.request.user.social_auth.filter(provider='facebook').first()
-            graph = facebook.GraphAPI(user_social_auth.extra_data['access_token'])
-            facebook_friends = graph.request("v2.2/me/friends")["data"]
-            friends = User.objects.filter(social_auth__provider='facebook',
-                                          social_auth__uid__in=[user["id"] for user in facebook_friends])
+        # TODO: what does it look like when a user has more than one social auth for a provider? Is this a thing
+        # that can happen? How does it affect SocialShareMixin? The first one is the oldest--do we actually want
+        # the last one?
+        try:
+            user_social_auth = self.request.user.social_auth.filter(provider=provider).first()
+            backend = get_backend(settings.AUTHENTICATION_BACKENDS, provider)
+            friends = backend.get_friends(user_social_auth)
             return friends
-        elif provider == 'twitter':
-            user_social_auth = self.request.user.social_auth.filter(provider='twitter').first()
-            twitter = Twython(
-                app_key=settings.SOCIAL_AUTH_TWITTER_KEY,
-                app_secret=settings.SOCIAL_AUTH_TWITTER_SECRET,
-                oauth_token=user_social_auth.tokens['oauth_token'],
-                oauth_token_secret=user_social_auth.tokens['oauth_token_secret']
-            )
-            twitter_friends = twitter.get_friends_ids()["ids"]
-            friends = User.objects.filter(social_auth__provider='twitter',
-                                          social_auth__uid__in=twitter_friends)
-            return friends
-        else:
-            return Response({"errors": "{} is not a valid social provider".format(provider)},
-                            status=status.HTTP_400_BAD_REQUEST)
+        except UserSocialAuth.DoesNotExist:
+            raise AuthenticationFailed("User is not authenticated with {}".format(provider))

@@ -1,8 +1,8 @@
 from social.backends.instagram import InstagramOAuth2
-from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin
+from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 
 
-class Instagram(ExtraDataAbstractMixin, InstagramOAuth2):
+class Instagram(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, InstagramOAuth2):
     @staticmethod
     def save_extra_data(response, user):
         if response['data']['bio']:
@@ -14,3 +14,11 @@ class Instagram(ExtraDataAbstractMixin, InstagramOAuth2):
     def get_profile_image(strategy, details, response, uid, user, social, is_new=False, *args, **kwargs):
         image_url = response['data']['profile_picture']
         return image_url
+
+    @staticmethod
+    def post(user_social_auth, **kwargs):
+        return
+
+    @staticmethod
+    def get_friends(user_social_auth, **kwargs):
+        return
