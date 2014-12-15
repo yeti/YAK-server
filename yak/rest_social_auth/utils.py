@@ -1,69 +1,9 @@
-import requests
-import urllib
-import urllib2
 from celery.task import task
 from django.conf import settings
-from twython import Twython
-from yak.settings import yak_settings
-
-
-def post_to_facebook(app_access_token, user_social_auth, message, link):
-    url = "https://graph.facebook.com/{}/feed".format(user_social_auth.uid)
-
-    params = {
-        'access_token': app_access_token,
-        'message': message,
-        'link': link
-    }
-
-    req = urllib2.Request(url, urllib.urlencode(params))
-    urllib2.urlopen(req)
-
-
-def post_to_facebook_og(app_access_token, user_social_auth, obj):
-    og_info = obj.facebook_og_info()
-
-    url = "https://graph.facebook.com/{0}/{1}:{2}".format(
-        user_social_auth.uid,
-        yak_settings.FACEBOOK_OG_NAMESPACE,
-        og_info['action'],
-    )
-
-    params = {
-        '{0}'.format(og_info['object']): '{0}'.format(og_info['url']),
-        'access_token': app_access_token,
-    }
-
-    requests.post(url, params=params)
+from social.backends.utils import get_backend
 
 
 @task
 def post_social_media(user_social_auth, social_obj):
-    message = social_obj.create_social_message(user_social_auth.provider)
-    link = social_obj.url()
-
-    if user_social_auth.provider == 'facebook':
-        if yak_settings.USE_FACEBOOK_OG:
-            post_to_facebook_og(settings.SOCIAL_AUTH_FACEBOOK_APP_TOKEN, user_social_auth, social_obj)
-        else:
-            post_to_facebook(settings.SOCIAL_AUTH_FACEBOOK_APP_TOKEN, user_social_auth, message, link)
-    elif user_social_auth.provider == 'twitter':
-        twitter = Twython(
-            app_key=settings.SOCIAL_AUTH_TWITTER_KEY,
-            app_secret=settings.SOCIAL_AUTH_TWITTER_SECRET,
-            oauth_token=user_social_auth.tokens['oauth_token'],
-            oauth_token_secret=user_social_auth.tokens['oauth_token_secret']
-        )
-
-        full_message_url = "{0} {1}".format(message, link)
-
-        # 140 characters minus the length of the link minus the space minus 3 characters for the ellipsis
-        message_trunc = 140 - len(link) - 1 - 3
-
-        # Truncate the message if the message + url is over 140
-        if len(full_message_url) > 140:
-            safe_message = "{0}... {1}".format(message[:message_trunc], link)
-        else:
-            safe_message = full_message_url
-
-        twitter.update_status(status=safe_message, wrap_links=True)
+    backend = get_backend(settings.AUTHENTICATION_BACKENDS, user_social_auth.provider)
+    backend.post(user_social_auth, social_obj)
