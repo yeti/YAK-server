@@ -1,3 +1,4 @@
+from instagram import InstagramAPI
 from social.backends.instagram import InstagramOAuth2
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 
@@ -16,9 +17,15 @@ class Instagram(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, InstagramOAut
         return image_url
 
     @staticmethod
-    def post(user_social_auth, **kwargs):
+    def post(user_social_auth, social_obj):
         return
 
     @staticmethod
-    def get_friends(user_social_auth, **kwargs):
+    def get_friends(user_social_auth):
         return
+
+    @staticmethod
+    def get_posts(user_social_auth, last_updated_time):
+        api = InstagramAPI(access_token=user_social_auth.extra_data['access_token'])
+        recent_media, next_ = api.user_recent_media(user_id=user_social_auth.uid, min_time=last_updated_time)
+        return recent_media

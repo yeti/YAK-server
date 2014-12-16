@@ -51,6 +51,12 @@ class SocialSignUp(SignUp):
         user = backend.do_auth(token, user=user)
 
         if user and user.is_active:
+            # if the access token was set to an empty string, then save the access token from the request
+            auth_created = user.social_auth.get(provider=provider)
+            if not auth_created.extra_data['access_token']:
+                auth_created.extra_data['access_token'] = token
+                auth_created.save()
+
             # Set instance since we are not calling `serializer.save()`
             serializer.instance = user
             headers = self.get_success_headers(serializer.data)

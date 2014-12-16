@@ -103,10 +103,14 @@ AUTH_USER_MODEL = "{}.{}".format(YAK['USER_APP_LABEL'], YAK['USER_MODEL'].capita
 PACKAGES_TO_TEST = ['test_project', 'yak']
 
 AUTHENTICATION_BACKENDS = (
-    "yak.rest_social_auth.backends.facebook.Facebook",
-    "yak.rest_social_auth.backends.twitter.Twitter",
+    "yak.rest_social_auth.backends.yak_instagram.Instagram",
+    "yak.rest_social_auth.backends.yak_facebook.Facebook",
+    "yak.rest_social_auth.backends.yak_twitter.Twitter",
     "yak.rest_user.backends.CaseInsensitiveBackend",
 )
+
+SOCIAL_AUTH_INSTAGRAM_KEY = ''
+SOCIAL_AUTH_INSTAGRAM_SECRET = ''
 
 SOCIAL_AUTH_FACEBOOK_KEY = ''
 SOCIAL_AUTH_FACEBOOK_SECRET = ''
