@@ -23,6 +23,7 @@ paramiko==1.12.2
 -e git://github.com/Pushwoosh/pushwoosh-python-lib.git@15ba670a0278d1547088ae88a62a2bd24aadc3b8#egg=pyPushwoosh-master
 pycrypto==2.6.1
 pyflakes==0.8.1
+python-instagram==1.3.0
 python-openid==2.2.5
 python-social-auth==0.2.1
 python-swiftclient==2.3.1
