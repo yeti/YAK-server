@@ -1,4 +1,4 @@
-from instagram import InstagramAPI
+from instagram import InstagramAPI, helper
 from social.backends.instagram import InstagramOAuth2
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 
@@ -27,5 +27,6 @@ class Instagram(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, InstagramOAut
     @staticmethod
     def get_posts(user_social_auth, last_updated_time):
         api = InstagramAPI(access_token=user_social_auth.extra_data['access_token'])
-        recent_media, next_ = api.user_recent_media(user_id=user_social_auth.uid, min_time=last_updated_time)
+        formatted_time = helper.datetime_to_timestamp(last_updated_time)
+        recent_media, next_ = api.user_recent_media(user_id=user_social_auth.uid, min_timestamp=formatted_time)
         return recent_media
