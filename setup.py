@@ -13,7 +13,7 @@ setup(
     packages=['yak'],
     install_requires=[
         'Django>=1.7',
-        'djangorestframework==3.0.0',
+        'djangorestframework>=3.0.0, !=3.0.1',
         'Pillow>=2.5',
         'django-filter>=0.7',
         'django-model-utils>=2.0',

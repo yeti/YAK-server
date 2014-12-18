@@ -11,7 +11,7 @@ django-braces==1.4.0
 django-filter==0.8
 django-model-utils==2.2
 django-oauth-toolkit==0.7.2
-djangorestframework==3.0.0
+djangorestframework==3.0.2
 ecdsa==0.10
 facebook-sdk==0.4.0
 factory-boy==2.4.1
