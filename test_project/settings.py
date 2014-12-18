@@ -104,6 +104,7 @@ PACKAGES_TO_TEST = ['test_project', 'yak']
 
 AUTHENTICATION_BACKENDS = (
     "yak.rest_social_auth.backends.yak_instagram.Instagram",
+    "yak.rest_social_auth.backends.yak_soundcloud.Soundcloud",
     "yak.rest_social_auth.backends.yak_facebook.Facebook",
     "yak.rest_social_auth.backends.yak_twitter.Twitter",
     "yak.rest_user.backends.CaseInsensitiveBackend",
@@ -111,6 +112,9 @@ AUTHENTICATION_BACKENDS = (
 
 SOCIAL_AUTH_INSTAGRAM_KEY = ''
 SOCIAL_AUTH_INSTAGRAM_SECRET = ''
+
+SOCIAL_AUTH_SOUNDCLOUD_KEY = ''
+SOCIAL_AUTH_SOUNDCLOUD_SECRET = ''
 
 SOCIAL_AUTH_FACEBOOK_KEY = ''
 SOCIAL_AUTH_FACEBOOK_SECRET = ''
