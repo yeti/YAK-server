@@ -536,7 +536,8 @@
         {"$socialSignUpRequest": {
             "provider": "string",
             "access_token": "string",
-            "access_token_secret": "string,optional"
+            "access_token_secret": "string,optional",
+            "password": "string"
         }},
         {"$locationRequest": {
             "name": "string",

@@ -1,6 +1,6 @@
+import base64
 from django.conf import settings
 from django.contrib.auth import get_user_model
-import facebook
 from rest_framework import status, generics
 from rest_framework.decorators import detail_route
 from rest_framework.exceptions import AuthenticationFailed
@@ -11,7 +11,6 @@ from social.apps.django_app.default.models import UserSocialAuth
 from social.apps.django_app.utils import load_backend
 from social.backends.oauth import BaseOAuth1, BaseOAuth2
 from social.backends.utils import get_backend
-from twython import Twython
 from yak.rest_social_auth.serializers import SocialSignUpSerializer
 from yak.rest_social_auth.utils import post_social_media
 from yak.rest_user.serializers import UserSerializer
@@ -35,7 +34,7 @@ class SocialSignUp(SignUp):
         provider = request.data['provider']
 
         # If this request was made with an authenticated user, try to associate this social account with it
-        user = request.user if not request.user.is_anonymous() else None
+        authed_user = request.user if not request.user.is_anonymous() else None
 
         strategy = load_strategy(request)
         backend = load_backend(strategy=strategy, name=provider, redirect_uri=None)
@@ -48,7 +47,7 @@ class SocialSignUp(SignUp):
         elif isinstance(backend, BaseOAuth2):
             token = request.data['access_token']
 
-        user = backend.do_auth(token, user=user)
+        user = backend.do_auth(token, user=authed_user)
 
         if user and user.is_active:
             # if the access token was set to an empty string, then save the access token from the request
@@ -56,6 +55,12 @@ class SocialSignUp(SignUp):
             if not auth_created.extra_data['access_token']:
                 auth_created.extra_data['access_token'] = token
                 auth_created.save()
+
+            # Allow client to send up password to complete auth flow
+            if not authed_user and request.data['password']:
+                password = base64.decodestring(request.data['password'])
+                user.set_password(password)
+                user.save()
 
             # Set instance since we are not calling `serializer.save()`
             serializer.instance = user
