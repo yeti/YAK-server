@@ -57,7 +57,7 @@ class SocialSignUp(SignUp):
                 auth_created.save()
 
             # Allow client to send up password to complete auth flow
-            if not authed_user and request.data['password']:
+            if not authed_user and 'password' in request.data:
                 password = base64.decodestring(request.data['password'])
                 user.set_password(password)
                 user.save()
