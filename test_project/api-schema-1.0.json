@@ -537,24 +537,7 @@
             "provider": "string",
             "access_token": "string",
             "access_token_secret": "string,optional",
-            "password": "string"
-        }},
-        {"$locationRequest": {
-            "name": "string",
-            "latitude": "float",
-            "longitude": "float",
-            "facebook_id": "string,optional"
-        }},
-        {"$locationParameters": {
-            "search": "string,optional"
-        }},
-        {"$locationResponse": {
-            "id": "int,primarykey",
-            "name": "string",
-            "latitude": "float",
-            "longitude": "float",
-            "facebook_id": "string,optional",
-            "custom_location_owner": "int,optional"
+            "password": "string,optional"
         }},
         {"$userParameters": {
             "search": "string,optional"
@@ -594,117 +577,6 @@
             "created": "datetime",
             "token": "string",
             "user": "M2O,$userResponse"
-        }},
-        {"$clipParameters": {
-            "type": "string,optional"
-        }},
-        {"$clipRequest": {
-            "id": "int,primarykey,optional",
-            "video_file": "string,optional",
-            "thumbnail": "string,optional",
-            "privacy": "string,optional",
-            "session": "int,optional"
-        }},
-        {"$clipResponse": {
-            "id": "int,primarykey",
-            "video_file": "string,optional",
-            "thumbnail": "string,optional",
-            "created": "datetime",
-            "privacy": "string,optional",
-            "session": "int",
-            "content_type": "int"
-        }},
-        {"$addClipRequest": {
-            "clip": "int"
-        }},
-        {"$addClipResponse": {
-            "status": "string"
-        }},
-        {"$sessionRequest": {
-            "description": "string,optional",
-            "location": "string,optional"
-        }},
-        {"$sessionResponse": {
-            "id": "int,primarykey",
-            "created": "datetime",
-            "description": "string",
-            "user": "M2O,$userResponse",
-            "location": "M2O,$locationResponse,optional",
-            "clips": "O2M,$clipResponse,optional",
-            "shared_with_user": "string,optional",
-            "content_type": "int"
-        }},
-        {"$sessionParameters": {
-            "ordering": "string,optional",
-            "search": "string,optional",
-            "user": "int,optional",
-            "type": "string,optional",
-            "description": "string,optional",
-            "user__username": "string,optional",
-            "latitude": "float,optional",
-            "longitude": "float,optional",
-            "radius": "float,optional"
-        }},
-        {"$videoRequest": {
-            "video_file": "string,optional",
-            "thumbnail": "string,optional",
-            "title": "string,optional",
-            "description": "string,optional",
-            "clips": "array,int,optional"
-        }},
-        {"$videoResponse": {
-            "id": "int,primarykey",
-            "created": "datetime",
-            "video_file": "string,optional",
-            "thumbnail": "string,optional",
-            "title": "string",
-            "description": "string,optional",
-            "user": "M2O,$userResponse",
-            "view_count": "int",
-            "likes_count": "int",
-            "comments": "O2M,$commentResponse,optional",
-            "content_type": "int",
-            "contributors": "O2M,$userResponse"
-        }},
-        {"$videoParameters": {
-            "ordering": "string,optional",
-            "search": "string,optional",
-            "user": "int,optional",
-            "starring": "int,optional",
-            "featured": "boolean,optional",
-            "type": "string,optional",
-            "description": "string,optional",
-            "user__username": "string,optional",
-            "title": "string,optional"
-        }},
-        {"$castingRequest": {
-            "video_file": "string,optional",
-            "thumbnail": "string,optional",
-            "description": "string,optional",
-            "clips": "array,int,optional",
-            "location": "string,optional",
-            "is_active": "boolean"
-        }},
-        {"$castingResponse": {
-            "id": "int,primarykey",
-            "created": "datetime",
-            "video_file": "string,optional",
-            "thumbnail": "string,optional",
-            "description": "string,optional",
-            "user": "M2O,$userResponse",
-            "clips": "M2M,$clipResponse,optional",
-            "is_active": "boolean",
-            "content_type": "int"
-        }},
-        {"$castingParameters": {
-            "type": "string,optional",
-            "user": "int,optional",
-            "search": "string,optional",
-            "ordering": "string,optional",
-            "is_active": "boolean,optional",
-            "description": "string,optional",
-            "user__username": "string,optional",
-            "location": "string,optional"
         }},
         {"$commentResponse": {
             "user": "M2O,$userResponse",
@@ -791,14 +663,6 @@
         }},
         {"$socialShareResponse": {
             "status": "string"
-        }},
-        {"$watchVideoRequest": {
-            "video": "int"
-        }},
-        {"$watchVideoResponse": {
-            "id": "int,primarykey",
-            "created": "datetime",
-            "video": "int"
         }},
         {"$socialFriendParameters": {
             "provider": "string"
