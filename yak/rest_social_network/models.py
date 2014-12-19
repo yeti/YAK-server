@@ -108,7 +108,7 @@ class Comment(CoreModel):
     related_tags = models.ManyToManyField(Tag, blank=True, null=True)
 
     description = models.CharField(max_length=140)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="comments")
 
     class Meta:
         ordering = ['created']
@@ -123,7 +123,7 @@ class Follow(CoreModel):
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = generic.GenericForeignKey()
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="following")
 
     @property
     def object_type(self):
@@ -144,7 +144,7 @@ class Like(CoreModel):
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = generic.GenericForeignKey()
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="likes")
 
     class Meta:
         unique_together = (("user", "content_type", "object_id"),)
@@ -156,7 +156,7 @@ class Flag(CoreModel):
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey()
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="flags")
 
     class Meta:
         unique_together = (("user", "content_type", "object_id"),)
@@ -168,7 +168,7 @@ class Share(CoreModel):
     content_object = generic.GenericForeignKey()
     shared_with = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='shared_with')
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="shares")
 
     class Meta:
         unique_together = (("user", "content_type", "object_id"),)
