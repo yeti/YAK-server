@@ -34,6 +34,6 @@ class Soundcloud(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, SoundcloudOA
         track_url = "https://api.soundcloud.com/me/tracks.json"
         tracks = requests.get(track_url, params=params).json()
 
-        playlist_url = "https://api.soundcloud.com/me/tracks.json"
+        playlist_url = "https://api.soundcloud.com/me/playlists.json"
         playlists = requests.get(playlist_url, params=params).json()
         return tracks + playlists
