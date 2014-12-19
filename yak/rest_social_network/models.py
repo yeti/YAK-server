@@ -212,7 +212,7 @@ class AbstractSocialYeti(AbstractYeti):
         abstract = True
 
     def user_following(self):
-        return self.follow_set.filter(
+        return self.following.filter(
             content_type=ContentType.objects.get(app_label=yak_settings.USER_APP_LABEL, model=yak_settings.USER_MODEL)
         )
 
