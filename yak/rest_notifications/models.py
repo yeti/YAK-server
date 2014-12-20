@@ -4,21 +4,53 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.loader import render_to_string
 from celery.task import task
-from model_utils import Choices
 from yak.rest_core.models import CoreModel
-from yak.settings import yak_settings
 
-__author__ = 'rudy'
+
+class NotificationType(CoreModel):
+    name = models.CharField(max_length=32)
+    slug = models.SlugField(unique=True)
+    description = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return u"{}".format(self.name)
+
+
+class NotificationSetting(CoreModel):
+    notification_type = models.ForeignKey(NotificationType, related_name="user_settings")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='notification_settings')
+    allow_push = models.BooleanField(default=True)
+    allow_email = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('notification_type', 'user')
+
+    def name(self):
+        return u"{}: {}".format(self.user, self.notification_type)
+
+
+def create_notification_settings(sender, **kwargs):
+    sender_name = "{0}.{1}".format(sender._meta.app_label, sender._meta.object_name)
+    if sender_name.lower() != settings.AUTH_USER_MODEL.lower():
+        return
+
+    if kwargs['created']:
+        user = kwargs['instance']
+        if not user.notification_settings.exists():
+            user_settings = []
+            for notification_type in NotificationType.objects.all():
+                user_settings.append(NotificationSetting(user=user, notification_type=notification_type))
+            NotificationSetting.objects.bulk_create(user_settings)
 
 
 class Notification(CoreModel):
-    TYPES = Choices(*yak_settings.NOTIFICATION_TYPES)
     PUSH = "push"
     EMAIL = "email"
 
-    notification_type = models.PositiveSmallIntegerField(choices=TYPES)
+    notification_type = models.ForeignKey(NotificationType, related_name="notifications")
     # template_override = models.CharField(max_length=100, blank=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_received", null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_received", null=True, blank=True)
     reporter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_sent", null=True, blank=True)
 
     # The object that the notification is about, not the social model related to it
@@ -42,7 +74,7 @@ class Notification(CoreModel):
         if hasattr(self.content_object, 'extra_notification_params'):
             data.update(self.content_object.extra_notification_params())
 
-        configured_template_name = unicode(Notification.TYPES._triples[self.notification_type][2])
+        configured_template_name = "{}.html".format(self.notification_type.slug)
         # template_name = self.template_override if self.template_override else configured_template_name
         return render_to_string("notifications/{}/{}".format(location, configured_template_name), data)
 
@@ -58,7 +90,10 @@ class Notification(CoreModel):
 
     @property
     def name(self):
-        return u"{0}".format(Notification.TYPES._triples[self.notification_type][1])
+        return u"{}".format(self.notification_type)
+
+    def __unicode__(self):
+        return u"{}: {}".format(self.user, self.notification_type)
 
     class Meta:
         ordering = ['-created']
@@ -85,31 +120,6 @@ def create_notification(receiver, reporter, content_object, notification_type, t
     if notification_setting.allow_email:
         from .utils import send_email_notification
         send_email_notification(receiver, notification.email_message(), reply_to=reply_to)
-
-
-class NotificationSetting(CoreModel):
-    notification_type = models.PositiveSmallIntegerField(choices=Notification.TYPES)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='notification_settings')
-    allow_push = models.BooleanField(default=True)
-    allow_email = models.BooleanField(default=True)
-
-    class Meta:
-        unique_together = ('notification_type', 'user')
-
-    def name(self):
-        return u"{0}".format(Notification.TYPES._triples[self.notification_type][1])
-
-
-def create_notification_settings(sender, **kwargs):
-    sender_name = "{0}.{1}".format(sender._meta.app_label, sender._meta.object_name)
-    if sender_name.lower() != settings.AUTH_USER_MODEL.lower():
-        return
-
-    if kwargs['created']:
-        user = kwargs['instance']
-        if not user.notification_settings.exists():
-            user_settings = [NotificationSetting(user=user, notification_type=pk) for pk, name in Notification.TYPES]
-            NotificationSetting.objects.bulk_create(user_settings)
 
 
 class PushwooshToken(CoreModel):

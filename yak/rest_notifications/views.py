@@ -5,7 +5,7 @@ from pypushwoosh import client, constants
 from pypushwoosh.command import RegisterDeviceCommand
 from yak.rest_core.permissions import IsOwner
 from yak.rest_notifications.models import NotificationSetting, Notification, create_notification, \
-    PushwooshToken
+    PushwooshToken, NotificationType
 from yak.rest_notifications.serializers import NotificationSettingSerializer, NotificationSerializer, \
     PushwooshTokenSerializer
 from yak.rest_social_network.views import CommentViewSet, FollowViewSet, ShareViewSet, LikeViewSet
@@ -60,23 +60,27 @@ class NotificationView(generics.ListAPIView):
 class NotificationCommentViewSet(CommentViewSet):
     def perform_create(self, serializer):
         obj = serializer.save()
-        create_notification(obj.content_object.user, obj.user, obj.content_object, Notification.TYPES.comment)
+        notification_type = NotificationType.objects.get(slug="comment")
+        create_notification(obj.content_object.user, obj.user, obj.content_object, notification_type)
 
 
 class NotificationFollowViewSet(FollowViewSet):
     def perform_create(self, serializer):
         obj = serializer.save()
-        create_notification(obj.content_object, obj.user, obj.content_object, Notification.TYPES.follow)
+        notification_type = NotificationType.objects.get(slug="follow")
+        create_notification(obj.content_object, obj.user, obj.content_object, notification_type)
 
 
 class NotificationShareViewSet(ShareViewSet):
     def perform_create(self, serializer):
         obj = serializer.save()
+        notification_type = NotificationType.objects.get(slug="share")
         for receiver in obj.shared_with.all():
-            create_notification(receiver, obj.user, obj.content_object, Notification.TYPES.share)
+            create_notification(receiver, obj.user, obj.content_object, notification_type)
 
 
 class NotificationLikeViewSet(LikeViewSet):
     def perform_create(self, serializer):
         obj = serializer.save()
-        create_notification(obj.content_object.user, obj.user, obj.content_object, Notification.TYPES.like)
+        notification_type = NotificationType.objects.get(slug="like")
+        create_notification(obj.content_object.user, obj.user, obj.content_object, notification_type)
