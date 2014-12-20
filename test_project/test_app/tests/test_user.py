@@ -58,6 +58,7 @@ class UserTests(SchemaTestCase):
         url = reverse("sign_up")
         password = base64.encodestring("testtest")
         data = {
+            "fullname": "tester",
             "username": "tester",
             "email": "tester@yetihq.com",
             "password": password

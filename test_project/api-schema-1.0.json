@@ -505,11 +505,13 @@
     ],
     "objects": [
         {"$signUpRequest": {
+            "fullname": "string",
             "username": "string",
             "email": "string",
             "password": "string"
         }},
         {"$signUpResponse": {
+            "fullname": "string",
             "username": "string",
             "email": "string",
             "client_id": "string",
