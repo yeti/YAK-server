@@ -48,19 +48,6 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='FriendAction',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(auto_now_add=True, null=True)),
-                ('action_type', models.PositiveSmallIntegerField(choices=[(0, 'is following'), (1, 'favorited a post'), (2, 'replied to a post')])),
-                ('object_id', models.PositiveIntegerField(db_index=True)),
-            ],
-            options={
-                'ordering': ['-created'],
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
             name='Like',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),

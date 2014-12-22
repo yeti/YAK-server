@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from model_utils import Choices
 from yak.rest_core.models import CoreModel
+from yak.rest_notifications.models import NotificationType
 from yak.rest_user.models import AbstractYeti
 from yak.settings import yak_settings
 
@@ -94,7 +95,8 @@ def mentions(sender, **kwargs):
             User = get_user_model()
             try:
                 receiver = User.objects.get(username=user[1:])
-                create_notification(receiver, kwargs['instance'].user, content_object, Notification.TYPES.mention)
+                mention_type = NotificationType.objects.get(slug="mention")
+                create_notification(receiver, kwargs['instance'].user, content_object, mention_type)
             except User.DoesNotExist:
                 pass
 
@@ -172,37 +174,6 @@ class Share(CoreModel):
 
     class Meta:
         unique_together = (("user", "content_type", "object_id"),)
-
-
-class FriendAction(CoreModel):
-    TYPES = Choices(*yak_settings.SOCIAL_FRIEND_ACTIONS)
-
-    # Unpack the list of social friend actions from the settings
-    action_type = models.PositiveSmallIntegerField(choices=TYPES)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField(db_index=True)
-    content_object = generic.GenericForeignKey()
-
-    def message(self):
-        return unicode(self.TYPES[self.action_type][1])
-
-    def name(self):
-        return u"{0}".format(self.TYPES._triples[self.action_type][1])
-
-    def display_name(self):
-        return u"{0}".format(self.get_action_type_display())
-
-    class Meta:
-        ordering = ['-created']
-
-
-def create_friend_action(user, content_object, action_type):
-    friend_action = FriendAction.objects.create(user=user,
-                                                content_object=content_object,
-                                                action_type=action_type)
-    friend_action.save()
 
 
 class AbstractSocialYeti(AbstractYeti):

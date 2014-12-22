@@ -18,18 +18,6 @@ DEFAULTS = {
     'USER_SERIALIZER': "test_app.api.serializers.ProjectUserSerializer",
     'API_SCHEMA': 'api-schema-1.0.json',
     'SOCIAL_MODEL': "test_app.models.Post",
-    'SOCIAL_FRIEND_ACTIONS': (
-        (0, 'follow', 'is following'),
-        (1, 'like', 'favorited a post'),
-        (2, 'reply', 'replied to a post')
-    ),
-    'NOTIFICATION_TYPES': (
-        (0, 'follow', 'follow.html'),
-        (1, 'like', 'like.html'),
-        (2, 'comment', 'comment.html'),
-        (3, 'mention', 'mention.html'),
-        (4, 'share', 'share.html'),
-    ),
     'EMAIL_NOTIFICATION_SUBJECT': 'Test Project Notification',
     'PUSHWOOSH_AUTH_TOKEN': "",
     'PUSHWOOSH_APP_CODE': "",
