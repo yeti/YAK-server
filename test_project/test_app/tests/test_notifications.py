@@ -4,6 +4,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.utils import unittest
+import memcache
 from mock import MagicMock
 from test_project.test_app.models import Post
 from test_project.test_app.tests.factories import PostFactory, UserFactory
@@ -227,11 +229,8 @@ class NotificationSettingsTestCase(SchemaTestCase):
                               unauthorized=True)
         self.assertSchemaDelete(delete_url, user, unauthorized=True)
 
+    @unittest.skipIf(not memcache.Client(["127.0.0.1:11211"]).set("test", "testval"),
+                     "memcache not running")
     def test_notification_types_are_cached(self):
-        cache.set('test', 'testval')
-        if cache.get('test'):  # If memcache is running
-            cache.clear()
-            assert NotificationType.objects.get(slug="like").from_cache is False
-            assert NotificationType.objects.get(slug="like").from_cache is True
-        else:
-            warnings.warn("Not testing NotificationType caching")
+        assert NotificationType.objects.get(slug="like").from_cache is False
+        assert NotificationType.objects.get(slug="like").from_cache is True

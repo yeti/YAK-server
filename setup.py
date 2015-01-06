@@ -29,6 +29,9 @@ setup(
         'requests-oauthlib>=0.4',
         'twython>=3.1'
     ],
+    dependency_links=[
+        "git+ssh://git@github.com/jbalogh/django-cache-machine.git#egg=django_cache_machine-master"
+    ],
     include_package_data=True,
     license='BSD License',
     description='Server-side implementation of Yeti App Kit built on Django',
