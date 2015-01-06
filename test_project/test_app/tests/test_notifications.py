@@ -232,5 +232,6 @@ class NotificationSettingsTestCase(SchemaTestCase):
     @unittest.skipIf(not memcache.Client(["127.0.0.1:11211"]).set("test", "testval"),
                      "memcache not running")
     def test_notification_types_are_cached(self):
+        cache.clear()
         assert NotificationType.objects.get(slug="like").from_cache is False
         assert NotificationType.objects.get(slug="like").from_cache is True
