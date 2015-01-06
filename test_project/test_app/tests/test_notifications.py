@@ -229,7 +229,8 @@ class NotificationSettingsTestCase(SchemaTestCase):
 
     def test_notification_types_are_cached(self):
         cache.set('test', 'testval')
-        if cache.get('test'):  # IF memcache is running
+        if cache.get('test'):  # If memcache is running
+            cache.clear()
             assert NotificationType.objects.get(slug="like").from_cache is False
             assert NotificationType.objects.get(slug="like").from_cache is True
         else:
