@@ -22,6 +22,7 @@ setup(
         'factory-boy>=2.4',
         'mock>=1.0',
         'python-instagram>=1.3.0',
+        'python-memcached>=1.53',
         'python-social-auth>=0.2',
         'python-swiftclient>=2.2',
         'requests>=2.1',

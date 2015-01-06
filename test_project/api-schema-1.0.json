@@ -644,9 +644,15 @@
             "name": "string",
             "id": "int,primarykey"
         }},
+        {"$notificationTypeResponse": {
+            "id": "int,primarykey",
+            "name": "string",
+            "description": "string",
+            "is_active": "boolean"
+        }},
         {"$notificationSettingResponse": {
             "id": "int,primarykey",
-            "notification_type": "int",
+            "notification_type": "$notificationTypeResponse",
             "allow_push": "boolean",
             "allow_email": "boolean"
         }},

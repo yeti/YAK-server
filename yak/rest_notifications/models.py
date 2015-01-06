@@ -1,3 +1,4 @@
+from caching.base import CachingMixin, CachingManager
 from django.conf import settings
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
@@ -7,11 +8,13 @@ from celery.task import task
 from yak.rest_core.models import CoreModel
 
 
-class NotificationType(CoreModel):
+class NotificationType(CachingMixin, CoreModel):
     name = models.CharField(max_length=32)
     slug = models.SlugField(unique=True)
     description = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
+
+    objects = CachingManager()
 
     def __unicode__(self):
         return u"{}".format(self.name)

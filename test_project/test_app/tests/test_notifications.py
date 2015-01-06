@@ -1,6 +1,8 @@
+import warnings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from mock import MagicMock
 from test_project.test_app.models import Post
@@ -224,3 +226,11 @@ class NotificationSettingsTestCase(SchemaTestCase):
         self.assertSchemaPost(create_url, "$notificationSettingRequest", "$notificationSettingResponse", data, user,
                               unauthorized=True)
         self.assertSchemaDelete(delete_url, user, unauthorized=True)
+
+    def test_notification_types_are_cached(self):
+        cache.set('test', 'testval')
+        if cache.get('test'):  # IF memcache is running
+            assert NotificationType.objects.get(slug="like").from_cache is False
+            assert NotificationType.objects.get(slug="like").from_cache is True
+        else:
+            warnings.warn("Not testing NotificationType caching")
