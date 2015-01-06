@@ -9,7 +9,6 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import post_save
-from model_utils import Choices
 from yak.rest_core.models import CoreModel
 from yak.rest_notifications.models import NotificationType
 from yak.rest_user.models import AbstractYeti
@@ -81,7 +80,7 @@ def mentions(sender, **kwargs):
     This function creates notifications but does not associate mentioned users with the created model instance
     """
     try:
-        from rest_notifications.rest_notifications.models import create_notification, Notification
+        from rest_notifications.rest_notifications.models import create_notification
     except ImportError:
         return
 

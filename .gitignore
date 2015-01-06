@@ -9,3 +9,4 @@ local_settings.py
 *.sqlite3
 *.egg-info
 dist
+syntax_output

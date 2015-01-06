@@ -6,8 +6,8 @@ amqp==1.4.6
 anyjson==0.3.3
 billiard==3.3.0.19
 celery==3.1.16
-coverage==3.7.1
 django-braces==1.4.0
+-e git://github.com/jbalogh/django-cache-machine.git@f827f05b195ad3fc1b0111131669471d843d631f#egg=django_cache_machine-master
 django-filter==0.8
 django-model-utils==2.2
 django-oauth-toolkit==0.7.2
@@ -15,20 +15,25 @@ djangorestframework==3.0.2
 ecdsa==0.10
 facebook-sdk==0.4.0
 factory-boy==2.4.1
+flake8==2.3.0
 futures==2.2.0
+httplib2==0.9
 kombu==3.0.24
+mccabe==0.3
 mock==1.0.1
 oauthlib==0.7.2
 paramiko==1.12.2
+pep8==1.5.7
 -e git://github.com/Pushwoosh/pushwoosh-python-lib.git@15ba670a0278d1547088ae88a62a2bd24aadc3b8#egg=pyPushwoosh-master
 pycrypto==2.6.1
 pyflakes==0.8.1
 python-instagram==1.3.0
+python-memcached==1.53
 python-openid==2.2.5
 python-social-auth==0.2.1
 python-swiftclient==2.3.1
 pytz==2014.9
-requests==2.2.1
+requests==2.5.0
 requests-oauthlib==0.4.2
 simplejson==3.3.3
 six==1.8.0
@@ -38,4 +43,4 @@ virtualenv==1.11.6
 virtualenv-clone==0.2.5
 virtualenvwrapper==4.3
 wsgiref==0.1.2
--e git+git@github.com:yeti/YAK-server.git@31c42d777e5217a030d1d427eb909e3f333f0197#egg=yak_server-master
+-e git+git@github.com:yeti/YAK-server.git#egg=yak_server-master

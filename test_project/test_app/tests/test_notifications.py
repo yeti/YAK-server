@@ -1,7 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.utils import unittest
+import memcache
 from mock import MagicMock
 from test_project.test_app.models import Post
 from test_project.test_app.tests.factories import PostFactory, UserFactory
@@ -224,3 +227,10 @@ class NotificationSettingsTestCase(SchemaTestCase):
         self.assertSchemaPost(create_url, "$notificationSettingRequest", "$notificationSettingResponse", data, user,
                               unauthorized=True)
         self.assertSchemaDelete(delete_url, user, unauthorized=True)
+
+    @unittest.skipIf(not memcache.Client(["127.0.0.1:11211"]).set("test", "testval"),
+                     "memcache not running")
+    def test_notification_types_are_cached(self):
+        cache.clear()
+        assert NotificationType.objects.get(slug="like").from_cache is False
+        assert NotificationType.objects.get(slug="like").from_cache is True

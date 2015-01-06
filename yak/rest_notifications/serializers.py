@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from yak.rest_notifications.models import NotificationSetting, Notification, PushwooshToken
+from yak.rest_notifications.models import NotificationSetting, Notification, PushwooshToken, NotificationType
 from yak.rest_user.serializers import UserSerializer
 
 __author__ = 'baylee'
@@ -14,11 +14,19 @@ class PushwooshTokenSerializer(serializers.ModelSerializer):
         model = PushwooshToken
 
 
+class NotificationTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NotificationType
+        fields = ('id', 'name', 'description', 'is_active')
+
+
 class NotificationSettingSerializer(serializers.ModelSerializer):
+    notification_type = NotificationTypeSerializer(read_only=True)
+
     class Meta:
         model = NotificationSetting
         fields = ('id', 'notification_type', 'allow_push', 'allow_email')
-        read_only_fields = ('id', 'notification_type')
 
 
 class NotificationSerializer(serializers.ModelSerializer):
