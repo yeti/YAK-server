@@ -25,7 +25,7 @@ class UserFactory(factory.DjangoModelFactory):
                                    application=user.application_set.first(),
                                    token='token{}'.format(user.id),
                                    expires=now() + datetime.timedelta(days=1)
-        )
+                                   )
         return user
 
 

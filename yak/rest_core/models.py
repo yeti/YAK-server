@@ -88,7 +88,7 @@ def process_thumbnail(instance, original_file, sizes, crop=False):
             im = im.resize((width, int(width / original_ratio)), Image.ANTIALIAS)
             if crop:
                 clip_amount = int((int(width / original_ratio) - height) / 2)
-                im = im.crop((0, clip_amount, width,height + clip_amount))
+                im = im.crop((0, clip_amount, width, height + clip_amount))
         else:
             im = im.resize((int(height * original_ratio), height), Image.ANTIALIAS)
             if crop:

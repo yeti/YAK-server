@@ -17,7 +17,7 @@ class PushwooshTokenSerializer(serializers.ModelSerializer):
 class NotificationTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model  = NotificationType
+        model = NotificationType
         fields = ('id', 'name', 'description', 'is_active')
 
 
