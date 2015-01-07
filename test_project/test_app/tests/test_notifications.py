@@ -11,7 +11,6 @@ from test_project.test_app.tests.factories import PostFactory, UserFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_notifications.models import create_notification, Notification, NotificationSetting, NotificationType
 from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient
-from yak.rest_social_network.models import Comment
 from yak.settings import yak_settings
 
 
@@ -165,7 +164,7 @@ class NotificationsTestCase(SchemaTestCase):
                                                          notification_type=like_type).count()
         self.assertEquals(notification_count, 1)
 
-    def comment_mention_creates_notification(self):
+    def test_comment_mention_creates_notification(self):
         """
         User receives a notification when their username is @mentioned, even if they are not the owner of the post
         """
@@ -180,7 +179,7 @@ class NotificationsTestCase(SchemaTestCase):
         mention_type = NotificationType.objects.get(slug="mention")
         notification_count = Notification.objects.filter(user=self.social_obj.user,
                                                          reporter=self.reporter,
-                                                         content_type=ContentType.objects.get_for_model(Comment),
+                                                         content_type=ContentType.objects.get_for_model(Post),
                                                          notification_type=mention_type).count()
 
         self.assertEquals(notification_count, 1)

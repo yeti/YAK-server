@@ -80,7 +80,7 @@ def mentions(sender, **kwargs):
     This function creates notifications but does not associate mentioned users with the created model instance
     """
     try:
-        from rest_notifications.rest_notifications.models import create_notification
+        from yak.rest_notifications.models import create_notification
     except ImportError:
         return
 
@@ -96,6 +96,8 @@ def mentions(sender, **kwargs):
                 receiver = User.objects.get(username=user[1:])
                 mention_type = NotificationType.objects.get(slug="mention")
                 create_notification(receiver, kwargs['instance'].user, content_object, mention_type)
+                # Note that for a Comment, this means the notification is associated with the object commented on,
+                # not the comment itself
             except User.DoesNotExist:
                 pass
 

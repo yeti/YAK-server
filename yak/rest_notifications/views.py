@@ -59,21 +59,21 @@ class NotificationView(generics.ListAPIView):
 
 class NotificationCommentViewSet(CommentViewSet):
     def perform_create(self, serializer):
-        obj = serializer.save()
+        obj = serializer.save(user=self.request.user)
         notification_type = NotificationType.objects.get(slug="comment")
         create_notification(obj.content_object.user, obj.user, obj.content_object, notification_type)
 
 
 class NotificationFollowViewSet(FollowViewSet):
     def perform_create(self, serializer):
-        obj = serializer.save()
+        obj = serializer.save(user=self.request.user)
         notification_type = NotificationType.objects.get(slug="follow")
         create_notification(obj.content_object, obj.user, obj.content_object, notification_type)
 
 
 class NotificationShareViewSet(ShareViewSet):
     def perform_create(self, serializer):
-        obj = serializer.save()
+        obj = serializer.save(user=self.request.user)
         notification_type = NotificationType.objects.get(slug="share")
         for receiver in obj.shared_with.all():
             create_notification(receiver, obj.user, obj.content_object, notification_type)
@@ -81,6 +81,6 @@ class NotificationShareViewSet(ShareViewSet):
 
 class NotificationLikeViewSet(LikeViewSet):
     def perform_create(self, serializer):
-        obj = serializer.save()
+        obj = serializer.save(user=self.request.user)
         notification_type = NotificationType.objects.get(slug="like")
         create_notification(obj.content_object.user, obj.user, obj.content_object, notification_type)
