@@ -70,21 +70,12 @@ class SignUpSerializer(LoginSerializer):
 
 
 class UserSerializer(AuthSerializerMixin, YAKModelSerializer):
-    class Meta:
-        model = User
-        # exclude = ('last_login', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'groups', 'user_permissions')
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
         """
-        Due to issues with recursive importing, it's difficult to have our project-specific user serializer inherit
-        from this model. Instead, each project can define its own UserSerializer. Then we import those fields here
-        so that our other rest libraries will serialize the user model correctly.
-
-        TODO: allow graceful failure / default if a project-specific serializer isn't defined.
+        Can't just inherit in the class definition due to lots of import issues
         """
-        super(UserSerializer, self).__init__(*args, **kwargs)
-        custom_user_serializer = yak_settings.USER_SERIALIZER
-        self._fields = custom_user_serializer().fields
+        return yak_settings.USER_SERIALIZER(*args, **kwargs)
 
 
 class PasswordSerializer(serializers.Serializer):

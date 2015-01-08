@@ -15,7 +15,7 @@ USER_SETTINGS = getattr(settings, 'YAK', None)
 DEFAULTS = {
     'USER_APP_LABEL': 'test_app',
     'USER_MODEL': 'user',
-    'USER_SERIALIZER': "test_app.api.serializers.ProjectUserSerializer",
+    'USER_SERIALIZER': "test_app.api.serializers.UserSerializer",
     'API_SCHEMA': 'api-schema-1.0.json',
     'SOCIAL_MODEL': "test_app.models.Post",
     'EMAIL_NOTIFICATION_SUBJECT': 'Test Project Notification',

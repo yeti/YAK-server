@@ -90,7 +90,7 @@ class SocialUserViewSet(UserViewSet):
         requested_user = User.objects.get(pk=pk)
         following = requested_user.user_following()
         page = self.paginate_queryset(following)
-        serializer = FollowPaginationSerializer(instance=page)
+        serializer = FollowPaginationSerializer(instance=page, context={'request': request})
         return Response(serializer.data)
 
     @detail_route(methods=['get'])
@@ -98,5 +98,5 @@ class SocialUserViewSet(UserViewSet):
         requested_user = User.objects.get(pk=pk)
         follower = requested_user.user_followers()
         page = self.paginate_queryset(follower)
-        serializer = FollowPaginationSerializer(instance=page)
+        serializer = FollowPaginationSerializer(instance=page, context={'request': request})
         return Response(serializer.data)

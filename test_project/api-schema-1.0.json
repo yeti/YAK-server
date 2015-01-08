@@ -558,7 +558,8 @@
             "content_type": "int",
             "clip": "O2O,$clipResponse,optional",
             "user_following_count": "int",
-            "user_followers_count": "int"
+            "user_followers_count": "int",
+            "followed": "boolean"
         }},
         {"$userRequest": {
             "email": "string,optional",

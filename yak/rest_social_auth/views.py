@@ -12,7 +12,7 @@ from social.apps.django_app.utils import load_backend
 from social.backends.oauth import BaseOAuth1, BaseOAuth2
 from social.backends.utils import get_backend
 from yak.rest_social_auth.utils import post_social_media
-from yak.rest_user.serializers import UserSerializer, SignUpSerializer
+from yak.rest_user.serializers import SignUpSerializer, UserSerializer
 from yak.rest_user.views import SignUp
 
 

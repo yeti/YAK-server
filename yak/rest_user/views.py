@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from yak.rest_core.permissions import IsOwnerOrReadOnly
 from yak.rest_user.permissions import IsAuthenticatedOrCreate
-from yak.rest_user.serializers import SignUpSerializer, UserSerializer, LoginSerializer, PasswordSerializer
+from yak.rest_user.serializers import SignUpSerializer, LoginSerializer, PasswordSerializer, UserSerializer
 
 __author__ = 'baylee'
 
