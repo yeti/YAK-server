@@ -664,7 +664,9 @@
             "created": "datetime",
             "name": "string",
             "message": "string",
-            "reporter": "M2O,$userResponse"
+            "reporter": "M2O,$userResponse",
+            "content_object": "string",
+            "thumbnail": "string"
         }},
         {"$socialShareRequest": {
             "provider": "string"
