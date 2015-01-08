@@ -40,7 +40,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def get_user_follow(self, obj):
         user = User.objects.get(pk=obj.object_id)
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(user, context={'request': self.context.get('request')})
         return serializer.data
 
 
