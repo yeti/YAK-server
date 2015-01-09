@@ -32,7 +32,8 @@ class UserTests(SchemaTestCase):
         url = reverse("users-detail", args=[me.pk])
 
         data = {
-            "fullname": "Hodor"
+            "fullname": "Hodor",
+            "username": me.username  # Don't freak out if unchanged unique data is sent
         }
         # Unauthenticated user can't update a user's profile
         self.assertSchemaPatch(url, "$userRequest", "$userResponse", data, None, unauthorized=True)

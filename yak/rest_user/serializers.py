@@ -33,12 +33,14 @@ class AuthSerializerMixin(object):
         return super(AuthSerializerMixin, self).update(instance, validated_data)
 
     def validate_username(self, value):
-        if User.objects.filter(username__iexact=value).exists():
+        username = self.context['request'].user.username if self.context['request'].user.is_authenticated() else None
+        if value and value != username and User.objects.filter(username__iexact=value).exists():
             raise serializers.ValidationError("That username is taken")
         return value
 
     def validate_email(self, value):
-        if User.objects.filter(email__iexact=value).exists():
+        email = self.context['request'].user.email if self.context['request'].user.is_authenticated() else None
+        if value and value != email and User.objects.filter(email__iexact=value).exists():
             raise serializers.ValidationError("An account already exists with that email")
         return value
 
