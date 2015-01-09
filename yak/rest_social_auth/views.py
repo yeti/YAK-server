@@ -11,6 +11,7 @@ from social.apps.django_app.default.models import UserSocialAuth
 from social.apps.django_app.utils import load_backend
 from social.backends.oauth import BaseOAuth1, BaseOAuth2
 from social.backends.utils import get_backend
+from yak.rest_social_auth.serializers import SocialSignUpSerializer
 from yak.rest_social_auth.utils import post_social_media
 from yak.rest_user.serializers import SignUpSerializer, UserSerializer
 from yak.rest_user.views import SignUp
@@ -20,7 +21,7 @@ User = get_user_model()
 
 
 class SocialSignUp(SignUp):
-    serializer_class = SignUpSerializer
+    serializer_class = SocialSignUpSerializer
 
     def create(self, request, *args, **kwargs):
         """
