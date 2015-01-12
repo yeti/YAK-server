@@ -1,6 +1,8 @@
 import base64
 from django.contrib.auth import get_user_model
+from django.core.files.images import get_image_dimensions
 from django.core.urlresolvers import reverse
+from test_project import settings
 from test_project.test_app.tests.factories import UserFactory
 from yak.rest_core.test import SchemaTestCase
 
@@ -173,3 +175,24 @@ class UserTests(SchemaTestCase):
 
     def test_token_authenticates_user(self):
         pass
+
+    def test_photo_resize(self):
+        me = UserFactory()
+        url = reverse("users-detail", args=[me.pk])
+        data = {
+            "original_photo": open(settings.PROJECT_ROOT + "/test_app/tests/img/yeti.jpg", 'r')
+        }
+        self.assertSchemaPatch(url, "$userRequest", "$userResponse", data, me, format="multipart")
+        user = User.objects.get(pk=me.pk)
+
+        # Check the original photo is saved
+        self.assertEqual(
+            user.original_photo.file.read(),
+            open(settings.PROJECT_ROOT + "/test_app/tests/img/yeti.jpg", 'r').read()
+        )
+
+        # Check the photo is correctly resized
+        for size_field, size in User.SIZES.iteritems():
+            w, h = get_image_dimensions(getattr(user, size_field).file)
+            self.assertEqual(size['height'], h)
+            self.assertEqual(size['width'], w)

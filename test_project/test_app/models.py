@@ -11,11 +11,11 @@ from yak.rest_user.utils import create_auth_client
 
 
 class User(AbstractSocialYeti):
-
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        super(User, self).save(force_insert, force_update, using, update_fields)
-        resize_model_photos(self, force_insert, force_update)
+        resize_model_photos(self)
+        super(User, self).save(force_insert=False, force_update=False, using=None,
+             update_fields=None)
 
 FollowableModel.register(User)
 post_save.connect(create_auth_client, sender=User)

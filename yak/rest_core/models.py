@@ -3,7 +3,7 @@ import os
 from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
-from yak.rest_core.utils import retry_cloudfiles
+# from yak.rest_core.utils import retry_cloudfiles
 from model_utils import Choices
 
 
@@ -32,29 +32,25 @@ class Media(CoreModel):
         abstract = True
 
 
-def resize_model_photos(instance, force_insert, force_update):
+def resize_model_photos(obj):
     """
     Requires the model to have one field to hold the original file and a constant called SIZES
     Expects the sender to have an attribute `original_file` or to define an alternate with `original_file_name`
     """
-    # Without this check, the function is called one too many times and errors on the last call
-    if not force_insert and not force_update:
-        return
-
-    original_file_field_name = getattr(instance, "original_file_name", "original_file")
+    original_file_field_name = getattr(obj, "original_file_name", "original_file")
 
     # If this is a video file, do nothing
-    file_type = getattr(instance, "media_type", None)
-    if file_type and file_type == instance.TYPE_CHOICES.video:
+    file_type = getattr(obj, "media_type", None)
+    if file_type and file_type == obj.TYPE_CHOICES.video:
         return
 
-    original_file = getattr(instance, original_file_field_name)
+    original_file = getattr(obj, original_file_field_name)
     if not original_file:
-        for size_name, size in instance.SIZES.iteritems():
-            setattr(instance, size_name, '')
+        for size_name, size in obj.SIZES.iteritems():
+            setattr(obj, size_name, '')
         return
 
-    process_thumbnail(instance, original_file, instance.SIZES)
+    process_thumbnail(obj, original_file, obj.SIZES)
 
 
 def process_thumbnail(instance, original_file, sizes, crop=False):
@@ -102,12 +98,14 @@ def process_thumbnail(instance, original_file, sizes, crop=False):
         im.save(tempfile_io, 'JPEG')
 
         temp_file = InMemoryUploadedFile(tempfile_io, None, name, 'image/jpeg', tempfile_io.len, None)
+        temp_file.seek(0)
+        setattr(instance, size_name, temp_file)
 
-        def save_image(temp_file, instance, size_name, name):
-            # Make sure we're at the beginning of the file for reading when saving
-            temp_file.seek(0)
-            getattr(instance, size_name).save(name, temp_file)
-
-        retry_cloudfiles(save_image, temp_file, instance, size_name, name)
+        # def save_image(temp_file, instance, size_name, name):
+        #     # Make sure we're at the beginning of the file for reading when saving
+        #     temp_file.seek(0)
+        #     instance.update(**{size_name: temp_file})
+        #
+        # retry_cloudfiles(save_image, temp_file, instance, size_name, name)
 
     return True

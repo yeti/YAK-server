@@ -4,7 +4,7 @@
 .DS_Store
 .coverage
 local_settings.py
-/static
+test_project/static
 .idea/
 *.sqlite3
 *.egg-info
