@@ -92,6 +92,8 @@ YAK = {
     'API_SCHEMA': 'test_project/api-schema-1.0.json',
     'SOCIAL_MODEL': "test_project.test_app.models.Post",
     'EMAIL_NOTIFICATION_SUBJECT': 'Notification',
+    'ALLOW_EMAIL': True,
+    'ALLOW_PUSH': True,
     'PUSHWOOSH_AUTH_TOKEN': "",
     'PUSHWOOSH_APP_CODE': "",
     'USE_FACEBOOK_OG': True,

@@ -6,6 +6,7 @@ from django.db import models
 from django.template.loader import render_to_string
 from celery.task import task
 from yak.rest_core.models import CoreModel
+from yak.settings import yak_settings
 
 
 class NotificationType(CachingMixin, CoreModel):
@@ -116,11 +117,11 @@ def create_notification(receiver, reporter, content_object, notification_type, t
     notification.save()
 
     notification_setting = NotificationSetting.objects.get(notification_type=notification_type, user=receiver)
-    if notification_setting.allow_push:
+    if notification_setting.allow_push and yak_settings.ALLOW_PUSH:
         from .utils import send_push_notification
         send_push_notification(receiver, notification.push_message())
 
-    if notification_setting.allow_email:
+    if notification_setting.allow_email and yak_settings.ALLOW_EMAIL:
         from .utils import send_email_notification
         send_email_notification(receiver, notification.email_message(), reply_to=reply_to)
 

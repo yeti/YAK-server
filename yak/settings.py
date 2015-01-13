@@ -18,6 +18,8 @@ DEFAULTS = {
     'USER_SERIALIZER': "test_app.api.serializers.UserSerializer",
     'API_SCHEMA': 'api-schema-1.0.json',
     'SOCIAL_MODEL': "test_app.models.Post",
+    'ALLOW_EMAIL': True,
+    'ALLOW_PUSH': True,
     'EMAIL_NOTIFICATION_SUBJECT': 'Test Project Notification',
     'PUSHWOOSH_AUTH_TOKEN': "",
     'PUSHWOOSH_APP_CODE': "",
