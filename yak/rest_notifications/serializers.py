@@ -44,4 +44,8 @@ class NotificationSerializer(serializers.ModelSerializer):
         return obj.message(Notification.PUSH)
 
     def get_thumbnail(self, obj):
-        return getattr(obj.content_object, "thumbnail", None)
+        # `getattr` works strangely with file fields
+        if getattr(obj.content_object, "thumbnail", None):
+            return obj.content_object.thumbnail
+        else:
+            return None
