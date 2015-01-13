@@ -61,8 +61,7 @@ def save_profile_image(strategy, details, response, uid, user, social, is_new=Fa
     if image_url:
         try:
             result = urllib.urlretrieve(image_url)
-            user.original_photo = "{}.jpg".format(uid), File(open(result[0]))
-            user.save()
+            user.original_photo.save("{}.jpg".format(uid), File(open(result[0])))
             # def save_image(user, uid, result):
             #     user.original_photo.save("{}.jpg".format(uid), File(open(result[0])))
             #     user.save(update_fields=['original_photo'])
