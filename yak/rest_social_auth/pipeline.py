@@ -2,7 +2,7 @@ from social.apps.django_app.default.models import UserSocialAuth
 import urllib
 from urllib2 import URLError
 from django.core.files import File
-from yak.rest_core.utils import retry_cloudfiles
+# from yak.rest_core.utils import retry_cloudfiles
 
 
 def social_auth_user(strategy, uid, user=None, *args, **kwargs):
@@ -61,11 +61,12 @@ def save_profile_image(strategy, details, response, uid, user, social, is_new=Fa
     if image_url:
         try:
             result = urllib.urlretrieve(image_url)
-
-            def save_image(user, uid, result):
-                user.original_photo.save("{}.jpg".format(uid), File(open(result[0])))
-                user.save(update_fields=['original_photo'])
-
-            retry_cloudfiles(save_image, user, uid, result)
+            user.original_photo = "{}.jpg".format(uid), File(open(result[0]))
+            user.save()
+            # def save_image(user, uid, result):
+            #     user.original_photo.save("{}.jpg".format(uid), File(open(result[0])))
+            #     user.save(update_fields=['original_photo'])
+            #
+            # retry_cloudfiles(save_image, user, uid, result)
         except URLError:
             pass
