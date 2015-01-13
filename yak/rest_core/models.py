@@ -57,8 +57,17 @@ def process_thumbnail(instance, original_file, sizes, crop=False):
     """
     Makes a smart thumbnail
     """
-    file = StringIO.StringIO(original_file.read())
-    original_image = Image.open(file)  # open the image using PIL
+    # TODO: All of this is terrible
+    try:
+        file = StringIO.StringIO(original_file.read())
+        file.seek(0)
+        original_image = Image.open(file)  # open the image using PIL
+    except IOError:
+        # Open the file because this takes care of `seek(0)` but is more flexible
+        # When the original photo has already been saved and `save` is called more than once in a view,
+        # this block will execute
+        file = StringIO.StringIO(open(original_file.path, 'r').read())
+        original_image = Image.open(file)  # open the image using PIL
 
     # pull a few variables out of that full path
     filename = os.path.basename(original_file.name).rsplit('.', 1)[0]
