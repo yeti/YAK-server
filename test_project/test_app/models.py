@@ -26,6 +26,7 @@ class Post(BaseSocialModel):
     user = models.ForeignKey(User, related_name='posts')
     title = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
+    thumbnail = models.ImageField(upload_to="post_photos/thumbnail/", blank=True, null=True)
 
     TAG_FIELD = 'description'
 

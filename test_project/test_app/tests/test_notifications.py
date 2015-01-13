@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.utils import unittest
 import memcache
 from mock import MagicMock
+from test_project import settings
 from test_project.test_app.models import Post
 from test_project.test_app.tests.factories import PostFactory, UserFactory
 from yak.rest_core.test import SchemaTestCase
@@ -98,6 +99,13 @@ class NotificationsTestCase(SchemaTestCase):
     def test_can_only_see_own_notifications(self):
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
         create_notification(self.reporter, self.receiver, self.social_obj, self.notification_type)
+
+        # Notifications serialized with thumbnails
+        post = PostFactory()
+        post.thumbnail = settings.PROJECT_ROOT + "/test_app/tests/img/yeti.jpg"
+        post.save()
+        create_notification(self.receiver, self.reporter, post, self.notification_type)
+
         url = reverse("notifications")
         response = self.assertSchemaGet(url, None, "$notificationResponse", self.receiver)
         self.assertEqual(response.data["count"], self.receiver.notifications_received.count())
