@@ -79,7 +79,7 @@ class Notification(CoreModel):
 
         configured_template_name = "{}.html".format(self.notification_type.slug)
         # template_name = self.template_override if self.template_override else configured_template_name
-        return render_to_string("notifications/{}/{}".format(location, configured_template_name), data)
+        return unicode(render_to_string("notifications/{}/{}".format(location, configured_template_name), data))
 
     def email_message(self):
         return self.message(Notification.EMAIL)
@@ -87,9 +87,9 @@ class Notification(CoreModel):
     def push_message(self):
         message = self.message(Notification.PUSH)
         if self.reporter:
-            return "{0} {1}".format(self.reporter, message)
+            return u"{0} {1}".format(self.reporter, message)
         else:
-            return "{0}".format(message)
+            return u"{0}".format(message)
 
     @property
     def name(self):
