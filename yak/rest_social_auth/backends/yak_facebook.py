@@ -52,5 +52,5 @@ class Facebook(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, Facebook2OAuth
         graph = facebook.GraphAPI(user_social_auth.extra_data['access_token'])
         facebook_friends = graph.get_connections("me", "friends")
         friends = User.objects.filter(social_auth__provider='facebook',
-                                      social_auth__uid__in=[user["id"] for user in facebook_friends])
+                                      social_auth__uid__in=[user["id"] for user in facebook_friends['data']])
         return friends

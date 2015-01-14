@@ -90,9 +90,6 @@ class SocialFriends(generics.ListAPIView):
 
     def get_queryset(self):
         provider = self.request.query_params.get('provider', None)
-        # TODO: what does it look like when a user has more than one social auth for a provider? Is this a thing
-        # that can happen? How does it affect SocialShareMixin? The first one is the oldest--do we actually want
-        # the last one?
         try:
             user_social_auth = self.request.user.social_auth.filter(provider=provider).first()
             backend = get_backend(settings.AUTHENTICATION_BACKENDS, provider)
