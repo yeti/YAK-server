@@ -18,7 +18,7 @@ class AuthSerializerMixin(object):
         if validated_data.get("email", None):
             validated_data["email"] = validated_data["email"].lower()
         if validated_data.get("password", None):
-            validated_data["password"] = make_password(base64.decodestring(validated_data["password"]))
+            validated_data["password"] = make_password(validated_data["password"])
 
         return super(AuthSerializerMixin, self).create(validated_data)
 
@@ -28,7 +28,7 @@ class AuthSerializerMixin(object):
         if validated_data.get("email", None):
             validated_data["email"] = validated_data["email"].lower()
         if validated_data.get("password", None):
-            validated_data["password"] = make_password(base64.decodestring(validated_data["password"]))
+            validated_data["password"] = make_password(validated_data["password"])
 
         return super(AuthSerializerMixin, self).update(instance, validated_data)
 
@@ -45,6 +45,7 @@ class AuthSerializerMixin(object):
         return value
 
     def validate_password(self, value):
+        value = base64.decodestring(value)
         if len(value) < 6:
             raise serializers.ValidationError("Password must be at least 6 characters")
         return value

@@ -73,6 +73,18 @@ class UserTests(SchemaTestCase):
         # Password gets hashed
         self.assertTrue(user[0].check_password("testtest"))
 
+    def test_password_min_length(self):
+        url = reverse("sign_up")
+        password = base64.encodestring("test")
+        data = {
+            "fullname": "tester2",
+            "username": "tester2",
+            "email": "tester2@yeti.co",
+            "password": password
+        }
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, 400)
+
     def test_user_can_log_in(self):
         url = reverse("login")
 
