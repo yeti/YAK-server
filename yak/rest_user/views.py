@@ -50,9 +50,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if not user.check_password(base64.decodestring(request.data['old_password'])):
             raise APIException("Old password does not match")
         serializer = PasswordSerializer(data=request.data)
-        if serializer.is_valid():
-            user.set_password(base64.decodestring(serializer.data['password']))
-            user.save()
-            return Response({'status': 'password set'})
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        user.set_password(serializer.data['password'])
+        user.save()
+        return Response({'status': 'password set'})

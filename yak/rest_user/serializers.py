@@ -86,6 +86,7 @@ class PasswordSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
 
     def validate_password(self, value):
+        value = base64.decodestring(value)
         if len(value) < 6:
             raise serializers.ValidationError("Password must be at least 6 characters")
         return value
