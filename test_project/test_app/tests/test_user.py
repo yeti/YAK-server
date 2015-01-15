@@ -63,7 +63,6 @@ class UserTests(SchemaTestCase):
         data = {
             "fullname": "tester",
             "username": "tester",
-            "email": "tester@yetihq.com",
             "password": password
         }
         self.assertSchemaPost(url, "$signUpRequest", "$signUpResponse", data, None)

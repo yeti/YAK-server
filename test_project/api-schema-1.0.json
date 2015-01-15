@@ -507,13 +507,13 @@
         {"$signUpRequest": {
             "fullname": "string",
             "username": "string",
-            "email": "string",
+            "email": "string,optional",
             "password": "string"
         }},
         {"$signUpResponse": {
             "fullname": "string",
             "username": "string",
-            "email": "string",
+            "email": "string,optional",
             "client_id": "string",
             "client_secret": "string"
         }},
@@ -545,7 +545,7 @@
             "search": "string,optional"
         }},
         {"$userResponse": {
-            "email": "string",
+            "email": "string,optional",
             "id": "int,primarykey",
             "username": "string",
             "fullname": "string",

@@ -59,7 +59,7 @@ class AbstractYeti(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    REQUIRED_FIELDS = []  # Used for `createsuperuser` command and nowhere else. Include any fields that cannot be blank
 
     class Meta:
         abstract = True

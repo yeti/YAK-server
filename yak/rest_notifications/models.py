@@ -121,7 +121,7 @@ def create_notification(receiver, reporter, content_object, notification_type, t
         from .utils import send_push_notification
         send_push_notification(receiver, notification.push_message())
 
-    if notification_setting.allow_email and yak_settings.ALLOW_EMAIL:
+    if notification_setting.allow_email and yak_settings.ALLOW_EMAIL and receiver.email:
         from .utils import send_email_notification
         send_email_notification(receiver, notification.email_message(), reply_to=reply_to)
 
