@@ -2,26 +2,7 @@ from django.core import validators
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-
-
-class UserManager(BaseUserManager):
-
-    def _create_user(self, username, email, password, is_staff, is_superuser, is_admin, **extra_fields):
-        """
-        Creates and saves a User with the given username, email and password.
-        """
-        user = self.model(username=username, email=email, is_staff=is_staff,
-                          is_active=True, is_superuser=is_superuser, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_user(self, username, email=None, password=None, **extra_fields):
-        return self._create_user(username, email, password, False, False, False, **extra_fields)
-
-    def create_superuser(self, username, email, password, **extra_fields):
-        return self._create_user(username, email, password, True, True, True, **extra_fields)
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 
 
 class AbstractYeti(AbstractBaseUser, PermissionsMixin):
@@ -59,7 +40,8 @@ class AbstractYeti(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []  # Used for `createsuperuser` command and nowhere else. Include any fields that cannot be blank
+    # Used for `createsuperuser` command and nowhere else. Include any fields that cannot be blank
+    REQUIRED_FIELDS = ['email']
 
     class Meta:
         abstract = True
