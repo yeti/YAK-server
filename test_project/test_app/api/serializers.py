@@ -30,5 +30,8 @@ class ProjectUserSerializer(AuthSerializerMixin, YAKModelSerializer):
 
 
 class PostSerializer(YAKModelSerializer):
+    user = ProjectUserSerializer(read_only=True, default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Post
+        fields = ('id', 'user', 'title', 'description', 'thumbnail')

@@ -11,3 +11,6 @@ class ProjectUserViewSet(SocialUserViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

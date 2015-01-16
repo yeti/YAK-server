@@ -59,216 +59,53 @@
             }
         },
         {
-            "url": "videos/",
+            "url": "posts/",
             "get": {
                 "#meta" : "oauth2,optional",
-                "doc": "Gets a list of all videos. For videos of people you are following, type=following. For featured videos, featured=True. For videos shared with you, type=shares. For newest first, pass ordering=-created. To see videos where users clips was used (starred), pass starring=pk. To sort by popularity, pass type=popular (should not be used in conjunction w/ ordering parameter). Will return an array of contributors, which is just the user's thumbnail image and a session id to link to the session the contributed clip was part of.",
-                "parameters" : "$videoParameters",
+                "doc": "Gets a list of all posts",
                 "response": {
-                    "200+": "$videoResponse"
+                    "200+": "$postResponse"
                 }
             },
             "post": {
                 "#meta": "oauth2",
-                "doc": "Post a video",
-                "request": "$videoRequest",
+                "doc": "Create a post",
+                "request": "$postRequest",
                 "response": {
-                    "200+": "$videoResponse"
+                    "200+": "$postResponse"
                 }
             }
         },
         {
-            "url": "videos/:id/",
+            "url": "posts/:id/",
             "get": {
                 "#meta" : "oauth2,optional",
-                "doc": "Gets a single video",
-                "prototype": "$videoResponse",
+                "doc": "Gets a single post",
                 "response": {
-                    "200+": "$videoResponse"
+                    "200+": "$postResponse"
                 }
             },
             "patch": {
                 "#meta": "oauth2",
-                "doc": "Update a video",
-                "request": "$videoRequest",
-                "prototype": "$videoResponse",
+                "doc": "Update a post",
+                "request": "$postRequest",
                 "response": {
-                    "200+": "$videoResponse"
+                    "200+": "$postResponse"
                 }
             },
             "delete": {
-                "#meta": "oauth2",
-                "prototype" : "$videoResponse"
+                "#meta": "oauth2"
             }
         },
         {
-            "url": "videos/:id/social_share/",
+            "url": "posts/:id/social_share/",
             "post": {
                 "#meta": "oauth2",
-                "doc": "Share a video to facebook or twitter. Only request param is 'provider', which should be either 'facebook' or 'twitter'. Should return the string 'success'",
+                "doc": "Share a post to a third party social provider. Only request param is 'provider', which should be 'facebook' or 'twitter' or whatever. Should return the string 'success'",
                 "request": "$socialShareRequest",
                 "response": {
                     "200+": "$socialShareResponse"
                 }
-            }
-        },
-        {
-            "url": "castings/",
-            "get": {
-                "#meta" : "oauth2,optional",
-                "doc": "Gets a list of all castings. For castings of people you are following, type=following. For castings shared with you, type=shares. To order by popularity, pass type=popular. For newest first, pass ordering=-created",
-                "parameters" : "$castingParameters",
-                "response": {
-                    "200+": "$castingResponse"
-                }
-            },
-            "post": {
-                "#meta": "oauth2",
-                "doc": "Post a casting",
-                "request": "$castingRequest",
-                "response": {
-                    "200+": "$castingResponse"
-                }
-            }
-        },
-        {
-            "url": "castings/:id/",
-            "get": {
-                "#meta": "oauth2,optional",
-                "doc": "Gets a single casting",
-                "prototype": "$castingResponse",
-                "response": {
-                    "200+": "$castingResponse"
-                }
-            },
-            "patch": {
-                "#meta": "oauth2",
-                "doc": "Update a casting",
-                "request": "$castingRequest",
-                "prototype": "$castingResponse",
-                "response": {
-                    "200+": "$castingResponse"
-                }
-            },
-            "delete": {
-                "#meta": "oauth2",
-                "prototype" : "$castingResponse"
-            }
-        },
-        {
-            "url": "castings/:id/addclip/",
-            "post": {
-                "#meta": "oauth2",
-                "doc": "Add a single clip to a specific casting. Should return the string 'success'",
-                "request": "$addClipRequest",
-                "response": {
-                    "200+": "$addClipResponse"
-                }
-            }
-        },
-        {
-            "url": "castings/:id/social_share/",
-            "post": {
-                "#meta": "oauth2",
-                "doc": "Share a casting to facebook or twitter. Only request param is 'provider', which should be either 'facebook' or 'twitter'. Should return the string 'success'",
-                "request": "$socialShareRequest",
-                "response": {
-                    "200+": "$socialShareResponse"
-                }
-            }
-        },
-        {
-            "url": "sessions/",
-            "get": {
-                "#meta" : "oauth2,optional",
-                "doc": "Gets a list of all sessions. For sessions of people you are following, type=following. For newest first, pass ordering=-created. To get nearby sessions, pass latitude, longitude, and a radius in km",
-                "parameters" : "$sessionParameters",
-                "response": {
-                    "200+": "$sessionResponse"
-                }
-            },
-            "post": {
-                "#meta": "oauth2",
-                "doc": "Create a user session. Privacy options are 'PUBLIC', 'PRIVATE', and 'FRIENDS'.",
-                "request": "$sessionRequest",
-                "response": {
-                    "200+": "$sessionResponse"
-                }
-            }
-        },
-        {
-            "url": "sessions/:id/",
-            "doc": "Gets a specific session designated by the ID in url",
-            "get": {
-                "#meta" : "oauth2,optional",
-                "doc": "Gets a single session",
-                "prototype": "$sessionResponse",
-                "response": {
-                    "200+": "$sessionResponse"
-                }
-            },
-            "patch": {
-                "#meta": "oauth2",
-                "prototype": "$sessionResponse",
-                "request": "$sessionRequest",
-                "response": {
-                    "200+": "$sessionResponse"
-                }
-            },
-            "delete": {
-                "#meta": "oauth2",
-                "prototype" : "$sessionResponse"
-            }
-        },
-        {
-            "url": "clips/",
-            "get": {
-                "#meta": "oauth2,optional",
-                "doc": "Returns clips that a user has access to. Pass type=shared to get clips shared with me. Pass type=popular to get clips ordered by popularity. Pass type=likes to get users liked clips ordered by most recently liked.",
-                "parameters": "$clipParameters",
-                "response": {
-                    "200+": "$clipResponse"
-                }
-            },
-            "post": {
-                "#meta": "oauth2",
-                "doc": "Creates a user clip. It will automatically be assigned to the correct daily session",
-                "request": "$clipRequest",
-                "response": {
-                    "200+": "$clipResponse"
-                }
-            },
-            "put": {
-                "#meta": "oauth2",
-                "doc": "Bulk updates a list of clips.",
-                "request": "$clipRequest",
-                "response": {
-                    "200+": "$clipResponse"
-                }
-            }
-        },
-        {
-            "url": "clips/:id/",
-            "get": {
-                "#meta": "oauth2,optional",
-                "doc": "Gets a single clip",
-                "prototype": "$clipResponse",
-                "response": {
-                    "200+": "$clipResponse"
-                }
-            },
-            "patch": {
-                "#meta": "oauth2",
-                "doc": "Update a clip",
-                "request": "$clipRequest",
-                "prototype": "$clipResponse",
-                "response": {
-                    "200+": "$clipResponse"
-                }
-            },
-            "delete": {
-                "#meta": "oauth2",
-                "prototype" : "$clipResponse"
             }
         },
         {
@@ -356,7 +193,7 @@
             },
             "post": {
                 "#meta": "oauth2",
-                "doc": "Post a video comment",
+                "doc": "Post a comment",
                 "request": "$commentRequest",
                 "response": {
                     "200+": "$commentResponse"
@@ -462,36 +299,6 @@
             }
         },
         {
-            "url": "watch_video/",
-            "post": {
-                "#meta": "",
-                "doc": "Log that a video has been watched",
-                "request": "$watchVideoRequest",
-                "response": {
-                    "200+": "$watchVideoResponse"
-                }
-            }
-        },
-        {
-            "url": "locations/",
-            "get": {
-                "#meta": "oauth2,optional",
-                "doc": "See the current user's custom locations. Pass search parameter to do a filtered autocomplete",
-                "parameters": "$locationParameters",
-                "response": {
-                    "200+": "$locationResponse"
-                }
-            },
-            "post": {
-                "#meta": "oauth2",
-                "doc": "Create a new custom user location",
-                "request": "$locationRequest",
-                "response": {
-                    "200+": "$locationResponse"
-                }
-            }
-        },
-        {
             "url": "social_friends/",
             "get": {
                 "#meta": "oauth2",
@@ -569,6 +376,19 @@
             "about": "string,optional",
             "location": "int,optional",
             "clip": "int,optional"
+        }},
+        {"$postRequest": {
+            "title": "string,optional",
+            "description": "string,optional",
+            "thumbnail": "image,optional"
+        }},
+        {"$postResponse": {
+            "id": "int,primarykey",
+            "title": "string,optional",
+            "description": "string,optional",
+            "thumbnail": "string,optional",
+            "content_type": "int",
+            "user": "$userResponse"
         }},
         {"$pushwooshTokenRequest": {
             "token": "string",
