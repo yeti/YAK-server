@@ -48,7 +48,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def password(self, request, pk=None):
         user = self.get_object()
         if not user.check_password(base64.decodestring(request.data['old_password'])):
-            raise APIException("Old password does not match")
+            raise APIException("Old password was incorrect")
         serializer = PasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user.set_password(serializer.data['password'])

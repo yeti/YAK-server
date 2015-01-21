@@ -1,7 +1,9 @@
 import base64
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.core.validators import RegexValidator
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from yak.rest_core.serializers import YAKModelSerializer
 from yak.settings import yak_settings
 
@@ -67,9 +69,20 @@ class LoginSerializer(AuthSerializerMixin, serializers.ModelSerializer):
 
 
 class SignUpSerializer(LoginSerializer):
+    password = serializers.CharField(max_length=128, write_only=True, error_messages={'required': 'Password required'})
+    username = serializers.CharField(
+        error_messages={'required': 'Username required'},
+        max_length=30,
+        validators=[RegexValidator(), UniqueValidator(queryset=User.objects.all(), message="Username taken")])
+    email = serializers.EmailField(
+        allow_blank=True,
+        allow_null=True,
+        max_length=75,
+        required=False,
+        validators=[UniqueValidator(queryset=User.objects.all(), message="Email address taken")])
+
     class Meta(LoginSerializer.Meta):
         fields = ('fullname', 'username', 'email', 'password', 'client_id', 'client_secret')
-        write_only_fields = ('password',)
 
 
 class UserSerializer(AuthSerializerMixin, YAKModelSerializer):
@@ -82,8 +95,8 @@ class UserSerializer(AuthSerializerMixin, YAKModelSerializer):
 
 
 class PasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True)
-    password = serializers.CharField(required=True)
+    old_password = serializers.CharField(required=True, error_messages={'required': 'Old password required'})
+    password = serializers.CharField(required=True, error_messages={'required': 'New password required'})
 
     def validate_password(self, value):
         value = base64.decodestring(value)
