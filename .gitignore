@@ -3,7 +3,7 @@
 *.db
 .DS_Store
 .coverage
-local_settings.py
+test_project/local_settings.py
 test_project/static
 .idea/
 *.sqlite3

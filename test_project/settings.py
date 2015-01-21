@@ -107,6 +107,7 @@ PACKAGES_TO_TEST = ['test_project', 'yak']
 AUTHENTICATION_BACKENDS = (
     "yak.rest_social_auth.backends.yak_instagram.Instagram",
     "yak.rest_social_auth.backends.yak_soundcloud.Soundcloud",
+    "yak.rest_social_auth.backends.yak_tumblr.Tumblr",
     "yak.rest_social_auth.backends.yak_facebook.Facebook",
     "yak.rest_social_auth.backends.yak_twitter.Twitter",
     "yak.rest_user.backends.CaseInsensitiveBackend",
@@ -235,3 +236,17 @@ MEDIA_URL = STATIC_URL + "media/"
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, *MEDIA_URL.strip("/").split("/"))
+
+
+##################
+# LOCAL SETTINGS #
+##################
+
+# Allow any settings to be defined in local_settings.py which should be
+# ignored in your version control system allowing for settings to be
+# defined per machine.
+try:
+    from local_settings import *
+except ImportError as e:
+    if "local_settings" not in str(e):
+        raise e
