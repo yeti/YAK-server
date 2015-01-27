@@ -10,6 +10,18 @@ __author__ = 'baylee'
 User = get_user_model()
 
 
+class LikedMixin(object):
+    def get_liked_id(self, obj):
+        request = self.context['request']
+        if request.user.is_authenticated():
+            try:
+                content_type = self.get_content_type(obj)
+                return Like.objects.get(content_type=content_type, user=request.user, object_id=obj.pk).pk
+            except Like.DoesNotExist:
+                pass
+        return None
+
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag

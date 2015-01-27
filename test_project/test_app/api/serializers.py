@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from test_project.test_app.models import Post
 from yak.rest_core.serializers import YAKModelSerializer
+from yak.rest_social_network.serializers import LikedMixin
 from yak.rest_user.serializers import AuthSerializerMixin
 
 
@@ -29,9 +30,10 @@ class ProjectUserSerializer(AuthSerializerMixin, YAKModelSerializer):
         return followed
 
 
-class PostSerializer(YAKModelSerializer):
+class PostSerializer(YAKModelSerializer, LikedMixin):
     user = ProjectUserSerializer(read_only=True, default=serializers.CurrentUserDefault())
+    liked_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ('id', 'user', 'title', 'description', 'thumbnail')
+        fields = ('id', 'user', 'title', 'description', 'thumbnail', 'liked_id')

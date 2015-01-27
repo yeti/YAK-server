@@ -388,7 +388,8 @@
             "description": "string,optional",
             "thumbnail": "string,optional",
             "content_type": "int",
-            "user": "$userResponse"
+            "user": "$userResponse",
+            "liked_id": "int,optional"
         }},
         {"$pushwooshTokenRequest": {
             "token": "string",
