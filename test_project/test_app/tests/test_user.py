@@ -69,7 +69,7 @@ class UserTests(SchemaTestCase):
         user = User.objects.filter(username="tester")
         self.assertEqual(user.count(), 1)
 
-        # Password gets hashed
+        # Password gets decoded and hashed
         self.assertTrue(user[0].check_password("testtest"))
 
     def test_password_min_length(self):
@@ -174,11 +174,9 @@ class UserTests(SchemaTestCase):
 
         url = reverse("oauth2_provider:token")
         data = {
-            "username": self.user.username,
-            "email": self.user.email,
             "client_id": self.user.application_set.first().client_id,
             "client_secret": self.user.application_set.first().client_secret,
-            "grant_type": "password"
+            "grant_type": "client_credentials"
         }
         self.assertManticomPOSTResponse(url, "$tokenRequest", "$tokenResponse", data, None)
         """

@@ -27,7 +27,7 @@
             "doc": "Provides access token for authenticated calls throughout the app",
             "post": {
                 "#meta": "",
-                "doc": "Request object must be passed with Content-Type application/x-www-form-urlencoded. grant_type should be set to 'password' and password should be the raw password",
+                "doc": "Request object must be passed with Content-Type application/x-www-form-urlencoded. grant_type should be set to 'client_credentials'",
                 "request": "$tokenRequest",
                 "response": {
                     "200+": "$tokenResponse"
@@ -329,8 +329,6 @@
             "client_secret": "string"
         }},
         {"$tokenRequest": {
-            "username": "string",
-            "password": "string",
             "client_id": "string",
             "client_secret": "string",
             "grant_type": "string"
@@ -345,8 +343,7 @@
         {"$socialSignUpRequest": {
             "provider": "string",
             "access_token": "string",
-            "access_token_secret": "string,optional",
-            "password": "string,optional"
+            "access_token_secret": "string,optional"
         }},
         {"$userParameters": {
             "search": "string,optional"

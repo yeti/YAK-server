@@ -53,7 +53,7 @@ class AuthSerializerMixin(object):
         return value
 
 
-class LoginSerializer(AuthSerializerMixin, serializers.ModelSerializer):
+class LoginSerializer(serializers.ModelSerializer):
     client_id = serializers.SerializerMethodField()
     client_secret = serializers.SerializerMethodField()
 
@@ -68,7 +68,7 @@ class LoginSerializer(AuthSerializerMixin, serializers.ModelSerializer):
         return obj.application_set.first().client_secret
 
 
-class SignUpSerializer(LoginSerializer):
+class SignUpSerializer(AuthSerializerMixin, LoginSerializer):
     password = serializers.CharField(max_length=128, write_only=True, error_messages={'required': 'Password required'})
     username = serializers.CharField(
         error_messages={'required': 'Username required'},
