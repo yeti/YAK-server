@@ -337,7 +337,6 @@
             "access_token": "string",
             "token_type": "string",
             "expires_in": "int",
-            "refresh_token": "string",
             "scope": "string"
         }},
         {"$socialSignUpRequest": {
