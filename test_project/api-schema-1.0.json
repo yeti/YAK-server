@@ -478,13 +478,20 @@
             "allow_push": "boolean",
             "allow_email": "boolean"
         }},
+        {"$articleResponse": {
+            "id": "int,primarykey",
+            "title": "string,optional",
+            "thumbnail": "string,optional",
+            "liked_id": "int,optional",
+            "content_type": "int"
+        }},
         {"$notificationResponse": {
             "created": "datetime",
             "name": "string",
             "message": "string",
             "reporter": "M2O,$userResponse",
-            "content_object": "string",
-            "thumbnail": "string"
+            "post": "$postResponse,optional",
+            "article": "$articleResponse,optional"
         }},
         {"$socialShareRequest": {
             "provider": "string"

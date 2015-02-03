@@ -98,6 +98,10 @@ YAK = {
     'PUSHWOOSH_APP_CODE': "",
     'USE_FACEBOOK_OG': True,
     'FACEBOOK_OG_NAMESPACE': "",
+    'SERIALIZER_MAPPING': {
+        "test_project.test_app.models.Post": "test_project.test_app.api.serializers.PostSerializer",
+        "test_project.test_app.models.Article": "test_project.test_app.api.serializers.ArticleSerializer"
+    }
 }
 
 AUTH_USER_MODEL = "{}.{}".format(YAK['USER_APP_LABEL'], YAK['USER_MODEL'].capitalize())

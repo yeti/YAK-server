@@ -3,7 +3,7 @@ from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.baseconv import base62
-from yak.rest_core.models import resize_model_photos
+from yak.rest_core.models import resize_model_photos, CoreModel
 from yak.rest_notifications.models import create_notification_settings
 from yak.rest_social_network.models import FollowableModel, BaseSocialModel, Like, Flag, Share, Tag, \
     Comment, relate_tags, mentions, AbstractSocialYeti
@@ -66,3 +66,16 @@ class Post(BaseSocialModel):
 
 post_save.connect(relate_tags, sender=Post)
 post_save.connect(mentions, sender=Post)
+
+
+class Article(CoreModel):
+    title = models.CharField(max_length=60)
+    body = models.TextField()
+    thumbnail = models.ImageField(upload_to="article_photos/thumbnail/", blank=True, null=True)
+    likes = GenericRelation(Like)
+
+    def __unicode__(self):
+        return u"{}".format(self.title) if self.title else "Untitled"
+
+    def identifier(self):
+        return u"{}".format(self.title)

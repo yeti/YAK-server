@@ -7,7 +7,7 @@ from django.utils import unittest
 import memcache
 from mock import MagicMock
 from test_project import settings
-from test_project.test_app.models import Post
+from test_project.test_app.models import Post, Article
 from test_project.test_app.tests.factories import PostFactory, UserFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_notifications.models import create_notification, Notification, NotificationSetting, NotificationType
@@ -109,6 +109,23 @@ class NotificationsTestCase(SchemaTestCase):
         url = reverse("notifications")
         response = self.assertSchemaGet(url, None, "$notificationResponse", self.receiver)
         self.assertEqual(response.data["count"], self.receiver.notifications_received.count())
+
+    def test_content_object_serialization(self):
+        """
+        Content object is serialized using the standard serialization for that object type
+        The `content_objectt` key is replaced for each different type of object serialized
+        """
+        article = Article.objects.create(title="Cool article")
+        user = UserFactory()
+        create_notification(user, self.reporter, self.social_obj, self.notification_type)
+        create_notification(user, self.receiver, article, self.notification_type)
+        url = reverse("notifications")
+        response = self.assertSchemaGet(url, None, "$notificationResponse", user)
+        self.assertEqual(response.data["count"], 2)
+        self.assertIn("article", response.data["results"][0])
+        self.assertNotIn("post", response.data["results"][0])
+        self.assertIn("post", response.data["results"][1])
+        self.assertNotIn("article", response.data["results"][1])
 
     def test_comment_creates_notification(self):
         url = reverse("comments-list")

@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from yak.rest_core.fields import GenericHyperlinkedRelatedField
 from yak.rest_notifications.models import NotificationSetting, Notification, PushwooshToken, NotificationType
 from yak.rest_user.serializers import UserSerializer
+from yak.settings import yak_settings
 
 __author__ = 'baylee'
 
@@ -33,19 +33,21 @@ class NotificationSettingSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     message = serializers.SerializerMethodField()
     reporter = UserSerializer(read_only=True)
-    content_object = GenericHyperlinkedRelatedField(read_only=True)
-    thumbnail = serializers.SerializerMethodField()
+    content_object = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
-        fields = ('created', 'name', 'message', 'reporter', 'content_object', 'thumbnail')
+        fields = ('created', 'name', 'message', 'reporter', 'content_object')
 
     def get_message(self, obj):
         return obj.message(Notification.PUSH)
 
-    def get_thumbnail(self, obj):
-        # `getattr` works strangely with file fields
-        if getattr(obj.content_object, "thumbnail", None):
-            return obj.content_object.thumbnail.url
-        else:
-            return None
+    def get_content_object(self, obj):
+        serializer_class = yak_settings.SERIALIZER_MAPPING[type(obj.content_object)]
+        serializer = serializer_class(instance=obj.content_object, context=self.context)
+        return serializer.data
+
+    def to_representation(self, instance):
+        ret = super(NotificationSerializer, self).to_representation(instance)
+        ret[instance.content_object._meta.model_name] = ret.pop('content_object')
+        return ret

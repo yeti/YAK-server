@@ -37,3 +37,11 @@ class PostSerializer(YAKModelSerializer, LikedMixin):
     class Meta:
         model = Post
         fields = ('id', 'user', 'title', 'description', 'thumbnail', 'liked_id')
+
+
+class ArticleSerializer(YAKModelSerializer, LikedMixin):
+    liked_id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'thumbnail', 'liked_id')
