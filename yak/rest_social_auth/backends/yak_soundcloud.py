@@ -1,4 +1,5 @@
 import requests
+from simplejson import JSONDecodeError
 from social.backends.soundcloud import SoundcloudOAuth2
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 
@@ -31,9 +32,15 @@ class Soundcloud(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, SoundcloudOA
             'created_at[from]': formatted_time,
             'filter': 'public'
         }
-        track_url = "https://api.soundcloud.com/me/tracks.json"
-        tracks = requests.get(track_url, params=params).json()
+        try:
+            track_url = "https://api.soundcloud.com/me/tracks.json"
+            tracks = requests.get(track_url, params=params).json()
 
-        playlist_url = "https://api.soundcloud.com/me/playlists.json"
-        playlists = requests.get(playlist_url, params=params).json()
-        return tracks + playlists
+            favorite_track_url = "https://api.soundcloud.com/me/favorites.json"
+            favorite_tracks = requests.get(favorite_track_url, params=params).json()
+
+            playlist_url = "https://api.soundcloud.com/me/playlists.json"
+            playlists = requests.get(playlist_url, params=params).json()
+            return tracks + favorite_tracks + playlists
+        except JSONDecodeError:
+            return []
