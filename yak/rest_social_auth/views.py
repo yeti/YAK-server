@@ -72,7 +72,7 @@ class SocialSignUp(SignUp):
 
 class SocialShareMixin(object):
 
-    @detail_route(methods=['post'])
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def social_share(self, request, pk):
         try:
             user_social_auth = UserSocialAuth.objects.get(user=request.user, provider=request.data['provider'])
