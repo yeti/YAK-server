@@ -1,5 +1,4 @@
 import requests
-from simplejson import JSONDecodeError
 from social.backends.soundcloud import SoundcloudOAuth2
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 
@@ -42,5 +41,5 @@ class Soundcloud(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, SoundcloudOA
             playlist_url = "https://api.soundcloud.com/me/playlists.json"
             playlists = requests.get(playlist_url, params=params).json()
             return tracks + favorite_tracks + playlists
-        except JSONDecodeError:
+        except ValueError:
             return []

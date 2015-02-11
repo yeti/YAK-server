@@ -35,7 +35,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    "django.contrib.redirects",
     'django.contrib.sessions',
+    "django.contrib.sites",
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
@@ -97,7 +99,7 @@ YAK = {
     'PUSHWOOSH_AUTH_TOKEN': "",
     'PUSHWOOSH_APP_CODE': "",
     'USE_FACEBOOK_OG': True,
-    'FACEBOOK_OG_NAMESPACE': "",
+    'FACEBOOK_OG_NAMESPACE': "yakexample",
     'SERIALIZER_MAPPING': {
         "test_project.test_app.models.Post": "test_project.test_app.api.serializers.PostSerializer",
         "test_project.test_app.models.Article": "test_project.test_app.api.serializers.ArticleSerializer"
