@@ -209,6 +209,22 @@ class NotificationsTestCase(SchemaTestCase):
 
         self.assertEquals(notification_count, 1)
 
+    def test_serialization_when_content_object_deleted(self):
+        mention_notification = NotificationType.objects.get(slug="mention")
+        content_type = ContentType.objects.get_for_model(Post)
+        user = UserFactory()
+        post = PostFactory(user=user)
+        Notification.objects.create(notification_type=mention_notification, content_type=content_type,
+                                    object_id=post.pk, user=user, reporter=self.reporter)
+        post.delete()
+        other_post = PostFactory(user=user)
+        Notification.objects.create(notification_type=mention_notification, content_type=content_type,
+                                    object_id=other_post.pk, user=user, reporter=self.reporter)
+        url = reverse("notifications")
+        response = self.assertSchemaGet(url, None, "$notificationResponse", user)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['post']['id'], other_post.pk)
+
 
 class NotificationSettingsTestCase(SchemaTestCase):
     def test_can_only_see_own_notification_settings(self):

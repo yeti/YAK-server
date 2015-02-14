@@ -1,6 +1,6 @@
 from caching.base import CachingMixin, CachingManager
 from django.conf import settings
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.loader import render_to_string
@@ -61,7 +61,7 @@ class Notification(CoreModel):
     # E.g., if you Like a Post, the content_object for the notification is the Post, not the Like
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField(db_index=True)
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
 
     def message(self, location):
         """

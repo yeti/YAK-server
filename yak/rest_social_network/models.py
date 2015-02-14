@@ -1,11 +1,10 @@
 import abc
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.sites.models import Site
 from django.utils.baseconv import base62
 import re
 from django.conf import settings
-from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import post_save
@@ -105,7 +104,7 @@ def mentions(sender, **kwargs):
 class Comment(CoreModel):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField(db_index=True)
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
 
     TAG_FIELD = 'description'
     related_tags = models.ManyToManyField(Tag, blank=True, null=True)
@@ -124,7 +123,7 @@ post_save.connect(relate_tags, sender=Comment)
 class Follow(CoreModel):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField(db_index=True)
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="following")
 
@@ -145,7 +144,7 @@ class Follow(CoreModel):
 class Like(CoreModel):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField(db_index=True)
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="likes")
 
@@ -157,7 +156,7 @@ class Like(CoreModel):
 class Flag(CoreModel):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="flags")
 
@@ -168,7 +167,7 @@ class Flag(CoreModel):
 class Share(CoreModel):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
     shared_with = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='shared_with')
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="shares")
