@@ -90,10 +90,10 @@ class SocialFriends(generics.ListAPIView):
 
     def get_queryset(self):
         provider = self.request.query_params.get('provider', None)
-        try:
-            user_social_auth = self.request.user.social_auth.filter(provider=provider).first()
+        user_social_auth = self.request.user.social_auth.filter(provider=provider).first()
+        if user_social_auth:  # `.first()` doesn't fail, it just returns None
             backend = get_backend(settings.AUTHENTICATION_BACKENDS, provider)
             friends = backend.get_friends(user_social_auth)
             return friends
-        except UserSocialAuth.DoesNotExist:
+        else:
             raise AuthenticationFailed("User is not authenticated with {}".format(provider))
