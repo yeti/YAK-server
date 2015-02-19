@@ -24,8 +24,8 @@ class PushwooshTokenView(generics.CreateAPIView):
         language = serializer.validated_data.pop("language")
 
         push_client = client.PushwooshClient()
-        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, hwid, constants.PLATFORM_IOS, language,
-                                        serializer.validated_data["token"])
+        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, hwid, constants.PLATFORM_IOS,
+                                        serializer.validated_data["token"], language)
         response = push_client.invoke(command)
 
         if response["status_code"] != 200:
