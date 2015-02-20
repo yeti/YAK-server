@@ -69,6 +69,8 @@ def process_thumbnail(instance, original_file, sizes, crop=False):
         file = StringIO.StringIO(open(original_file.path, 'r').read())
         original_image = Image.open(file)  # open the image using PIL
 
+    original_file.seek(0)
+
     # pull a few variables out of that full path
     filename = os.path.basename(original_file.name).rsplit('.', 1)[0]
     extension = os.path.basename(original_file.name).rsplit('.', 1)[1]  # the file extension
