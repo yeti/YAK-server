@@ -7,8 +7,16 @@ from pypushwoosh.client import PushwooshClient
 from yak.settings import yak_settings
 
 
+class PushClient(PushwooshClient):
+    def invoke(self, request):
+        self.connection.request('POST', '/json/1.3/createMessage', request, self.headers)
+        response = self.connection.getresponse()
+        body = response.read()
+        return json.loads(body)
+
+
 def send_push_notification(receiver, message):
-    client = PushwooshClient()
+    client = PushClient()
 
     notifications = [{
         'content': message,
@@ -23,10 +31,7 @@ def send_push_notification(receiver, message):
     }}
     request = json.dumps(request)
 
-    client.connection.request('POST', '/json/1.3/createMessage', request, client.headers)
-    response = client.connection.getresponse()
-    body = response.read()
-    return json.loads(body)
+    return client.invoke(request)
 
 
 def send_email_notification(receiver, message, reply_to=None):

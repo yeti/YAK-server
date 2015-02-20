@@ -10,8 +10,8 @@ from test_project import settings
 from test_project.test_app.models import Post, Article
 from test_project.test_app.tests.factories import PostFactory, UserFactory
 from yak.rest_core.test import SchemaTestCase
-from yak.rest_notifications.models import create_notification, Notification, NotificationType
-from yak.rest_notifications.utils import send_email_notification, PushwooshClient
+from yak.rest_notifications.models import create_notification, Notification, NotificationSetting, NotificationType
+from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient, PushClient
 from yak.settings import yak_settings
 
 
@@ -26,6 +26,7 @@ class NotificationsTestCase(SchemaTestCase):
         self.reporter = UserFactory()
         self.notification_type = NotificationType.objects.get(slug="comment")
         PushwooshClient.invoke = MagicMock(return_value={"status_code": 200})
+        PushClient.invoke = MagicMock(return_value={"status_code": 200})
 
     def test_create_pushwoosh_token(self):
         url = reverse("pushwoosh_token")
@@ -56,10 +57,10 @@ class NotificationsTestCase(SchemaTestCase):
         self.assertEqual(mail.outbox[0].body, "You have a notification!")
         self.assertEqual(mail.outbox[0].alternatives, [(message, "text/html")])
 
-    # def test_push_notification_sent(self):
-    #     message = "<h1>You have a notification!</h1>"
-    #     response = send_push_notification(self.receiver, message)
-    #     self.assertEqual(response["status_code"], 200)
+    def test_push_notification_sent(self):
+        message = "<h1>You have a notification!</h1>"
+        response = send_push_notification(self.receiver, message)
+        self.assertEqual(response["status_code"], 200)
 
     def test_create_notification(self):
         notification_count = Notification.objects.count()
@@ -72,29 +73,29 @@ class NotificationsTestCase(SchemaTestCase):
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
         self.assertEqual(notification_count + 1, Notification.objects.count())
 
-    # def test_correct_notification_type_sent(self):
-    #     setting = NotificationSetting.objects.get(notification_type=self.notification_type,
-    #                                               user=self.receiver)
-    #
-    #     # An email and a push are sent if allow_email and allow_push are True
-    #     create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
-    #     self.assertEqual(len(mail.outbox), 1)
-    #     self.assertTrue(len(PushwooshClient.invoke.mock_calls), 1)
-    #
-    #     # No new email is sent if allow_email is False
-    #     setting.allow_email = False
-    #     setting.save()
-    #     create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
-    #     self.assertEqual(len(mail.outbox), 1)
-    #     self.assertTrue(len(PushwooshClient.invoke.mock_calls), 2)
-    #
-    #     # If allow_push is False and allow_email True, an email is sent and a push isn't
-    #     setting.allow_email = True
-    #     setting.allow_push = False
-    #     setting.save()
-    #     create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
-    #     self.assertEqual(len(mail.outbox), 2)
-    #     self.assertTrue(len(PushwooshClient.invoke.mock_calls), 2)
+    def test_correct_notification_type_sent(self):
+        setting = NotificationSetting.objects.get(notification_type=self.notification_type,
+                                                  user=self.receiver)
+
+        # An email and a push are sent if allow_email and allow_push are True
+        create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(len(PushClient.invoke.mock_calls), 1)
+
+        # No new email is sent if allow_email is False
+        setting.allow_email = False
+        setting.save()
+        create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(len(PushClient.invoke.mock_calls), 2)
+
+        # If allow_push is False and allow_email True, an email is sent and a push isn't
+        setting.allow_email = True
+        setting.allow_push = False
+        setting.save()
+        create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertTrue(len(PushClient.invoke.mock_calls), 2)
 
     def test_can_only_see_own_notifications(self):
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
