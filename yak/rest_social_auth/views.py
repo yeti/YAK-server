@@ -11,6 +11,7 @@ from social.apps.django_app.default.models import UserSocialAuth
 from social.apps.django_app.utils import load_backend
 from social.backends.oauth import BaseOAuth1, BaseOAuth2
 from social.backends.utils import get_backend
+from social.exceptions import AuthAlreadyAssociated
 from yak.rest_social_auth.serializers import SocialSignUpSerializer
 from yak.rest_social_auth.utils import post_social_media
 from yak.rest_user.serializers import UserSerializer
@@ -47,7 +48,11 @@ class SocialSignUp(SignUp):
         elif isinstance(backend, BaseOAuth2):
             token = request.data['access_token']
 
-        user = backend.do_auth(token, user=authed_user)
+        try:
+            user = backend.do_auth(token, user=authed_user)
+        except AuthAlreadyAssociated:
+            return Response({"errors": "That social media account is already in use"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         if user and user.is_active:
             # if the access token was set to an empty string, then save the access token from the request
