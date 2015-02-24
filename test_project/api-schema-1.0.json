@@ -256,13 +256,35 @@
             }
         },
         {
-            "url": "users/:id/set_password",
+            "url": "password/change/",
             "patch": {
                 "#meta": "oauth2",
                 "doc": "Change the authenticated user's password",
                 "request": "$changePasswordRequest",
                 "response": {
                     "200+": "$changePasswordResponse"
+                }
+            }
+        },
+        {
+            "url": "password/reset/",
+            "post": {
+                "#meta": "",
+                "doc": "Sends a password reset email",
+                "request": "$resetPasswordRequest",
+                "response": {
+                    "200+": "$resetPasswordResponse"
+                }
+            }
+        },
+        {
+            "url": "password/new/",
+            "post": {
+                "#meta": "",
+                "doc": "Change a user's password",
+                "request": "$setPasswordRequest",
+                "response": {
+                    "200+": "$setPasswordResponse"
                 }
             }
         },
@@ -504,9 +526,25 @@
         }},
         {"$changePasswordRequest": {
             "old_password": "string",
-            "password": "string"
+            "password": "string",
+            "confirm_password": "string"
         }},
         {"$changePasswordResponse": {
+            "status": "string"
+        }},
+        {"$resetPasswordRequest": {
+            "email": "string"
+        }},
+        {"$resetPasswordResponse": {
+            "status": "string"
+        }},
+        {"$setPasswordRequest": {
+            "uid": "string",
+            "token": "string",
+            "password": "string",
+            "confirm_password": "string"
+        }},
+        {"$setPasswordResponse": {
             "status": "string"
         }}
     ]

@@ -43,4 +43,3 @@ virtualenv==1.11.6
 virtualenv-clone==0.2.5
 virtualenvwrapper==4.3
 wsgiref==0.1.2
--e git+git@github.com:yeti/YAK-server.git#egg=yak_server-master
