@@ -6,6 +6,7 @@ amqp==1.4.6
 anyjson==0.3.3
 billiard==3.3.0.19
 celery==3.1.16
+coverage==3.7.1
 django-braces==1.4.0
 -e git://github.com/jbalogh/django-cache-machine.git@f827f05b195ad3fc1b0111131669471d843d631f#egg=django_cache_machine-master
 django-filter==0.8
