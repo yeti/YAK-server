@@ -214,6 +214,17 @@ class PasswordResetTests(SchemaTestCase):
                                unauthorized=True)
         self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
 
+        # User can't change password if the two new passwords don't match
+        mismatch_password_data = {
+            "old_password": base64.encodestring("password"),
+            "password": base64.encodestring("felicia"),
+            "confirm_password": base64.encodestring("FELICIA")
+        }
+        self.add_credentials(felicia)
+        response = self.client.patch(url, mismatch_password_data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
+
         # User can change their own password
         self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, felicia)
         self.assertTrue(User.objects.get(pk=felicia.pk).check_password("felicia"))
