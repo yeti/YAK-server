@@ -1,7 +1,11 @@
 import base64
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.core import mail
 from django.core.files.images import get_image_dimensions
 from django.core.urlresolvers import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from test_project import settings
 from test_project.test_app.tests.factories import UserFactory
 from yak.rest_core.test import SchemaTestCase
@@ -143,30 +147,6 @@ class UserTests(SchemaTestCase):
         response = self.client.patch(url, data, format="json")
         self.assertHttpBadRequest(response)
 
-    def test_user_can_change_password(self):
-        felicia = UserFactory(username='felicia')
-        felicia.set_password('password')
-        felicia.save()
-        stranger = UserFactory()
-        url = reverse("users-password", args=[felicia.pk])
-
-        data = {
-            "old_password": base64.encodestring("password"),
-            "password": base64.encodestring("felicia")
-        }
-        # Unauthenticated user can't change password
-        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, None, unauthorized=True)
-        self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
-
-        # Stranger can't change another user's password
-        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, stranger,
-                               unauthorized=True)
-        self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
-
-        # User can change their own password
-        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, felicia)
-        self.assertTrue(User.objects.get(pk=felicia.pk).check_password("felicia"))
-
     def test_user_can_get_token(self):
         """
         Below is the test I want. But it fails because django-oauth-toolkit will only accept requests with
@@ -205,3 +185,90 @@ class UserTests(SchemaTestCase):
             w, h = get_image_dimensions(getattr(user, size_field).file)
             self.assertEqual(size['height'], h)
             self.assertEqual(size['width'], w)
+
+
+class PasswordResetTests(SchemaTestCase):
+
+    def test_user_can_change_password(self):
+        felicia = UserFactory(username='felicia')
+        felicia.set_password('password')
+        felicia.save()
+        url = reverse("password_change")
+
+        data = {
+            "old_password": base64.encodestring("password"),
+            "password": base64.encodestring("felicia"),
+            "confirm_password": base64.encodestring("felicia")
+        }
+        # Unauthenticated user can't change password
+        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, None, unauthorized=True)
+        self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
+
+        # User can't change password if the old / current password is incorrect
+        bad_data = {
+            "old_password": base64.encodestring("wrong_password"),
+            "password": base64.encodestring("felicia"),
+            "confirm_password": base64.encodestring("felicia")
+        }
+        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", bad_data, felicia,
+                               unauthorized=True)
+        self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
+
+        # User can't change password if the two new passwords don't match
+        mismatch_password_data = {
+            "old_password": base64.encodestring("password"),
+            "password": base64.encodestring("felicia"),
+            "confirm_password": base64.encodestring("FELICIA")
+        }
+        self.add_credentials(felicia)
+        response = self.client.patch(url, mismatch_password_data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(User.objects.get(pk=felicia.pk).check_password("felicia"))
+
+        # User can change their own password
+        self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, felicia)
+        self.assertTrue(User.objects.get(pk=felicia.pk).check_password("felicia"))
+
+    def test_user_can_get_reset_password_email(self):
+        jeanluc = UserFactory(username="jeanluc")
+        url = reverse("password_reset")
+        data = {
+            "email": jeanluc.email
+        }
+        self.assertSchemaPost(url, "$resetPasswordRequest", "$resetPasswordResponse", data, None, status_OK=True)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_user_can_reset_password(self):
+        url = reverse("password_new")
+        beverly = UserFactory(username="beverly")
+        beverly.set_password("jack")
+        beverly.save()
+
+        mismatch_password_data = {
+            "uid": urlsafe_base64_encode(force_bytes(beverly.pk)),
+            "token": default_token_generator.make_token(beverly),
+            "password": base64.encodestring("wesley"),
+            "confirm_password": base64.encodestring("WESLEY")
+        }
+        response = self.client.post(url, mismatch_password_data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(User.objects.get(username='beverly').check_password('wesley'))
+
+        bad_uid_data = {
+            "uid": urlsafe_base64_encode(force_bytes(UserFactory().pk)),
+            "token": default_token_generator.make_token(beverly),
+            "password": base64.encodestring("wesley"),
+            "confirm_password": base64.encodestring("wesley")
+        }
+        response = self.client.post(url, bad_uid_data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(User.objects.get(username='beverly').check_password('wesley'))
+
+        good_data = {
+            "uid": urlsafe_base64_encode(force_bytes(beverly.pk)),
+            "token": default_token_generator.make_token(beverly),
+            "password": base64.encodestring("wesley"),
+            "confirm_password": base64.encodestring("wesley")
+        }
+        self.assertSchemaPost(url, "$setPasswordRequest", "$setPasswordResponse", good_data, None, status_OK=True)
+        self.assertTrue(User.objects.get(username='beverly').check_password('wesley'))
