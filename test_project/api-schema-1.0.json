@@ -284,7 +284,7 @@
                 "doc": "Change a user's password",
                 "request": "$setPasswordRequest",
                 "response": {
-                    "200+": "$setPasswordResponse"
+                    "200+": "$userResponse"
                 }
             }
         },
