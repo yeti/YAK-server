@@ -269,6 +269,8 @@ class SchemaTestCase(APITestCaseWithAssertions):
             self.assertHttpNotAllowed(response)
         elif status_OK:
             self.assertHttpOK(response)
+            self.assertTrue(response['Content-Type'].startswith('application/json'))
+            self.check_response_data(response, response_object_name)
         else:
             self.assertHttpCreated(response)
             self.assertTrue(response['Content-Type'].startswith('application/json'))

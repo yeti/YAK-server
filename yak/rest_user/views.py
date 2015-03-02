@@ -89,6 +89,6 @@ class PasswordSetView(views.APIView):
         if user is not None and default_token_generator.check_token(user, serializer.data['token']):
             user.set_password(serializer.data['password'])
             user.save()
-            return Response({'status': 'password set'})
+            return Response(UserSerializer(instance=user, context={'request': request}).data)
         else:
             return Response({"errors": "Password reset unsuccessful"}, status=status.HTTP_400_BAD_REQUEST)

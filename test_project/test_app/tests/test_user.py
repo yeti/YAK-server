@@ -270,5 +270,5 @@ class PasswordResetTests(SchemaTestCase):
             "password": base64.encodestring("wesley"),
             "confirm_password": base64.encodestring("wesley")
         }
-        self.assertSchemaPost(url, "$setPasswordRequest", "$setPasswordResponse", good_data, None, status_OK=True)
+        self.assertSchemaPost(url, "$setPasswordRequest", "$userResponse", good_data, None, status_OK=True)
         self.assertTrue(User.objects.get(username='beverly').check_password('wesley'))
