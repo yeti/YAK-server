@@ -32,7 +32,8 @@ class Login(generics.ListAPIView):
     authentication_classes = (BasicAuthentication,)
 
     def get_queryset(self):
-        return [self.request.user]
+        queryset = super(Login, self).get_queryset()
+        return queryset.filter(pk=self.request.user.pk)
 
 
 class UserViewSet(viewsets.ModelViewSet):
