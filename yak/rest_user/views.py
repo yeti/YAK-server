@@ -1,5 +1,5 @@
 import base64
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import viewsets, generics, status, views
@@ -34,6 +34,28 @@ class Login(generics.ListAPIView):
     def get_queryset(self):
         queryset = super(Login, self).get_queryset()
         return queryset.filter(pk=self.request.user.pk)
+
+
+class SignIn(views.APIView):
+    """
+    Same function as `Login` but doesn't use basic auth. This is for web clients,
+    so we don't see a browser popup for basic auth.
+    """
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        if 'username' not in request.data:
+            msg = 'Username required'
+            raise AuthenticationFailed(msg)
+        elif 'password' not in request.data:
+            msg = 'Password required'
+            raise AuthenticationFailed(msg)
+
+        user = authenticate(username=request.data['username'], password=request.data['password'])
+        if user is None or not user.is_active:
+            raise AuthenticationFailed('Invalid username or password')
+        serializer = LoginSerializer(instance=user)
+        return Response(serializer.data, status=200)
 
 
 class UserViewSet(viewsets.ModelViewSet):
