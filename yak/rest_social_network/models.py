@@ -109,7 +109,7 @@ class Comment(CoreModel):
     TAG_FIELD = 'description'
     related_tags = models.ManyToManyField(Tag, blank=True, null=True)
 
-    description = models.CharField(max_length=140)
+    description = models.TextField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="comments")
 
     class Meta:
