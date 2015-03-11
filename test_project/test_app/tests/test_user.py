@@ -104,6 +104,24 @@ class UserTests(SchemaTestCase):
         response = self.client.get(url)
         self.assertHttpUnauthorized(response)
 
+    def test_user_can_sign_in(self):
+        url = reverse("sign_in")
+
+        # With the correct username and password, a user can sign in
+        good_data = {
+            "username": "tester1",
+            "password": "password"
+        }
+        self.assertSchemaPost(url, "$signInRequest", "$loginResponse", good_data, None, status_OK=True)
+
+        # Incorrect credentials return unauthorized
+        bad_data = {
+            "username": "tester1",
+            "password": "WRONGPASSWORD"
+        }
+        response = self.client.post(url, bad_data, format="json")
+        self.assertHttpUnauthorized(response)
+
     def test_inexact_signup(self):
         """
         Email and username are case insensitive

@@ -23,6 +23,17 @@
             }
         },
         {
+            "url": "sign_in/",
+            "doc": "Authenticates an existing user and returns client_id and client_secret. Like 'login' but doesn't require basic auth",
+            "post": {
+                "#meta": "",
+                "request": "$signInRequest",
+                "response": {
+                    "200+": "$loginResponse"
+                }
+            }
+        },
+        {
             "url": "o/token/",
             "doc": "Provides access token for authenticated calls throughout the app",
             "post": {
@@ -349,6 +360,10 @@
         {"$loginResponse": {
             "client_id": "string",
             "client_secret": "string"
+        }},
+        {"$signInRequest": {
+            "username": "string",
+            "password": "string"
         }},
         {"$tokenRequest": {
             "client_id": "string",
