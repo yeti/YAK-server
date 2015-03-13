@@ -172,9 +172,6 @@ class Share(CoreModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="shares")
 
-    class Meta:
-        unique_together = (("user", "content_type", "object_id"),)
-
 
 class AbstractSocialYeti(AbstractYeti):
     follows = GenericRelation(Follow)

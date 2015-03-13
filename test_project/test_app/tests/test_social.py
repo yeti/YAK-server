@@ -40,6 +40,20 @@ class ShareTestCase(BaseAPITests):
         }
         self.assertSchemaPost(shares_url, "$shareRequest", "$shareResponse", data, self.dev_user)
 
+    def test_users_can_share_content_multiple_times(self):
+        sharing_user = UserFactory()
+        test_user = UserFactory()
+        content_type = ContentType.objects.get_for_model(Post)
+        shares_url = reverse('shares-list')
+        data = {
+            'content_type': content_type.pk,
+            'object_id': PostFactory().pk,
+            'shared_with': [test_user.pk]
+        }
+        self.assertSchemaPost(shares_url, "$shareRequest", "$shareResponse", data, sharing_user)
+        data['shared_with'] = [self.dev_user.pk]
+        self.assertSchemaPost(shares_url, "$shareRequest", "$shareResponse", data, sharing_user)
+
 
 class LikeTestCase(BaseAPITests):
     def test_users_can_like_content(self):
