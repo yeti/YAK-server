@@ -21,7 +21,8 @@ def send_push_notification(receiver, message):
     notifications = [{
         'content': message,
         'send_date': constants.SEND_DATE_NOW,
-        'devices': [token.token for token in receiver.pushwoosh_tokens.all()]
+        'devices': [token.token for token in receiver.pushwoosh_tokens.all()],
+        'ios_badges': '+1'
     }]
 
     request = {'request': {
