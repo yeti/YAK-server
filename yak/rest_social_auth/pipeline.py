@@ -48,11 +48,12 @@ def save_extra_data(strategy, details, response, uid, user, social, *args, **kwa
 def save_profile_image(strategy, details, response, uid, user, social, is_new=False, *args, **kwargs):
     """Attempt to get a profile image for the User"""
 
-    if user is None:
+    # Don't get a profile image if we don't have a user or if they're an already existing user
+    if user is None or not is_new:
         return
 
     try:  # Basically, check the backend is one of ours
-        image_url = kwargs['backend'].get_profile_image(strategy, details, response, uid, user, social, is_new=False,
+        image_url = kwargs['backend'].get_profile_image(strategy, details, response, uid, user, social, is_new=is_new,
                                                         *args,
                                                         **kwargs)
     except AttributeError:
@@ -62,10 +63,5 @@ def save_profile_image(strategy, details, response, uid, user, social, is_new=Fa
         try:
             result = urllib.urlretrieve(image_url)
             user.original_photo.save("{}.jpg".format(uid), File(open(result[0])))
-            # def save_image(user, uid, result):
-            #     user.original_photo.save("{}.jpg".format(uid), File(open(result[0])))
-            #     user.save(update_fields=['original_photo'])
-            #
-            # retry_cloudfiles(save_image, user, uid, result)
         except URLError:
             pass
