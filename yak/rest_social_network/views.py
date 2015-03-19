@@ -23,6 +23,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    filter_fields = ('content_type', 'object_id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from test_project.test_app.models import Post
-from test_project.test_app.tests.factories import UserFactory, PostFactory
+from test_project.test_app.tests.factories import UserFactory, PostFactory, CommentFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_social_network.models import Follow, Comment, Tag
 
@@ -87,6 +87,25 @@ class CommentTestCase(BaseAPITests):
         response = self.assertSchemaGet(tags_url, None, "$tagResponse", self.dev_user)
         self.assertEqual(response.data['results'][0]['name'], 'django')
         self.assertIsNotNone(Tag.objects.get(name='django'))
+
+    def test_comments_for_specific_object(self):
+        test_user = UserFactory()
+        post_content_type = ContentType.objects.get_for_model(Post)
+
+        post = PostFactory(user=test_user)
+        comment = CommentFactory(content_type=post_content_type, object_id=post.pk)
+
+        post2 = PostFactory(user=test_user)
+        CommentFactory(content_type=post_content_type, object_id=post2.pk)
+
+        url = reverse('comments-list')
+        parameters = {
+            'content_type': post_content_type.pk,
+            'object_id': post.pk,
+        }
+        response = self.assertSchemaGet(url, parameters, "$commentResponse", self.dev_user)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["id"], comment.pk)
 
 
 class UserFollowingTestCase(BaseAPITests):

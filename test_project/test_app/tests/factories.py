@@ -4,6 +4,7 @@ from test_project.test_app.models import Post
 from django.utils.timezone import now
 from oauth2_provider.models import AccessToken
 from django.contrib.auth import get_user_model
+from yak.rest_social_network.models import Comment
 
 
 User = get_user_model()
@@ -36,3 +37,11 @@ class PostFactory(factory.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     title = "Factory-farmed post"
     description = "I love Yeti App Kit!"
+
+
+class CommentFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = Comment
+
+    user = factory.SubFactory(UserFactory)
+    description = "This is not, the greatest comment in the world."

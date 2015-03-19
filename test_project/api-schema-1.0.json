@@ -198,6 +198,7 @@
             "get": {
                 "#meta" : "oauth2,optional",
                 "doc": "Gets a list of all comments",
+                "parameters": "$commentParameters",
                 "response": {
                     "200+": "$commentResponse"
                 }
@@ -447,6 +448,10 @@
             "content_type": "int",
             "object_id": "int",
             "description": "string"
+        }},
+        {"$commentParameters": {
+            "content_type": "int,optional",
+            "object_id": "int,optional"
         }},
         {"$followResponse": {
             "follower": "M2O,$userResponse",
