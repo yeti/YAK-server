@@ -16,67 +16,67 @@ class APITestCaseWithAssertions(APITestCase):
         """
         Ensures the response is returning a HTTP 200.
         """
-        return self.assertEqual(resp.status_code, 200)
+        return self.assertEqual(resp.status_code, 200, resp)
 
     def assertHttpCreated(self, resp):
         """
         Ensures the response is returning a HTTP 201.
         """
-        return self.assertEqual(resp.status_code, 201)
+        return self.assertEqual(resp.status_code, 201, resp)
 
     def assertHttpAccepted(self, resp):
         """
         Ensures the response is returning either a HTTP 202 or a HTTP 204.
         """
-        return self.assertIn(resp.status_code, [202, 204])
+        return self.assertIn(resp.status_code, [202, 204], resp)
 
     def assertHttpMultipleChoices(self, resp):
         """
         Ensures the response is returning a HTTP 300.
         """
-        return self.assertEqual(resp.status_code, 300)
+        return self.assertEqual(resp.status_code, 300, resp)
 
     def assertHttpSeeOther(self, resp):
         """
         Ensures the response is returning a HTTP 303.
         """
-        return self.assertEqual(resp.status_code, 303)
+        return self.assertEqual(resp.status_code, 303, resp)
 
     def assertHttpNotModified(self, resp):
         """
         Ensures the response is returning a HTTP 304.
         """
-        return self.assertEqual(resp.status_code, 304)
+        return self.assertEqual(resp.status_code, 304, resp)
 
     def assertHttpBadRequest(self, resp):
         """
         Ensures the response is returning a HTTP 400.
         """
-        return self.assertEqual(resp.status_code, 400)
+        return self.assertEqual(resp.status_code, 400, resp)
 
     def assertHttpUnauthorized(self, resp):
         """
         Ensures the response is returning a HTTP 401.
         """
-        return self.assertEqual(resp.status_code, 401)
+        return self.assertEqual(resp.status_code, 401, resp)
 
     def assertHttpForbidden(self, resp):
         """
         Ensures the response is returning a HTTP 403.
         """
-        return self.assertEqual(resp.status_code, 403)
+        return self.assertEqual(resp.status_code, 403, resp)
 
     def assertHttpNotFound(self, resp):
         """
         Ensures the response is returning a HTTP 404.
         """
-        return self.assertEqual(resp.status_code, 404)
+        return self.assertEqual(resp.status_code, 404, resp)
 
     def assertHttpMethodNotAllowed(self, resp):
         """
         Ensures the response is returning a HTTP 405.
         """
-        return self.assertEqual(resp.status_code, 405)
+        return self.assertEqual(resp.status_code, 405, resp)
 
     def assertHttpNotAllowed(self, resp):
         """
@@ -85,43 +85,43 @@ class APITestCaseWithAssertions(APITestCase):
         HTTP response codes. Bundling these together into a single assertion
         so that schema tests can be more flexible.
         """
-        return self.assertIn(resp.status_code, [401, 403, 404, 405])
+        return self.assertIn(resp.status_code, [401, 403, 404, 405], resp)
 
     def assertHttpConflict(self, resp):
         """
         Ensures the response is returning a HTTP 409.
         """
-        return self.assertEqual(resp.status_code, 409)
+        return self.assertEqual(resp.status_code, 409, resp)
 
     def assertHttpGone(self, resp):
         """
         Ensures the response is returning a HTTP 410.
         """
-        return self.assertEqual(resp.status_code, 410)
+        return self.assertEqual(resp.status_code, 410, resp)
 
     def assertHttpUnprocessableEntity(self, resp):
         """
         Ensures the response is returning a HTTP 422.
         """
-        return self.assertEqual(resp.status_code, 422)
+        return self.assertEqual(resp.status_code, 422, resp)
 
     def assertHttpTooManyRequests(self, resp):
         """
         Ensures the response is returning a HTTP 429.
         """
-        return self.assertEqual(resp.status_code, 429)
+        return self.assertEqual(resp.status_code, 429, resp)
 
     def assertHttpApplicationError(self, resp):
         """
         Ensures the response is returning a HTTP 500.
         """
-        return self.assertEqual(resp.status_code, 500)
+        return self.assertEqual(resp.status_code, 500, resp)
 
     def assertHttpNotImplemented(self, resp):
         """
         Ensures the response is returning a HTTP 501.
         """
-        return self.assertEqual(resp.status_code, 501)
+        return self.assertEqual(resp.status_code, 501, resp)
 
     def assertValidJSONResponse(self, resp):
         """
@@ -190,10 +190,12 @@ class SchemaTestCase(APITestCaseWithAssertions):
                 self.check_schema_keys(new_data_object, self.schema_objects[new_schema_object])
 
         # The actual `data_object` contains every required field
-        self.assertTrue(set(required_fields).issubset(set(data_object)))
+        self.assertTrue(set(required_fields).issubset(set(data_object)),
+                        "Schema did not match.\nRequired fields: {}\nData: {}".format(required_fields, data_object))
 
         # The actual `data_object` contains no extraneous fields not found in the schema
-        self.assertTrue(set(data_object).issubset(set(schema_fields)))
+        self.assertTrue(set(data_object).issubset(set(schema_fields)),
+                        "Schema did not match.\nRequired fields: {}\nData: {}".format(required_fields, data_object))
 
     def add_credentials(self, user):
         """
