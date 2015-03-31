@@ -189,13 +189,18 @@ class SchemaTestCase(APITestCaseWithAssertions):
 
                 self.check_schema_keys(new_data_object, self.schema_objects[new_schema_object])
 
+        set_required_fields = set(required_fields)
+        set_data_object = set(data_object)
+        set_schema_fields = set(schema_fields)
         # The actual `data_object` contains every required field
-        self.assertTrue(set(required_fields).issubset(set(data_object)),
-                        "Schema did not match.\nRequired fields: {}\nData: {}".format(required_fields, data_object))
+        self.assertTrue(set_required_fields.issubset(set_data_object),
+                        "Data did not match schema.\nMissing fields: {}".format(
+                            set_required_fields.difference(set_data_object)))
 
         # The actual `data_object` contains no extraneous fields not found in the schema
-        self.assertTrue(set(data_object).issubset(set(schema_fields)),
-                        "Schema did not match.\nRequired fields: {}\nData: {}".format(required_fields, data_object))
+        self.assertTrue(set_data_object.issubset(set_schema_fields),
+                        "Data did not match schema.\nExtra fields: {}".format(
+                            set_data_object.difference(set_schema_fields)))
 
     def add_credentials(self, user):
         """
