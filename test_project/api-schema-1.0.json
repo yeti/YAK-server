@@ -308,6 +308,14 @@
                 "response": {
                     "200+": "$notificationSettingResponse"
                 }
+            },
+            "put": {
+                "#meta": "oauth2",
+                "doc": "Bulk update a user's notification settings",
+                "request": "$notificationSettingBulkRequest",
+                "repsonse": {
+                    "200+": "$notificationSettingResponse"
+                }
             }
         },
         {
@@ -515,6 +523,11 @@
             "notification_type": "$notificationTypeResponse",
             "allow_push": "boolean",
             "allow_email": "boolean"
+        }},
+        {"$notificationSettingBulkRequest": {
+            "id": "int,primarykey",
+            "allow_push": "boolean,optional",
+            "allow_email": "boolean,optional"
         }},
         {"$notificationSettingRequest": {
             "allow_push": "boolean",

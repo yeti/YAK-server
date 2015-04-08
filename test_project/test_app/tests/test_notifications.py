@@ -275,3 +275,20 @@ class NotificationSettingsTestCase(SchemaTestCase):
         cache.clear()
         assert NotificationType.objects.get(slug="like").from_cache is False
         assert NotificationType.objects.get(slug="like").from_cache is True
+
+    def test_bulk_update_notification_settings(self):
+        url = reverse("notification_settings-list")
+        user = UserFactory()
+        bad_user = UserFactory()
+        notification_settings = user.notification_settings.all()
+        data = [
+            {"id": notification_settings[0].pk, "allow_email": False},
+            {"id": notification_settings[1].pk, "allow_email": False}
+        ]
+        # Can't update another user's notification settings
+        self.assertSchemaPut(url, "$notificationSettingBulkRequest", "$notificationSettingResponse", data, bad_user,
+                             forbidden=True)
+        self.assertTrue(NotificationSetting.objects.get(pk=notification_settings[0].pk).allow_email)
+
+        self.assertSchemaPut(url, "$notificationSettingBulkRequest", "$notificationSettingResponse", data, user)
+        self.assertFalse(NotificationSetting.objects.get(pk=notification_settings[0].pk).allow_email)

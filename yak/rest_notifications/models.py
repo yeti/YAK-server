@@ -30,6 +30,9 @@ class NotificationSetting(CoreModel):
     class Meta:
         unique_together = ('notification_type', 'user')
 
+    def __unicode__(self):
+        return u"{}: {}".format(self.user, self.notification_type)
+
     def name(self):
         return u"{}: {}".format(self.user, self.notification_type)
 
