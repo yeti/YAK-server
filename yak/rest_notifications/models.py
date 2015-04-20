@@ -1,3 +1,4 @@
+from collections import defaultdict
 from caching.base import CachingMixin, CachingManager
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -72,10 +73,7 @@ class Notification(CoreModel):
         replacing the appropriate variables from the content object
         """
 
-        data = {
-            'identifier': None,
-            'reporter': None
-        }
+        data = defaultdict(str)
 
         # TODO: Right now assumes the content_object has identifier defined
         if self.content_object:
