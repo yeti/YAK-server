@@ -84,6 +84,9 @@ class Notification(CoreModel):
         if hasattr(self.content_object, 'extra_notification_params'):
             data.update(self.content_object.extra_notification_params())
 
+        if hasattr(self.content_object, 'protocol_and_domain_params'):
+            data.update(self.content_object.protocol_and_domain_params())
+
         configured_template_name = "{}.html".format(self.notification_type.slug)
         # template_name = self.template_override if self.template_override else configured_template_name
         return unicode(render_to_string("notifications/{}/{}".format(location, configured_template_name), data))
