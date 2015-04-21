@@ -3,6 +3,7 @@ from caching.base import CachingMixin, CachingManager
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from django.db import models
 from django.template.loader import render_to_string
 from celery.task import task
@@ -74,8 +75,9 @@ class Notification(CoreModel):
         """
 
         data = defaultdict(str)
+        # get the domain from Site
+        data['domain'] = Site.objects.get_current().domain
 
-        # TODO: Right now assumes the content_object has identifier defined
         if self.content_object:
             data['identifier'] = self.content_object.identifier()
         if self.reporter:
