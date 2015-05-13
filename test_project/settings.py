@@ -126,7 +126,7 @@ YAK = {
         "test_project.test_app.models.Post": "test_project.test_app.api.serializers.PostSerializer",
         "test_project.test_app.models.Article": "test_project.test_app.api.serializers.ArticleSerializer"
     },
-    'FLAKE8_CONFIG': "{}/setup.cfg".format(PROJECT_ROOT)
+    'FLAKE8_CONFIG': os.path.join(PROJECT_ROOT, "setup.cfg"),
 }
 
 AUTH_USER_MODEL = "{}.{}".format(YAK['USER_APP_LABEL'], YAK['USER_MODEL'].capitalize())
