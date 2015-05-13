@@ -425,7 +425,7 @@ class YAKSyntaxTest(TestCase):
         packages = settings.PACKAGES_TO_TEST
 
         # Prepare
-        config_file = getattr(settings, 'FLAKE8_CONFIG', flake8.main.DEFAULT_CONFIG)
+        config_file = getattr(yak_settings, 'FLAKE8_CONFIG', flake8.main.DEFAULT_CONFIG)
         flake8_style = get_style_guide(config_file=config_file)
         options = flake8_style.options
 
