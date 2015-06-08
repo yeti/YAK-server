@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.utils import unittest
+import unittest
 import memcache
 from mock import MagicMock
 from test_project import settings

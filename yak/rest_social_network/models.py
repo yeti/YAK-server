@@ -107,7 +107,7 @@ class Comment(CoreModel):
     content_object = GenericForeignKey()
 
     TAG_FIELD = 'description'
-    related_tags = models.ManyToManyField(Tag, blank=True, null=True)
+    related_tags = models.ManyToManyField(Tag, blank=True)
 
     description = models.TextField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="comments")

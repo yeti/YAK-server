@@ -35,7 +35,7 @@ class Post(BaseSocialModel):
     likes = GenericRelation(Like)
     flags = GenericRelation(Flag)
     shares = GenericRelation(Share)
-    related_tags = models.ManyToManyField(Tag, null=True, blank=True)
+    related_tags = models.ManyToManyField(Tag, blank=True)
     comments = GenericRelation(Comment)
     notifications = GenericRelation(Notification)
 
