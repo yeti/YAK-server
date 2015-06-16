@@ -33,14 +33,8 @@ class Soundcloud(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, SoundcloudOA
             'filter': 'public'
         }
         try:
-            track_url = "https://api.soundcloud.com/me/tracks.json"
-            tracks = requests.get(track_url, params=params).json()
-
-            favorite_track_url = "https://api.soundcloud.com/me/favorites.json"
-            favorite_tracks = requests.get(favorite_track_url, params=params).json()
-
-            playlist_url = "https://api.soundcloud.com/me/playlists.json"
-            playlists = requests.get(playlist_url, params=params).json()
-            return tracks + favorite_tracks + playlists
+            activity_url = "https://api.soundcloud.com/me/activities.json"
+            activities = requests.get(activity_url, params=params).json()['collection']
+            return activities
         except JSONDecodeError:
             return []
