@@ -14,7 +14,8 @@ class Soundcloud(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, SoundcloudOA
 
     @staticmethod
     def get_profile_image(strategy, details, response, uid, user, social, is_new=False, *args, **kwargs):
-        return response['avatar_url']
+        # Currently Soundcloud's SSL certificate causes a SSLError with requests and python 2.7
+        return response['avatar_url'].replace('https', 'http')
 
     @staticmethod
     def post(user_social_auth, social_obj):
