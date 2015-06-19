@@ -35,6 +35,13 @@ class Soundcloud(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, SoundcloudOA
         try:
             activity_url = "https://api.soundcloud.com/me/activities.json"
             activities = requests.get(activity_url, params=params).json()['collection']
-            return activities
         except JSONDecodeError:
-            return []
+            activities = []
+
+        try:
+            favorite_track_url = "https://api.soundcloud.com/me/favorites.json"
+            favorite_tracks = requests.get(favorite_track_url, params=params).json()
+        except JSONDecodeError:
+            favorite_tracks = []
+
+        return {'activities': activities, 'favorites': favorite_tracks}
