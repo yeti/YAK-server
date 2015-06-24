@@ -41,7 +41,7 @@ class Facebook(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, Facebook2OAuth
             action_name = "{}:{}".format(yak_settings.FACEBOOK_OG_NAMESPACE, og_info['action'])
             object_name = '{}'.format(og_info['object'])
             object_url = '{}'.format(og_info['url'])
-            graph.put_object("me", action_name, **{object_name: object_url})
+            graph.put_object("me", action_name, **{object_name: object_url, 'fb:explicitly_shared': True})
         else:
             message = social_obj.create_social_message(user_social_auth.provider)
             link = social_obj.url()
