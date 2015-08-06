@@ -121,7 +121,8 @@ def create_notification(receiver, reporter, content_object, notification_type, t
     notification = Notification.objects.create(user=receiver,
                                                reporter=reporter,
                                                content_object=content_object,
-                                               notification_type=notification_type)
+                                               notification_type=notification_type,
+                                               template_override=template_override)
     notification.save()
 
     notification_setting = NotificationSetting.objects.get(notification_type=notification_type, user=receiver)
