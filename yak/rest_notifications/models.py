@@ -58,7 +58,7 @@ class Notification(CoreModel):
     EMAIL = "email"
 
     notification_type = models.ForeignKey(NotificationType, related_name="notifications")
-    # template_override = models.CharField(max_length=100, blank=True, null=True)
+    template_override = models.CharField(max_length=100, blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_received", null=True, blank=True)
     reporter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_sent", null=True, blank=True)
 
@@ -87,8 +87,8 @@ class Notification(CoreModel):
             data.update(self.content_object.extra_notification_params())
 
         configured_template_name = "{}.html".format(self.notification_type.slug)
-        # template_name = self.template_override if self.template_override else configured_template_name
-        return unicode(render_to_string("notifications/{}/{}".format(location, configured_template_name), data))
+        template_name = self.template_override if self.template_override else configured_template_name
+        return unicode(render_to_string("notifications/{}/{}".format(location, template_name), data))
 
     def email_message(self):
         return self.message(Notification.EMAIL)
