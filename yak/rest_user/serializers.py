@@ -62,10 +62,10 @@ class LoginSerializer(serializers.ModelSerializer):
         fields = ('client_id', 'client_secret')
 
     def get_client_id(self, obj):
-        return obj.application_set.first().client_id
+        return obj.oauth2_provider_application.first().client_id
 
     def get_client_secret(self, obj):
-        return obj.application_set.first().client_secret
+        return obj.oauth2_provider_application.first().client_secret
 
 
 class SignUpSerializer(AuthSerializerMixin, LoginSerializer):

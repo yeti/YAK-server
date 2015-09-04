@@ -23,7 +23,7 @@ class UserFactory(factory.DjangoModelFactory):
         # Force save for post_save signal to create auth client
         user.save()
         AccessToken.objects.create(user=user,
-                                   application=user.application_set.first(),
+                                   application=user.oauth2_provider_application.first(),
                                    token='token{}'.format(user.id),
                                    expires=now() + datetime.timedelta(days=1)
                                    )
