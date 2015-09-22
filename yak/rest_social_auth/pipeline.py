@@ -52,7 +52,7 @@ def save_profile_image(strategy, details, response, uid, user, social, is_new=Fa
         return
 
     try:  # Basically, check the backend is one of ours
-        image_url = kwargs['backend'].get_profile_image(strategy, details, response, uid, user, social, is_new=False,
+        image_url = kwargs['backend'].get_profile_image(strategy, details, response, uid, user, social, is_new=is_new,
                                                         *args,
                                                         **kwargs)
     except AttributeError:

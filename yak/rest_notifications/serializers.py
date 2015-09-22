@@ -22,12 +22,36 @@ class NotificationTypeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'is_active')
 
 
+class NotificationSettingListSerializer(serializers.ListSerializer):
+    """
+    Helps us do bulk updates
+    """
+    def update(self, instance, validated_data):
+        # Maps for id->instance and id->data item.
+        object_mapping = {obj.id: obj for obj in instance}
+        data_mapping = {item['id']: item for item in validated_data}
+
+        # Perform creations and updates.
+        ret = []
+        for obj_id, data in data_mapping.items():
+            obj = object_mapping.get(obj_id, None)
+            if obj is None:
+                raise serializers.ValidationError("Cannot update {}".format(obj_id))
+            else:
+                ret.append(self.child.update(obj, data))
+
+        return ret
+
+
 class NotificationSettingSerializer(serializers.ModelSerializer):
     notification_type = NotificationTypeSerializer(read_only=True)
+    # This allows us to pass `id` for bulk updates
+    id = serializers.IntegerField(label='ID', read_only=False, required=False)
 
     class Meta:
         model = NotificationSetting
         fields = ('id', 'notification_type', 'allow_push', 'allow_email')
+        list_serializer_class = NotificationSettingListSerializer
 
 
 class NotificationSerializer(serializers.ModelSerializer):

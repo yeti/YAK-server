@@ -4,13 +4,15 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.utils.baseconv import base62
 from yak.rest_core.models import resize_model_photos, CoreModel
-from yak.rest_notifications.models import create_notification_settings
+from yak.rest_notifications.models import create_notification_settings, Notification
 from yak.rest_social_network.models import FollowableModel, BaseSocialModel, Like, Flag, Share, Tag, \
     Comment, relate_tags, mentions, AbstractSocialYeti
 from yak.rest_user.utils import create_auth_client
 
 
 class User(AbstractSocialYeti):
+    notifications = GenericRelation(Notification)
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         resize_model_photos(self)
@@ -33,8 +35,9 @@ class Post(BaseSocialModel):
     likes = GenericRelation(Like)
     flags = GenericRelation(Flag)
     shares = GenericRelation(Share)
-    related_tags = models.ManyToManyField(Tag, null=True, blank=True)
+    related_tags = models.ManyToManyField(Tag, blank=True)
     comments = GenericRelation(Comment)
+    notifications = GenericRelation(Notification)
 
     def likes_count(self):
         return self.likes.count()
@@ -73,6 +76,7 @@ class Article(CoreModel):
     body = models.TextField()
     thumbnail = models.ImageField(upload_to="article_photos/thumbnail/", blank=True, null=True)
     likes = GenericRelation(Like)
+    notifications = GenericRelation(Notification)
 
     def __unicode__(self):
         return u"{}".format(self.title) if self.title else "Untitled"

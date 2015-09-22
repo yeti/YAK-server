@@ -28,3 +28,11 @@ def get_class(path):
     module = importlib.import_module(module_path)
     _class = getattr(module, class_name)
     return _class
+
+
+def get_package_version(package):
+    """
+    Return the version number of a Python package as a list of integers
+    e.g., 1.7.2 will return [1, 7, 2]
+    """
+    return [int(num) for num in package.__version__.split('.')]

@@ -67,6 +67,7 @@ DEFAULTS = {
     'USE_FACEBOOK_OG': False,
     'FACEBOOK_OG_NAMESPACE': "",
     'SERIALIZER_MAPPING': {},
+    'FLAKE8_CONFIG': None,
 }
 
 

@@ -1,11 +1,11 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from test_project.test_app.models import Post
-from test_project.test_app.tests.factories import UserFactory, PostFactory
+from test_project.test_app.tests.factories import UserFactory, PostFactory, CommentFactory
 from yak.rest_core.test import SchemaTestCase
-from yak.rest_social_network.models import Follow, Comment, Tag
-
+from yak.rest_social_network.models import Follow, Comment, Tag, Like
 
 User = get_user_model()
 
@@ -40,6 +40,20 @@ class ShareTestCase(BaseAPITests):
         }
         self.assertSchemaPost(shares_url, "$shareRequest", "$shareResponse", data, self.dev_user)
 
+    def test_users_can_share_content_multiple_times(self):
+        sharing_user = UserFactory()
+        test_user = UserFactory()
+        content_type = ContentType.objects.get_for_model(Post)
+        shares_url = reverse('shares-list')
+        data = {
+            'content_type': content_type.pk,
+            'object_id': PostFactory().pk,
+            'shared_with': [test_user.pk]
+        }
+        self.assertSchemaPost(shares_url, "$shareRequest", "$shareResponse", data, sharing_user)
+        data['shared_with'] = [self.dev_user.pk]
+        self.assertSchemaPost(shares_url, "$shareRequest", "$shareResponse", data, sharing_user)
+
 
 class LikeTestCase(BaseAPITests):
     def test_users_can_like_content(self):
@@ -50,6 +64,19 @@ class LikeTestCase(BaseAPITests):
             'object_id': PostFactory().pk,
         }
         self.assertSchemaPost(likes_url, "$likeRequest", "$likeResponse", data, self.dev_user)
+
+    def test_liked_mixin(self):
+        post = PostFactory()
+        url = reverse("posts-detail", args=[post.pk])
+        like = Like.objects.create(content_type=ContentType.objects.get_for_model(Post), object_id=post.pk,
+                                   user=self.dev_user)
+        response = self.assertSchemaGet(url, None, "$postResponse", self.dev_user)
+        self.assertEqual(response.data["liked_id"], like.pk)
+
+        other_post = PostFactory()
+        url = reverse("posts-detail", args=[other_post.pk])
+        response = self.assertSchemaGet(url, None, "$postResponse", self.dev_user)
+        self.assertIsNone(response.data["liked_id"])
 
 
 class CommentTestCase(BaseAPITests):
@@ -74,6 +101,25 @@ class CommentTestCase(BaseAPITests):
         self.assertEqual(response.data['results'][0]['name'], 'django')
         self.assertIsNotNone(Tag.objects.get(name='django'))
 
+    def test_comments_for_specific_object(self):
+        test_user = UserFactory()
+        post_content_type = ContentType.objects.get_for_model(Post)
+
+        post = PostFactory(user=test_user)
+        comment = CommentFactory(content_type=post_content_type, object_id=post.pk)
+
+        post2 = PostFactory(user=test_user)
+        CommentFactory(content_type=post_content_type, object_id=post2.pk)
+
+        url = reverse('comments-list')
+        parameters = {
+            'content_type': post_content_type.pk,
+            'object_id': post.pk,
+        }
+        response = self.assertSchemaGet(url, parameters, "$commentResponse", self.dev_user)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["id"], comment.pk)
+
 
 class UserFollowingTestCase(BaseAPITests):
     def test_user_can_follow_each_other(self):
@@ -97,8 +143,8 @@ class UserFollowingTestCase(BaseAPITests):
         Follow.objects.create(content_type=user_content_type, object_id=self.dev_user.pk, user=test_user2)
         following_url = reverse('users-following', args=[self.dev_user.pk])
         response = self.assertSchemaGet(following_url, None, "$followResponse", self.dev_user)
-        self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['following']['username'], test_user1.username)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['following']['username'], test_user1.username)
 
     def test_follower_endpoint(self):
         test_user1 = UserFactory()
@@ -109,8 +155,20 @@ class UserFollowingTestCase(BaseAPITests):
         Follow.objects.create(content_type=user_content_type, object_id=self.dev_user.pk, user=test_user2)
         followers_url = reverse('users-followers', args=[self.dev_user.pk])
         response = self.assertSchemaGet(followers_url, None, "$followResponse", self.dev_user)
-        self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['follower']['username'], test_user2.username)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['follower']['username'], test_user2.username)
+
+    def test_follow_pagination(self):
+        user_content_type = ContentType.objects.get_for_model(User)
+        for _ in range(0, 30):
+            user = UserFactory()
+            Follow.objects.create(content_type=user_content_type, object_id=self.dev_user.pk, user=user)
+
+        followers_url = reverse('users-followers', args=[self.dev_user.pk])
+        response = self.assertSchemaGet(followers_url, None, "$followResponse", self.dev_user)
+        self.assertEqual(len(response.data), settings.REST_FRAMEWORK['PAGE_SIZE'])
+        response = self.assertSchemaGet(followers_url, {"page": 2}, "$followResponse", self.dev_user)
+        self.assertEqual(len(response.data), 30 - settings.REST_FRAMEWORK['PAGE_SIZE'])
 
     def test_user_can_unfollow_user(self):
         follower = UserFactory()
@@ -156,3 +214,16 @@ class UserFollowingTestCase(BaseAPITests):
         self.assertSchemaPost(url, "$followRequest", "$followResponse", data, self.dev_user)
         self.assertEqual(user1.user_followers_count(), 1)
         self.assertEqual(user2.user_followers_count(), 1)
+
+    def test_follow_id(self):
+        follower = UserFactory()
+        user_content_type = ContentType.objects.get_for_model(User)
+        follow_object = Follow.objects.create(content_type=user_content_type, object_id=self.dev_user.pk, user=follower)
+        url = reverse("users-detail", args=[self.dev_user.pk])
+        response = self.assertSchemaGet(url, None, "$userResponse", follower)
+        self.assertEqual(response.data['follow_id'], follow_object.pk)
+
+        not_follower = UserFactory()
+        url = reverse("users-detail", args=[self.dev_user.pk])
+        response = self.assertSchemaGet(url, None, "$userResponse", not_follower)
+        self.assertIsNone(response.data['follow_id'])

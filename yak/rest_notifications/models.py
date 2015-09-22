@@ -1,7 +1,9 @@
+from collections import defaultdict
 from caching.base import CachingMixin, CachingManager
 from django.conf import settings
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from django.db import models
 from django.template.loader import render_to_string
 from celery.task import task
@@ -30,6 +32,9 @@ class NotificationSetting(CoreModel):
     class Meta:
         unique_together = ('notification_type', 'user')
 
+    def __unicode__(self):
+        return u"{}: {}".format(self.user, self.notification_type)
+
     def name(self):
         return u"{}: {}".format(self.user, self.notification_type)
 
@@ -53,7 +58,7 @@ class Notification(CoreModel):
     EMAIL = "email"
 
     notification_type = models.ForeignKey(NotificationType, related_name="notifications")
-    # template_override = models.CharField(max_length=100, blank=True, null=True)
+    template_override = models.CharField(max_length=100, blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_received", null=True, blank=True)
     reporter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_sent", null=True, blank=True)
 
@@ -61,7 +66,7 @@ class Notification(CoreModel):
     # E.g., if you Like a Post, the content_object for the notification is the Post, not the Like
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField(db_index=True)
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
 
     def message(self, location):
         """
@@ -69,18 +74,21 @@ class Notification(CoreModel):
         replacing the appropriate variables from the content object
         """
 
-        # TODO: Right now assumes the content_object has identifier defined
-        data = {
-            'identifier': self.content_object.identifier(),
-            'reporter': self.reporter.identifier()
-        }
+        data = defaultdict(str)
+        # get the domain from Site
+        data['domain'] = Site.objects.get_current().domain
+
+        if self.content_object:
+            data['identifier'] = self.content_object.identifier()
+        if self.reporter:
+            data['reporter'] = self.reporter.identifier()
 
         if hasattr(self.content_object, 'extra_notification_params'):
             data.update(self.content_object.extra_notification_params())
 
         configured_template_name = "{}.html".format(self.notification_type.slug)
-        # template_name = self.template_override if self.template_override else configured_template_name
-        return unicode(render_to_string("notifications/{}/{}".format(location, configured_template_name), data))
+        template_name = self.template_override if self.template_override else configured_template_name
+        return unicode(render_to_string("notifications/{}/{}".format(location, template_name), data))
 
     def email_message(self):
         return self.message(Notification.EMAIL)
@@ -113,7 +121,8 @@ def create_notification(receiver, reporter, content_object, notification_type, t
     notification = Notification.objects.create(user=receiver,
                                                reporter=reporter,
                                                content_object=content_object,
-                                               notification_type=notification_type)
+                                               notification_type=notification_type,
+                                               template_override=template_override)
     notification.save()
 
     notification_setting = NotificationSetting.objects.get(notification_type=notification_type, user=receiver)

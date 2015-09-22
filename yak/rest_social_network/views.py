@@ -1,9 +1,11 @@
+import rest_framework
 from rest_framework.response import Response
 from rest_framework import viewsets, status, generics
 from rest_framework.decorators import detail_route, list_route
+from yak.rest_core.utils import get_package_version
 from yak.rest_social_network.models import Tag, Comment, Follow, Flag, Share, Like
 from yak.rest_social_network.serializers import TagSerializer, CommentSerializer, FollowSerializer, FlagSerializer, \
-    ShareSerializer, FollowPaginationSerializer, LikeSerializer
+    ShareSerializer, LikeSerializer
 from yak.rest_user.serializers import UserSerializer
 from yak.rest_user.views import UserViewSet
 from django.contrib.auth import get_user_model
@@ -13,6 +15,7 @@ __author__ = 'baylee'
 
 
 User = get_user_model()
+drf_version = get_package_version(rest_framework)
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -23,6 +26,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    filter_fields = ('content_type', 'object_id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -89,14 +93,26 @@ class SocialUserViewSet(UserViewSet):
     def following(self, request, pk):
         requested_user = User.objects.get(pk=pk)
         following = requested_user.user_following()
-        page = self.paginate_queryset(following)
-        serializer = FollowPaginationSerializer(instance=page, context={'request': request})
+
+        if drf_version[0] >= 3 and drf_version[1] < 1:
+            result_page = self.paginate_queryset(following)
+        else:
+            paginator = FollowViewSet.pagination_class
+            result_page = paginator.paginate_queryset(following, request)
+
+        serializer = FollowSerializer(instance=result_page, many=True, context={'request': request})
         return Response(serializer.data)
 
     @detail_route(methods=['get'])
     def followers(self, request, pk):
         requested_user = User.objects.get(pk=pk)
-        follower = requested_user.user_followers()
-        page = self.paginate_queryset(follower)
-        serializer = FollowPaginationSerializer(instance=page, context={'request': request})
+        followers = requested_user.user_followers()
+
+        if drf_version[0] >= 3 and drf_version[1] < 1:
+            result_page = self.paginate_queryset(followers)
+        else:
+            paginator = FollowViewSet.pagination_class
+            result_page = paginator.paginate_queryset(followers, request)
+
+        serializer = FollowSerializer(instance=result_page, many=True, context={'request': request})
         return Response(serializer.data)

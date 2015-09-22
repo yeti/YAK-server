@@ -23,6 +23,17 @@
             }
         },
         {
+            "url": "sign_in/",
+            "doc": "Authenticates an existing user and returns client_id and client_secret. Like 'login' but doesn't require basic auth",
+            "post": {
+                "#meta": "",
+                "request": "$signInRequest",
+                "response": {
+                    "200+": "$loginResponse"
+                }
+            }
+        },
+        {
             "url": "o/token/",
             "doc": "Provides access token for authenticated calls throughout the app",
             "post": {
@@ -187,6 +198,7 @@
             "get": {
                 "#meta" : "oauth2,optional",
                 "doc": "Gets a list of all comments",
+                "parameters": "$commentParameters",
                 "response": {
                     "200+": "$commentResponse"
                 }
@@ -256,7 +268,7 @@
             }
         },
         {
-            "url": "users/:id/set_password",
+            "url": "password/change/",
             "patch": {
                 "#meta": "oauth2",
                 "doc": "Change the authenticated user's password",
@@ -267,11 +279,41 @@
             }
         },
         {
+            "url": "password/reset/",
+            "post": {
+                "#meta": "",
+                "doc": "Sends a password reset email",
+                "request": "$resetPasswordRequest",
+                "response": {
+                    "200+": "$resetPasswordResponse"
+                }
+            }
+        },
+        {
+            "url": "password/new/",
+            "post": {
+                "#meta": "",
+                "doc": "Change a user's password",
+                "request": "$setPasswordRequest",
+                "response": {
+                    "200+": "$userResponse"
+                }
+            }
+        },
+        {
             "url": "notification_settings/",
             "get": {
                 "#meta": "oauth2",
                 "doc": "See the notification settings for the logged in user",
                 "response": {
+                    "200+": "$notificationSettingResponse"
+                }
+            },
+            "put": {
+                "#meta": "oauth2",
+                "doc": "Bulk update a user's notification settings",
+                "request": "$notificationSettingBulkRequest",
+                "repsonse": {
                     "200+": "$notificationSettingResponse"
                 }
             }
@@ -328,6 +370,10 @@
             "client_id": "string",
             "client_secret": "string"
         }},
+        {"$signInRequest": {
+            "username": "string",
+            "password": "string"
+        }},
         {"$tokenRequest": {
             "client_id": "string",
             "client_secret": "string",
@@ -362,7 +408,7 @@
             "clip": "O2O,$clipResponse,optional",
             "user_following_count": "int",
             "user_followers_count": "int",
-            "followed": "boolean"
+            "follow_id": "int,optional"
         }},
         {"$userRequest": {
             "email": "string,optional",
@@ -410,6 +456,10 @@
             "content_type": "int",
             "object_id": "int",
             "description": "string"
+        }},
+        {"$commentParameters": {
+            "content_type": "int,optional",
+            "object_id": "int,optional"
         }},
         {"$followResponse": {
             "follower": "M2O,$userResponse",
@@ -474,6 +524,11 @@
             "allow_push": "boolean",
             "allow_email": "boolean"
         }},
+        {"$notificationSettingBulkRequest": {
+            "id": "int,primarykey",
+            "allow_push": "boolean,optional",
+            "allow_email": "boolean,optional"
+        }},
         {"$notificationSettingRequest": {
             "allow_push": "boolean",
             "allow_email": "boolean"
@@ -504,10 +559,23 @@
         }},
         {"$changePasswordRequest": {
             "old_password": "string",
-            "password": "string"
+            "password": "string",
+            "confirm_password": "string"
         }},
         {"$changePasswordResponse": {
             "status": "string"
+        }},
+        {"$resetPasswordRequest": {
+            "email": "string"
+        }},
+        {"$resetPasswordResponse": {
+            "status": "string"
+        }},
+        {"$setPasswordRequest": {
+            "uid": "string",
+            "token": "string",
+            "password": "string",
+            "confirm_password": "string"
         }}
     ]
 }

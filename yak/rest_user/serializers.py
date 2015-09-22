@@ -2,15 +2,18 @@ import base64
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.core.validators import RegexValidator
+import oauth2_provider
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from yak.rest_core.serializers import YAKModelSerializer
+from yak.rest_core.utils import get_package_version
 from yak.settings import yak_settings
 
 __author__ = 'baylee'
 
 
 User = get_user_model()
+oauth_toolkit_version = get_package_version(oauth2_provider)
 
 
 class AuthSerializerMixin(object):
@@ -61,11 +64,18 @@ class LoginSerializer(serializers.ModelSerializer):
         model = User
         fields = ('client_id', 'client_secret')
 
+    def get_application(self, obj):
+        # If we're using version 0.8.0 or higher
+        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[1] >= 8:
+            return obj.oauth2_provider_application.first()
+        else:
+            return obj.application_set.first()
+
     def get_client_id(self, obj):
-        return obj.application_set.first().client_id
+        return self.get_application(obj).client_id
 
     def get_client_secret(self, obj):
-        return obj.application_set.first().client_secret
+        return self.get_application(obj).client_secret
 
 
 class SignUpSerializer(AuthSerializerMixin, LoginSerializer):
@@ -94,12 +104,26 @@ class UserSerializer(AuthSerializerMixin, YAKModelSerializer):
         return yak_settings.USER_SERIALIZER(*args, **kwargs)
 
 
-class PasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True, error_messages={'required': 'Old password required'})
+class PasswordConfirmSerializer(AuthSerializerMixin, serializers.Serializer):
     password = serializers.CharField(required=True, error_messages={'required': 'New password required'})
+    confirm_password = serializers.CharField(required=True,
+                                             error_messages={'required': 'New password must be confirmed'})
 
-    def validate_password(self, value):
-        value = base64.decodestring(value)
-        if len(value) < 6:
-            raise serializers.ValidationError("Password must be at least 6 characters")
-        return value
+    def validate(self, attrs):
+        # first password is decoded in the `validate_password` method
+        if attrs['password'] != base64.decodestring(attrs['confirm_password']):
+            raise serializers.ValidationError("Passwords did not match")
+        return attrs
+
+
+class PasswordChangeSerializer(PasswordConfirmSerializer):
+    old_password = serializers.CharField(required=True, error_messages={'required': 'Old password required'})
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordSetSerializer(PasswordConfirmSerializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()

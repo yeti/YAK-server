@@ -1,5 +1,6 @@
-from rest_framework import mixins, generics
+from rest_framework import mixins, generics, status
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from pypushwoosh import client, constants
 from pypushwoosh.command import RegisterDeviceCommand
@@ -24,8 +25,8 @@ class PushwooshTokenView(generics.CreateAPIView):
         language = serializer.validated_data.pop("language")
 
         push_client = client.PushwooshClient()
-        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, hwid, constants.PLATFORM_IOS, language,
-                                        serializer.validated_data["token"])
+        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, hwid, constants.PLATFORM_IOS,
+                                        serializer.validated_data["token"], language)
         response = push_client.invoke(command)
 
         if response["status_code"] != 200:
@@ -46,6 +47,14 @@ class NotificationSettingViewSet(mixins.UpdateModelMixin,
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
+    def put(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, data=request.data, many=True, partial=True)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class NotificationView(generics.ListAPIView):

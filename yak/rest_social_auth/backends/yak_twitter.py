@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from social.backends.twitter import TwitterOAuth
 from twython import Twython
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
+import re
 
 User = get_user_model()
 
@@ -14,7 +15,8 @@ class Twitter(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, TwitterOAuth):
 
     @staticmethod
     def get_profile_image(strategy, details, response, uid, user, social, is_new=False, *args, **kwargs):
-        return response['profile_image_url']
+        # Remove the `_normal` affix to get the highest resolution / original photo from twitter
+        return re.sub("_normal", "", response['profile_image_url'])
 
     @staticmethod
     def post(user_social_auth, social_obj):

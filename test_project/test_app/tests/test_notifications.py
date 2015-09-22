@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.utils import unittest
+import unittest
 import memcache
 from mock import MagicMock
 from test_project import settings
@@ -11,7 +11,7 @@ from test_project.test_app.models import Post, Article
 from test_project.test_app.tests.factories import PostFactory, UserFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_notifications.models import create_notification, Notification, NotificationSetting, NotificationType
-from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient
+from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient, PushClient
 from yak.settings import yak_settings
 
 
@@ -26,6 +26,7 @@ class NotificationsTestCase(SchemaTestCase):
         self.reporter = UserFactory()
         self.notification_type = NotificationType.objects.get(slug="comment")
         PushwooshClient.invoke = MagicMock(return_value={"status_code": 200})
+        PushClient.invoke = MagicMock(return_value={"status_code": 200})
 
     def test_create_pushwoosh_token(self):
         url = reverse("pushwoosh_token")
@@ -79,14 +80,14 @@ class NotificationsTestCase(SchemaTestCase):
         # An email and a push are sent if allow_email and allow_push are True
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(len(PushwooshClient.invoke.mock_calls), 1)
+        self.assertTrue(len(PushClient.invoke.mock_calls), 1)
 
         # No new email is sent if allow_email is False
         setting.allow_email = False
         setting.save()
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(len(PushwooshClient.invoke.mock_calls), 2)
+        self.assertTrue(len(PushClient.invoke.mock_calls), 2)
 
         # If allow_push is False and allow_email True, an email is sent and a push isn't
         setting.allow_email = True
@@ -94,7 +95,7 @@ class NotificationsTestCase(SchemaTestCase):
         setting.save()
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
         self.assertEqual(len(mail.outbox), 2)
-        self.assertTrue(len(PushwooshClient.invoke.mock_calls), 2)
+        self.assertTrue(len(PushClient.invoke.mock_calls), 2)
 
     def test_can_only_see_own_notifications(self):
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
@@ -209,6 +210,22 @@ class NotificationsTestCase(SchemaTestCase):
 
         self.assertEquals(notification_count, 1)
 
+    def test_serialization_when_content_object_deleted(self):
+        mention_notification = NotificationType.objects.get(slug="mention")
+        content_type = ContentType.objects.get_for_model(Post)
+        user = UserFactory()
+        post = PostFactory(user=user)
+        Notification.objects.create(notification_type=mention_notification, content_type=content_type,
+                                    object_id=post.pk, user=user, reporter=self.reporter)
+        post.delete()
+        other_post = PostFactory(user=user)
+        Notification.objects.create(notification_type=mention_notification, content_type=content_type,
+                                    object_id=other_post.pk, user=user, reporter=self.reporter)
+        url = reverse("notifications")
+        response = self.assertSchemaGet(url, None, "$notificationResponse", user)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['post']['id'], other_post.pk)
+
 
 class NotificationSettingsTestCase(SchemaTestCase):
     def test_can_only_see_own_notification_settings(self):
@@ -258,3 +275,20 @@ class NotificationSettingsTestCase(SchemaTestCase):
         cache.clear()
         assert NotificationType.objects.get(slug="like").from_cache is False
         assert NotificationType.objects.get(slug="like").from_cache is True
+
+    def test_bulk_update_notification_settings(self):
+        url = reverse("notification_settings-list")
+        user = UserFactory()
+        bad_user = UserFactory()
+        notification_settings = user.notification_settings.all()
+        data = [
+            {"id": notification_settings[0].pk, "allow_email": False},
+            {"id": notification_settings[1].pk, "allow_email": False}
+        ]
+        # Can't update another user's notification settings
+        self.assertSchemaPut(url, "$notificationSettingBulkRequest", "$notificationSettingResponse", data, bad_user,
+                             forbidden=True)
+        self.assertTrue(NotificationSetting.objects.get(pk=notification_settings[0].pk).allow_email)
+
+        self.assertSchemaPut(url, "$notificationSettingBulkRequest", "$notificationSettingResponse", data, user)
+        self.assertFalse(NotificationSetting.objects.get(pk=notification_settings[0].pk).allow_email)
