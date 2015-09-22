@@ -2,6 +2,7 @@ import rest_framework
 from rest_framework.response import Response
 from rest_framework import viewsets, status, generics
 from rest_framework.decorators import detail_route, list_route
+from yak.rest_core.utils import get_package_version
 from yak.rest_social_network.models import Tag, Comment, Follow, Flag, Share, Like
 from yak.rest_social_network.serializers import TagSerializer, CommentSerializer, FollowSerializer, FlagSerializer, \
     ShareSerializer, LikeSerializer
@@ -14,7 +15,7 @@ __author__ = 'baylee'
 
 
 User = get_user_model()
-drf_version = [int(num) for num in rest_framework.__version__.split('.')]
+drf_version = get_package_version(rest_framework)
 
 
 class TagViewSet(viewsets.ModelViewSet):

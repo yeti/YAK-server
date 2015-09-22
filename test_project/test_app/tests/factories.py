@@ -5,6 +5,7 @@ from test_project.test_app.models import Post
 from django.utils.timezone import now
 from oauth2_provider.models import AccessToken
 from django.contrib.auth import get_user_model
+from yak.rest_core.utils import get_package_version
 from yak.rest_social_network.models import Comment
 
 
@@ -23,20 +24,18 @@ class UserFactory(factory.DjangoModelFactory):
         user = super(UserFactory, cls)._create(model_class, *args, **kwargs)
         # Force save for post_save signal to create auth client
         user.save()
-        oauth_toolkit_version = [int(num) for num in oauth2_provider.__version__.split('.')]
+        oauth_toolkit_version = get_package_version(oauth2_provider)
         # If we're using version 0.8.0 or higher
         if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[1] >= 8:
-            AccessToken.objects.create(user=user,
-                                       application=user.oauth2_provider_application.first(),
-                                       token='token{}'.format(user.id),
-                                       expires=now() + datetime.timedelta(days=1)
-                                       )
+            application = user.oauth2_provider_application.first()
         else:
-            AccessToken.objects.create(user=user,
-                                       application=user.application_set.first(),
-                                       token='token{}'.format(user.id),
-                                       expires=now() + datetime.timedelta(days=1)
-                                       )
+            application = user.application_set.first()
+
+        AccessToken.objects.create(user=user,
+                                   application=application,
+                                   token='token{}'.format(user.id),
+                                   expires=now() + datetime.timedelta(days=1)
+                                   )
         return user
 
 
