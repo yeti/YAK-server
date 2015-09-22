@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.pagination import PaginationSerializer
 from yak.rest_social_network.models import Tag, Comment, Follow, Flag, Share, Like
 from yak.rest_user.serializers import UserSerializer
 
@@ -18,6 +17,19 @@ class LikedMixin(object):
                 content_type = self.get_content_type(obj)
                 return Like.objects.get(content_type=content_type, user=request.user, object_id=obj.pk).pk
             except Like.DoesNotExist:
+                pass
+        return None
+
+
+class FollowedMixin(object):
+    def get_follow_id(self, obj):
+        # Indicate whether or not the logged in user is following a given object (e.g., another user)
+        # Provide the id of the follow object so it can be deleted to unfollow the object
+        if self.context['request'].user.is_authenticated():
+            try:
+                content_type = self.get_content_type(obj)
+                return self.context['request'].user.following.get(content_type=content_type, object_id=obj.pk).pk
+            except Follow.DoesNotExist:
                 pass
         return None
 
@@ -70,31 +82,8 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
 
 
-class PaginatedFollowSerializer(PaginationSerializer):
-    class Meta:
-        object_serializer_class = FollowSerializer
-
-
 class FlagSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Flag
-
-
-class FollowPaginationSerializer(PaginationSerializer):
-    def __init__(self, *args, **kwargs):
-        """
-        Overrode BasePaginationSerializer init to set object serializer as Follow Serializer.
-        """
-        super(FollowPaginationSerializer, self).__init__(*args, **kwargs)
-        results_field = self.results_field
-        object_serializer = FollowSerializer
-        if 'context' in kwargs:
-            context_kwarg = {'context': kwargs['context']}
-        else:
-            context_kwarg = {}
-
-        self.fields[results_field] = object_serializer(source='object_list',
-                                                       many=True,
-                                                       **context_kwarg)

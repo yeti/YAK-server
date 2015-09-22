@@ -408,7 +408,7 @@
             "clip": "O2O,$clipResponse,optional",
             "user_following_count": "int",
             "user_followers_count": "int",
-            "followed": "boolean"
+            "follow_id": "int,optional"
         }},
         {"$userRequest": {
             "email": "string,optional",

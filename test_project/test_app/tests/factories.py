@@ -1,5 +1,6 @@
 import factory
 import datetime
+import oauth2_provider
 from test_project.test_app.models import Post
 from django.utils.timezone import now
 from oauth2_provider.models import AccessToken
@@ -22,11 +23,20 @@ class UserFactory(factory.DjangoModelFactory):
         user = super(UserFactory, cls)._create(model_class, *args, **kwargs)
         # Force save for post_save signal to create auth client
         user.save()
-        AccessToken.objects.create(user=user,
-                                   application=user.oauth2_provider_application.first(),
-                                   token='token{}'.format(user.id),
-                                   expires=now() + datetime.timedelta(days=1)
-                                   )
+        oauth_toolkit_version = [int(num) for num in oauth2_provider.__version__.split('.')]
+        # If we're using version 0.8.0 or higher
+        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[0] >= 8:
+            AccessToken.objects.create(user=user,
+                                       application=user.oauth2_provider_application.first(),
+                                       token='token{}'.format(user.id),
+                                       expires=now() + datetime.timedelta(days=1)
+                                       )
+        else:
+            AccessToken.objects.create(user=user,
+                                       application=user.application_set.first(),
+                                       token='token{}'.format(user.id),
+                                       expires=now() + datetime.timedelta(days=1)
+                                       )
         return user
 
 

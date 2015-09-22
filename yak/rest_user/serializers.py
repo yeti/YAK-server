@@ -2,6 +2,7 @@ import base64
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.core.validators import RegexValidator
+import oauth2_provider
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from yak.rest_core.serializers import YAKModelSerializer
@@ -11,6 +12,7 @@ __author__ = 'baylee'
 
 
 User = get_user_model()
+oauth_toolkit_version = [int(num) for num in oauth2_provider.__version__.split('.')]
 
 
 class AuthSerializerMixin(object):
@@ -62,10 +64,18 @@ class LoginSerializer(serializers.ModelSerializer):
         fields = ('client_id', 'client_secret')
 
     def get_client_id(self, obj):
-        return obj.oauth2_provider_application.first().client_id
+        # If we're using version 0.8.0 or higher
+        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[0] >= 8:
+            return obj.oauth2_provider_application.first().client_id
+        else:
+            return obj.application_set.first().client_id
 
     def get_client_secret(self, obj):
-        return obj.oauth2_provider_application.first().client_secret
+        # If we're using version 0.8.0 or higher
+        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[0] >= 8:
+            return obj.oauth2_provider_application.first().client_secret
+        else:
+            return obj.application_set.first().client_secret
 
 
 class SignUpSerializer(AuthSerializerMixin, LoginSerializer):

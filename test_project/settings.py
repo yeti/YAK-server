@@ -212,6 +212,7 @@ REST_FRAMEWORK = {
         'yak.rest_core.permissions.IsOwnerOrReadOnly',
     ),
     'PAGINATE_BY': 20,
+    'PAGE_SIZE': 20,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.ext.rest_framework.OAuth2Authentication',
         'rest_framework.authentication.SessionAuthentication',

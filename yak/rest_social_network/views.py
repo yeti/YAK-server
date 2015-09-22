@@ -3,7 +3,7 @@ from rest_framework import viewsets, status, generics
 from rest_framework.decorators import detail_route, list_route
 from yak.rest_social_network.models import Tag, Comment, Follow, Flag, Share, Like
 from yak.rest_social_network.serializers import TagSerializer, CommentSerializer, FollowSerializer, FlagSerializer, \
-    ShareSerializer, FollowPaginationSerializer, LikeSerializer
+    ShareSerializer, LikeSerializer
 from yak.rest_user.serializers import UserSerializer
 from yak.rest_user.views import UserViewSet
 from django.contrib.auth import get_user_model
@@ -90,14 +90,12 @@ class SocialUserViewSet(UserViewSet):
     def following(self, request, pk):
         requested_user = User.objects.get(pk=pk)
         following = requested_user.user_following()
-        page = self.paginate_queryset(following)
-        serializer = FollowPaginationSerializer(instance=page, context={'request': request})
+        serializer = FollowSerializer(instance=following, many=True, context={'request': request})
         return Response(serializer.data)
 
     @detail_route(methods=['get'])
     def followers(self, request, pk):
         requested_user = User.objects.get(pk=pk)
-        follower = requested_user.user_followers()
-        page = self.paginate_queryset(follower)
-        serializer = FollowPaginationSerializer(instance=page, context={'request': request})
+        followers = requested_user.user_followers()
+        serializer = FollowSerializer(instance=followers, many=True, context={'request': request})
         return Response(serializer.data)
