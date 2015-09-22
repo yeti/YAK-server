@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
@@ -156,6 +157,18 @@ class UserFollowingTestCase(BaseAPITests):
         response = self.assertSchemaGet(followers_url, None, "$followResponse", self.dev_user)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['follower']['username'], test_user2.username)
+
+    def test_follow_pagination(self):
+        user_content_type = ContentType.objects.get_for_model(User)
+        for _ in range(0, 30):
+            user = UserFactory()
+            Follow.objects.create(content_type=user_content_type, object_id=self.dev_user.pk, user=user)
+
+        followers_url = reverse('users-followers', args=[self.dev_user.pk])
+        response = self.assertSchemaGet(followers_url, None, "$followResponse", self.dev_user)
+        self.assertEqual(len(response.data), settings.REST_FRAMEWORK['PAGE_SIZE'])
+        response = self.assertSchemaGet(followers_url, {"page": 2}, "$followResponse", self.dev_user)
+        self.assertEqual(len(response.data), 30 - settings.REST_FRAMEWORK['PAGE_SIZE'])
 
     def test_user_can_unfollow_user(self):
         follower = UserFactory()

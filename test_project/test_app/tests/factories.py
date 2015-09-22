@@ -25,7 +25,7 @@ class UserFactory(factory.DjangoModelFactory):
         user.save()
         oauth_toolkit_version = [int(num) for num in oauth2_provider.__version__.split('.')]
         # If we're using version 0.8.0 or higher
-        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[0] >= 8:
+        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[1] >= 8:
             AccessToken.objects.create(user=user,
                                        application=user.oauth2_provider_application.first(),
                                        token='token{}'.format(user.id),

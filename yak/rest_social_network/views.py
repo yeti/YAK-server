@@ -1,3 +1,4 @@
+import rest_framework
 from rest_framework.response import Response
 from rest_framework import viewsets, status, generics
 from rest_framework.decorators import detail_route, list_route
@@ -13,6 +14,7 @@ __author__ = 'baylee'
 
 
 User = get_user_model()
+drf_version = [int(num) for num in rest_framework.__version__.split('.')]
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -90,12 +92,26 @@ class SocialUserViewSet(UserViewSet):
     def following(self, request, pk):
         requested_user = User.objects.get(pk=pk)
         following = requested_user.user_following()
-        serializer = FollowSerializer(instance=following, many=True, context={'request': request})
+
+        if drf_version[0] >= 3 and drf_version[1] < 1:
+            result_page = self.paginate_queryset(following)
+        else:
+            paginator = FollowViewSet.pagination_class
+            result_page = paginator.paginate_queryset(following, request)
+
+        serializer = FollowSerializer(instance=result_page, many=True, context={'request': request})
         return Response(serializer.data)
 
     @detail_route(methods=['get'])
     def followers(self, request, pk):
         requested_user = User.objects.get(pk=pk)
         followers = requested_user.user_followers()
-        serializer = FollowSerializer(instance=followers, many=True, context={'request': request})
+
+        if drf_version[0] >= 3 and drf_version[1] < 1:
+            result_page = self.paginate_queryset(followers)
+        else:
+            paginator = FollowViewSet.pagination_class
+            result_page = paginator.paginate_queryset(followers, request)
+
+        serializer = FollowSerializer(instance=result_page, many=True, context={'request': request})
         return Response(serializer.data)

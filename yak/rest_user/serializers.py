@@ -65,14 +65,14 @@ class LoginSerializer(serializers.ModelSerializer):
 
     def get_client_id(self, obj):
         # If we're using version 0.8.0 or higher
-        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[0] >= 8:
+        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[1] >= 8:
             return obj.oauth2_provider_application.first().client_id
         else:
             return obj.application_set.first().client_id
 
     def get_client_secret(self, obj):
         # If we're using version 0.8.0 or higher
-        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[0] >= 8:
+        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[1] >= 8:
             return obj.oauth2_provider_application.first().client_secret
         else:
             return obj.application_set.first().client_secret
