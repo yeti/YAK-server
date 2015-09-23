@@ -25,8 +25,14 @@ class Instagram(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, InstagramOAut
         return
 
     @staticmethod
-    def get_posts(user_social_auth, last_updated_time):
+    def get_posts(user_social_auth, **kwargs):
         api = InstagramAPI(access_token=user_social_auth.extra_data['access_token'])
-        formatted_time = helper.datetime_to_timestamp(last_updated_time) if last_updated_time else None
-        recent_media, next_ = api.user_recent_media(user_id=user_social_auth.uid, min_timestamp=formatted_time)
+        formatted_time = helper.datetime_to_timestamp(kwargs.get('last_updated_time', None))
+        params = {
+            'user_id': user_social_auth.uid,
+            'min_timestamp': formatted_time
+        }
+        if 'limit' in kwargs:
+            params.update({'count': kwargs['limit']})
+        recent_media, next_ = api.user_recent_media(**params)
         return recent_media

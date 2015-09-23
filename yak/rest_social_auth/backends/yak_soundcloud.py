@@ -26,13 +26,16 @@ class Soundcloud(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, SoundcloudOA
         return
 
     @staticmethod
-    def get_posts(user_social_auth, last_updated_time):
-        formatted_time = last_updated_time.replace(microsecond=0) if last_updated_time else None
+    def get_posts(user_social_auth, **kwargs):
+        formatted_time = kwargs['last_updated_time'].replace(microsecond=0) if 'last_updated_time' in kwargs else None
         params = {
             'oauth_token': user_social_auth.extra_data['access_token'],
-            'created_at[from]': formatted_time,
             'filter': 'public'
         }
+        if formatted_time:
+            params.update({'created_at[from]': formatted_time})
+        if 'limit' in kwargs:
+            params.update({'limit': kwargs['limit']})
         try:
             activity_url = "https://api.soundcloud.com/me/activities.json"
             activities = requests.get(activity_url, params=params).json()['collection']
