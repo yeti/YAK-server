@@ -143,8 +143,7 @@ class SchemaTestCase(APITestCaseWithAssertions):
         self.schema_objects = {}
         with open(yak_settings.API_SCHEMA) as file:
             schema_data = json.loads(file.read())
-            for schema_obj in schema_data["objects"]:
-                self.schema_objects.update(schema_obj)
+            self.schema_objects = schema_data['objects']
 
     def check_schema_keys(self, data_object, schema_fields):
         """
