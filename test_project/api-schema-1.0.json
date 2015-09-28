@@ -352,48 +352,48 @@
             }
         }
     ],
-    "objects": [
-        {"$signUpRequest": {
+    "objects": {
+        "$signUpRequest": {
             "fullname": "string",
             "username": "string",
             "email": "string,optional",
             "password": "string"
-        }},
-        {"$signUpResponse": {
+        },
+        "$signUpResponse": {
             "fullname": "string",
             "username": "string",
             "email": "string,optional",
             "client_id": "string",
             "client_secret": "string"
-        }},
-        {"$loginResponse": {
+        },
+        "$loginResponse": {
             "client_id": "string",
             "client_secret": "string"
-        }},
-        {"$signInRequest": {
+        },
+        "$signInRequest": {
             "username": "string",
             "password": "string"
-        }},
-        {"$tokenRequest": {
+        },
+        "$tokenRequest": {
             "client_id": "string",
             "client_secret": "string",
             "grant_type": "string"
-        }},
-        {"$tokenResponse": {
+        },
+        "$tokenResponse": {
             "access_token": "string",
             "token_type": "string",
             "expires_in": "int",
             "scope": "string"
-        }},
-        {"$socialSignUpRequest": {
+        },
+        "$socialSignUpRequest": {
             "provider": "string",
             "access_token": "string",
             "access_token_secret": "string,optional"
-        }},
-        {"$userParameters": {
+        },
+        "$userParameters": {
             "search": "string,optional"
-        }},
-        {"$userResponse": {
+        },
+        "$userResponse": {
             "email": "string,optional",
             "id": "int,primarykey",
             "username": "string",
@@ -409,8 +409,8 @@
             "user_following_count": "int",
             "user_followers_count": "int",
             "follow_id": "int,optional"
-        }},
-        {"$userRequest": {
+        },
+        "$userRequest": {
             "email": "string,optional",
             "username": "string,optional",
             "fullname": "string,optional",
@@ -418,13 +418,13 @@
             "about": "string,optional",
             "location": "int,optional",
             "clip": "int,optional"
-        }},
-        {"$postRequest": {
+        },
+        "$postRequest": {
             "title": "string,optional",
             "description": "string,optional",
             "thumbnail": "image,optional"
-        }},
-        {"$postResponse": {
+        },
+        "$postResponse": {
             "id": "int,primarykey",
             "title": "string,optional",
             "description": "string,optional",
@@ -432,150 +432,150 @@
             "content_type": "int",
             "user": "$userResponse",
             "liked_id": "int,optional"
-        }},
-        {"$pushwooshTokenRequest": {
+        },
+        "$pushwooshTokenRequest": {
             "token": "string",
             "language": "string",
             "hwid": "string"
-        }},
-        {"$pushwooshTokenResponse": {
+        },
+        "$pushwooshTokenResponse": {
             "id": "int,primarykey",
             "created": "datetime",
             "token": "string",
             "user": "M2O,$userResponse"
-        }},
-        {"$commentResponse": {
+        },
+        "$commentResponse": {
             "user": "M2O,$userResponse",
             "id": "int,primarykey",
             "created": "datetime",
             "content_type": "int",
             "object_id": "int",
             "description": "string"
-        }},
-        {"$commentRequest": {
+        },
+        "$commentRequest": {
             "content_type": "int",
             "object_id": "int",
             "description": "string"
-        }},
-        {"$commentParameters": {
+        },
+        "$commentParameters": {
             "content_type": "int,optional",
             "object_id": "int,optional"
-        }},
-        {"$followResponse": {
+        },
+        "$followResponse": {
             "follower": "M2O,$userResponse",
             "following": "M2O,$userResponse",
             "id": "int,primarykey",
             "created": "datetime",
             "content_type": "int",
             "object_id": "int"
-        }},
-        {"$followRequest": {
+        },
+        "$followRequest": {
             "content_type": "int",
             "object_id": "int"
-        }},
-        {"$shareResponse": {
+        },
+        "$shareResponse": {
             "user": "M2O,$userResponse",
             "id": "int,primarykey",
             "created": "datetime",
             "content_type": "int",
             "object_id": "int",
             "shared_with": "array,int"
-        }},
-        {"$shareRequest": {
+        },
+        "$shareRequest": {
             "content_type": "int",
             "object_id": "int",
             "shared_with": "array,int"
-        }},
-        {"$flagResponse": {
+        },
+        "$flagResponse": {
             "user": "M2O,$userResponse",
             "id": "int,primarykey",
             "created": "datetime",
             "content_type": "int",
             "object_id": "int"
-        }},
-        {"$flagRequest": {
+        },
+        "$flagRequest": {
             "content_type": "int",
             "object_id": "int"
-        }},
-        {"$likeResponse": {
+        },
+        "$likeResponse": {
             "user": "M2O,$userResponse",
             "id": "int,primarykey",
             "created": "datetime",
             "content_type": "int",
             "object_id": "int"
-        }},
-        {"$likeRequest": {
+        },
+        "$likeRequest": {
             "content_type": "int",
             "object_id": "int"
-        }},
-        {"$tagResponse": {
+        },
+        "$tagResponse": {
             "name": "string",
             "id": "int,primarykey"
-        }},
-        {"$notificationTypeResponse": {
+        },
+        "$notificationTypeResponse": {
             "id": "int,primarykey",
             "name": "string",
             "description": "string",
             "is_active": "boolean"
-        }},
-        {"$notificationSettingResponse": {
+        },
+        "$notificationSettingResponse": {
             "id": "int,primarykey",
             "notification_type": "$notificationTypeResponse",
             "allow_push": "boolean",
             "allow_email": "boolean"
-        }},
-        {"$notificationSettingBulkRequest": {
+        },
+        "$notificationSettingBulkRequest": {
             "id": "int,primarykey",
             "allow_push": "boolean,optional",
             "allow_email": "boolean,optional"
-        }},
-        {"$notificationSettingRequest": {
+        },
+        "$notificationSettingRequest": {
             "allow_push": "boolean",
             "allow_email": "boolean"
-        }},
-        {"$articleResponse": {
+        },
+        "$articleResponse": {
             "id": "int,primarykey",
             "title": "string,optional",
             "thumbnail": "string,optional",
             "liked_id": "int,optional",
             "content_type": "int"
-        }},
-        {"$notificationResponse": {
+        },
+        "$notificationResponse": {
             "created": "datetime",
             "name": "string",
             "message": "string",
             "reporter": "M2O,$userResponse",
             "post": "$postResponse,optional",
             "article": "$articleResponse,optional"
-        }},
-        {"$socialShareRequest": {
+        },
+        "$socialShareRequest": {
             "provider": "string"
-        }},
-        {"$socialShareResponse": {
+        },
+        "$socialShareResponse": {
             "status": "string"
-        }},
-        {"$socialFriendParameters": {
+        },
+        "$socialFriendParameters": {
             "provider": "string"
-        }},
-        {"$changePasswordRequest": {
+        },
+        "$changePasswordRequest": {
             "old_password": "string",
             "password": "string",
             "confirm_password": "string"
-        }},
-        {"$changePasswordResponse": {
+        },
+        "$changePasswordResponse": {
             "status": "string"
-        }},
-        {"$resetPasswordRequest": {
+        },
+        "$resetPasswordRequest": {
             "email": "string"
-        }},
-        {"$resetPasswordResponse": {
+        },
+        "$resetPasswordResponse": {
             "status": "string"
-        }},
-        {"$setPasswordRequest": {
+        },
+        "$setPasswordRequest": {
             "uid": "string",
             "token": "string",
             "password": "string",
             "confirm_password": "string"
-        }}
-    ]
+        }
+    }
 }
