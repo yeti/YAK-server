@@ -36,7 +36,7 @@ setup(
     license='BSD License',
     description='Server-side implementation of Yeti App Kit built on Django',
     long_description=README,
-    url='http://www.yetiappkit.com/',
+    url='https://yeti.co/yeti-app-kit/',
     author='Baylee Feore',
     author_email='baylee@yeti.co',
     classifiers=[
