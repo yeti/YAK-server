@@ -6,7 +6,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from social.apps.django_app import load_strategy
+from social.apps.django_app.utils import load_strategy
 from social.apps.django_app.default.models import UserSocialAuth
 from social.apps.django_app.utils import load_backend
 from social.backends.oauth import BaseOAuth1, BaseOAuth2
