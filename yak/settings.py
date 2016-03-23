@@ -5,7 +5,7 @@ This module provides the `api_setting` object, that is used to access
 YAK settings, checking for user settings first, then falling
 back to the defaults.
 """
-from __future__ import unicode_literals
+
 from django.conf import settings
 from django.utils import six
 from rest_framework.settings import APISettings, import_from_string
@@ -21,7 +21,7 @@ def perform_import(val, setting_name):
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]
     elif isinstance(val, dict):
-        return {import_from_string(k, setting_name): import_from_string(v, setting_name) for k, v in val.iteritems()}
+        return {import_from_string(k, setting_name): import_from_string(v, setting_name) for k, v in val.items()}
     return val
 
 
@@ -31,7 +31,7 @@ class YAKAPISettings(APISettings):
     """
 
     def __getattr__(self, attr):
-        if attr not in self.defaults.keys():
+        if attr not in list(self.defaults.keys()):
             raise AttributeError("Invalid API setting: '%s'" % attr)
 
         try:

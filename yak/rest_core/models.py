@@ -1,5 +1,7 @@
-import StringIO
+import io
 import os
+
+import sys
 from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
@@ -46,7 +48,7 @@ def resize_model_photos(obj):
 
     original_file = getattr(obj, original_file_field_name)
     if not original_file:
-        for size_name, size in obj.SIZES.iteritems():
+        for size_name, size in obj.SIZES.items():
             setattr(obj, size_name, '')
         return
 
@@ -59,14 +61,14 @@ def process_thumbnail(instance, original_file, sizes, crop=False):
     """
     # TODO: All of this is terrible
     try:
-        file = StringIO.StringIO(original_file.read())
+        file = io.BytesIO(original_file.read())
         file.seek(0)
         original_image = Image.open(file)  # open the image using PIL
     except IOError:
         # Open the file because this takes care of `seek(0)` but is more flexible
         # When the original photo has already been saved and `save` is called more than once in a view,
         # this block will execute
-        file = StringIO.StringIO(open(original_file.path, 'r').read())
+        file = io.BytesIO(open(original_file.path, 'rb').read())
         original_image = Image.open(file)  # open the image using PIL
 
     original_file.seek(0)
@@ -83,7 +85,7 @@ def process_thumbnail(instance, original_file, sizes, crop=False):
     if extension not in ['jpg', 'jpeg', 'gif', 'png']:
         return False
 
-    for size_name, size in sizes.iteritems():
+    for size_name, size in sizes.items():
         im = original_image.copy()
 
         (x_size, y_size) = im.size
@@ -103,12 +105,12 @@ def process_thumbnail(instance, original_file, sizes, crop=False):
                 im = im.crop((clip_amount, 0, width + clip_amount, height))
 
         name = "{}.jpg".format(filename)
-        tempfile_io = StringIO.StringIO()
+        tempfile_io = io.BytesIO()
         if im.mode != "RGB":
             im = im.convert("RGB")
         im.save(tempfile_io, 'JPEG')
 
-        temp_file = InMemoryUploadedFile(tempfile_io, None, name, 'image/jpeg', tempfile_io.len, None)
+        temp_file = InMemoryUploadedFile(tempfile_io, None, name, 'image/jpeg', sys.getsizeof(tempfile_io), None)
         temp_file.seek(0)
         setattr(instance, size_name, temp_file)
 

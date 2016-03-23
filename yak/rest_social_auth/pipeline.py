@@ -1,6 +1,5 @@
 from social.apps.django_app.default.models import UserSocialAuth
-import urllib
-from urllib2 import URLError
+from urllib import request, error
 from django.core.files import File
 # from yak.rest_core.utils import retry_cloudfiles
 
@@ -61,7 +60,7 @@ def save_profile_image(strategy, details, response, uid, user, social, is_new=Fa
 
     if image_url:
         try:
-            result = urllib.urlretrieve(image_url)
+            result = request.urlretrieve(image_url)
             user.original_photo.save("{}.jpg".format(uid), File(open(result[0])))
-        except URLError:
+        except error.URLError:
             pass

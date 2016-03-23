@@ -33,7 +33,7 @@ class NotificationSettingListSerializer(serializers.ListSerializer):
 
         # Perform creations and updates.
         ret = []
-        for obj_id, data in data_mapping.items():
+        for obj_id, data in list(data_mapping.items()):
             obj = object_mapping.get(obj_id, None)
             if obj is None:
                 raise serializers.ValidationError("Cannot update {}".format(obj_id))

@@ -152,7 +152,7 @@ class SchemaTestCase(APITestCaseWithAssertions):
         """
         required_fields = []
 
-        for schema_field, schema_type in schema_fields.iteritems():
+        for schema_field, schema_type in schema_fields.items():
             # If this field is actually another related object, then check that object's fields as well
             schema_parts = schema_type.split(',')
             is_list = False

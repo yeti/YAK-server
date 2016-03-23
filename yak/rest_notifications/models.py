@@ -20,7 +20,7 @@ class NotificationType(CachingMixin, CoreModel):
     objects = CachingManager()
 
     def __unicode__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
 
 class NotificationSetting(CoreModel):
@@ -33,10 +33,10 @@ class NotificationSetting(CoreModel):
         unique_together = ('notification_type', 'user')
 
     def __unicode__(self):
-        return u"{}: {}".format(self.user, self.notification_type)
+        return "{}: {}".format(self.user, self.notification_type)
 
     def name(self):
-        return u"{}: {}".format(self.user, self.notification_type)
+        return "{}: {}".format(self.user, self.notification_type)
 
 
 def create_notification_settings(sender, **kwargs):
@@ -88,7 +88,7 @@ class Notification(CoreModel):
 
         configured_template_name = "{}.html".format(self.notification_type.slug)
         template_name = self.template_override if self.template_override else configured_template_name
-        return unicode(render_to_string("notifications/{}/{}".format(location, template_name), data))
+        return str(render_to_string("notifications/{}/{}".format(location, template_name), data))
 
     def email_message(self):
         return self.message(Notification.EMAIL)
@@ -96,16 +96,16 @@ class Notification(CoreModel):
     def push_message(self):
         message = self.message(Notification.PUSH)
         if self.reporter:
-            return u"{0} {1}".format(self.reporter, message)
+            return "{0} {1}".format(self.reporter, message)
         else:
-            return u"{0}".format(message)
+            return "{0}".format(message)
 
     @property
     def name(self):
-        return u"{}".format(self.notification_type)
+        return "{}".format(self.notification_type)
 
     def __unicode__(self):
-        return u"{}: {}".format(self.user, self.notification_type)
+        return "{}: {}".format(self.user, self.notification_type)
 
     class Meta:
         ordering = ['-created']

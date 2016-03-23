@@ -46,10 +46,10 @@ class Post(BaseSocialModel):
         return self.comments.count()
 
     def identifier(self):
-        return u"{}".format(self.title)
+        return "{}".format(self.title)
 
     def __unicode__(self):
-        return u"{}".format(self.title) if self.title else "Untitled"
+        return "{}".format(self.title) if self.title else "Untitled"
 
     def url(self):
         current_site = Site.objects.get_current()
@@ -79,7 +79,7 @@ class Article(CoreModel):
     notifications = GenericRelation(Notification)
 
     def __unicode__(self):
-        return u"{}".format(self.title) if self.title else "Untitled"
+        return "{}".format(self.title) if self.title else "Untitled"
 
     def identifier(self):
-        return u"{}".format(self.title)
+        return "{}".format(self.title)

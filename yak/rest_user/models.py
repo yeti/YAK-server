@@ -47,7 +47,7 @@ class AbstractYeti(AbstractBaseUser, PermissionsMixin):
         abstract = True
 
     def __unicode__(self):
-        return u"{}".format(self.username)
+        return "{}".format(self.username)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

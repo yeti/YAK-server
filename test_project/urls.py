@@ -1,18 +1,14 @@
-from __future__ import unicode_literals
-
-from django.conf.urls import patterns
-from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.conf.urls import url, include
 from rest_framework import routers
-from test_app.api.views import ProjectUserViewSet, PostViewSet
+from .test_app.api.views import ProjectUserViewSet, PostViewSet
 
 
 router = routers.DefaultRouter()
 router.register(r'users', ProjectUserViewSet, base_name='users')
 router.register(r'posts', PostViewSet, base_name='posts')
 
-ap1_v1 = patterns('',
+api_v1 = [
 
     # Project-specific views
     url(r'^', include(router.urls)),
@@ -26,21 +22,21 @@ ap1_v1 = patterns('',
     url(r'^', include('yak.rest_social_auth.urls')),
     url(r'^', include('yak.rest_social_network.urls')),
     url(r'^', include('yak.rest_notifications.urls')),
-)
+]
 
 
 admin.autodiscover()
 
-urlpatterns = i18n_patterns("",
+urlpatterns = [
     # Change the admin prefix here to use an alternate URL for the
     # admin interface, which would be marginally more secure.
-    ("^admin/", include(admin.site.urls)),
-)
+    url("^admin/", include(admin.site.urls)),
+]
 
-urlpatterns += patterns('',
+urlpatterns += [
 
     # Web views
     # url(r'^(?P<content_type>\w+)/(?P<encoded_id>[a-zA-Z0-9]+)/$', 'brochure.views.share', name='share'),
 
-    url(r'^api/v1/', include(ap1_v1)),
-)
+    url(r'^api/v1/', include(api_v1)),
+]

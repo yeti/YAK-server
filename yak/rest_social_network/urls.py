@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from yak.rest_social_network import views
 from rest_framework import routers
 
@@ -15,7 +15,7 @@ router = routers.DefaultRouter()
 # These views do not expect app-specific notifications
 router.register(r'tags', views.TagViewSet, base_name='tags')
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^flag/$', views.FlagView.as_view(), name="flag"),
-)
+]
