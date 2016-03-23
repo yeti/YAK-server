@@ -257,13 +257,6 @@ CACHE_MIDDLEWARE_SECONDS = 60
 
 CACHE_MIDDLEWARE_KEY_PREFIX = "YAK"
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-#         "LOCATION": "127.0.0.1:11211",
-#     }
-# }
-
 
 ##################
 # LOCAL SETTINGS #

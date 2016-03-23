@@ -88,7 +88,7 @@ class Notification(CoreModel):
 
         configured_template_name = "{}.html".format(self.notification_type.slug)
         template_name = self.template_override if self.template_override else configured_template_name
-        return str(render_to_string("notifications/{}/{}".format(location, template_name), data))
+        return render_to_string("notifications/{}/{}".format(location, template_name), data)
 
     def email_message(self):
         return self.message(Notification.EMAIL)

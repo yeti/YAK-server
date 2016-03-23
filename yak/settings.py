@@ -31,7 +31,7 @@ class YAKAPISettings(APISettings):
     """
 
     def __getattr__(self, attr):
-        if attr not in list(self.defaults.keys()):
+        if attr not in self.defaults:
             raise AttributeError("Invalid API setting: '%s'" % attr)
 
         try:

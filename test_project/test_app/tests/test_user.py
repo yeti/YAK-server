@@ -14,6 +14,13 @@ from yak.rest_core.test import SchemaTestCase
 User = get_user_model()
 
 
+def encode_string(str):
+    """
+    Encode a unicode string as base 64 bytes, then decode back to unicode for use as a string
+    """
+    return base64.encodebytes(bytes(str, 'utf8')).decode()
+
+
 class UserTests(SchemaTestCase):
     def setUp(self):
         super(UserTests, self).setUp()
@@ -63,7 +70,7 @@ class UserTests(SchemaTestCase):
 
     def test_user_can_sign_up(self):
         url = reverse("sign_up")
-        password = base64.encodebytes(b"testtest").decode()
+        password = encode_string("testtest")
         data = {
             "fullname": "tester",
             "username": "tester",
@@ -78,7 +85,7 @@ class UserTests(SchemaTestCase):
 
     def test_password_min_length(self):
         url = reverse("sign_up")
-        password = base64.encodebytes(b"test").decode()
+        password = encode_string("test")
         data = {
             "fullname": "tester2",
             "username": "tester2",
@@ -92,14 +99,14 @@ class UserTests(SchemaTestCase):
         url = reverse("login")
 
         # With the correct username and password, a user can log in with basic auth
-        auth_string = base64.encodebytes(b"tester1:password").decode()
+        auth_string = encode_string("tester1:password")
         self.client.credentials(HTTP_AUTHORIZATION='Basic ' + auth_string)
         response = self.client.get(url)
         self.assertValidJSONResponse(response)
         self.check_response_data(response, "$loginResponse")
 
         # Incorrect credentials return unauthorized
-        auth_string = base64.encodebytes(b"tester1:WRONGPASSWORD").decode()
+        auth_string = encode_string("tester1:WRONGPASSWORD")
         self.client.credentials(HTTP_AUTHORIZATION='Basic ' + auth_string)
         response = self.client.get(url)
         self.assertHttpUnauthorized(response)
@@ -132,7 +139,7 @@ class UserTests(SchemaTestCase):
         data = {
             'username': 'useD',
             'email': 'different@email.com',
-            'password': base64.encodebytes(b"password").decode()
+            'password': encode_string("password")
         }
         response = self.client.post(url, data, format="json")
         self.assertHttpBadRequest(response)
@@ -140,7 +147,7 @@ class UserTests(SchemaTestCase):
         data = {
             'username': "new_username",
             'email': 'useD@email.com',
-            'password': base64.encodebytes(b"password").decode()
+            'password': encode_string("password")
         }
         response = self.client.post(url, data, format="json")
         self.assertHttpBadRequest(response)
@@ -149,7 +156,7 @@ class UserTests(SchemaTestCase):
         url = reverse("login")
 
         # username is case-insensitive for login
-        auth_string = base64.encodebytes(b"Tester1:password").decode()
+        auth_string = encode_string("Tester1:password")
         self.client.credentials(HTTP_AUTHORIZATION='Basic ' + auth_string)
         response = self.client.get(url)
         self.assertValidJSONResponse(response)
@@ -218,9 +225,9 @@ class PasswordResetTests(SchemaTestCase):
         url = reverse("password_change")
 
         data = {
-            "old_password": base64.encodebytes(b"password").decode(),
-            "password": base64.encodebytes(b"felicia").decode(),
-            "confirm_password": base64.encodebytes(b"felicia").decode()
+            "old_password": encode_string("password"),
+            "password": encode_string("felicia"),
+            "confirm_password": encode_string("felicia")
         }
         # Unauthenticated user can't change password
         self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", data, None, unauthorized=True)
@@ -228,9 +235,9 @@ class PasswordResetTests(SchemaTestCase):
 
         # User can't change password if the old / current password is incorrect
         bad_data = {
-            "old_password": base64.encodebytes(b"wrong_password").decode(),
-            "password": base64.encodebytes(b"felicia").decode(),
-            "confirm_password": base64.encodebytes(b"felicia").decode()
+            "old_password": encode_string("wrong_password"),
+            "password": encode_string("felicia"),
+            "confirm_password": encode_string("felicia")
         }
         self.assertSchemaPatch(url, "$changePasswordRequest", "$changePasswordResponse", bad_data, felicia,
                                unauthorized=True)
@@ -238,9 +245,9 @@ class PasswordResetTests(SchemaTestCase):
 
         # User can't change password if the two new passwords don't match
         mismatch_password_data = {
-            "old_password": base64.encodebytes(b"password").decode(),
-            "password": base64.encodebytes(b"felicia").decode(),
-            "confirm_password": base64.encodebytes(b"FELICIA").decode()
+            "old_password": encode_string("password"),
+            "password": encode_string("felicia"),
+            "confirm_password": encode_string("FELICIA")
         }
         self.add_credentials(felicia)
         response = self.client.patch(url, mismatch_password_data, format='json')
@@ -269,8 +276,8 @@ class PasswordResetTests(SchemaTestCase):
         mismatch_password_data = {
             "uid": urlsafe_base64_encode(force_bytes(beverly.pk)).decode(),
             "token": default_token_generator.make_token(beverly),
-            "password": base64.encodebytes(b"wesley").decode(),
-            "confirm_password": base64.encodebytes(b"WESLEY").decode()
+            "password": encode_string("wesley"),
+            "confirm_password": encode_string("WESLEY")
         }
         response = self.client.post(url, mismatch_password_data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -279,8 +286,8 @@ class PasswordResetTests(SchemaTestCase):
         bad_uid_data = {
             "uid": urlsafe_base64_encode(force_bytes(UserFactory().pk)).decode(),
             "token": default_token_generator.make_token(beverly),
-            "password": base64.encodebytes(b"wesley").decode(),
-            "confirm_password": base64.encodebytes(b"wesley").decode()
+            "password": encode_string("wesley"),
+            "confirm_password": encode_string("wesley")
         }
         response = self.client.post(url, bad_uid_data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -289,8 +296,8 @@ class PasswordResetTests(SchemaTestCase):
         good_data = {
             "uid": urlsafe_base64_encode(force_bytes(beverly.pk)).decode(),
             "token": default_token_generator.make_token(beverly),
-            "password": base64.encodebytes(b"wesley").decode(),
-            "confirm_password": base64.encodebytes(b"wesley").decode()
+            "password": encode_string("wesley"),
+            "confirm_password": encode_string("wesley")
         }
         self.assertSchemaPost(url, "$setPasswordRequest", "$userResponse", good_data, None, status_OK=True)
         self.assertTrue(User.objects.get(username='beverly').check_password('wesley'))
