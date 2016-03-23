@@ -11,7 +11,7 @@ class PushClient(PushwooshClient):
     def invoke(self, request):
         self.connection.request('POST', '/json/1.3/createMessage', request, self.headers)
         response = self.connection.getresponse()
-        body = response.read()
+        body = response.read().decode(response.headers.get_content_charset())
         return json.loads(body)
 
 

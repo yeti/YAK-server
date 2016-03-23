@@ -1,11 +1,8 @@
+from unittest.mock import MagicMock
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
-from django.core.cache import cache
 from django.core.urlresolvers import reverse
-import unittest
-import memcache
-from mock import MagicMock
 from test_project import settings
 from test_project.test_app.models import Post, Article
 from test_project.test_app.tests.factories import PostFactory, UserFactory
@@ -142,7 +139,7 @@ class NotificationsTestCase(SchemaTestCase):
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(Post),
                                                          notification_type=comment_type).count()
-        self.assertEquals(notification_count, 1)
+        self.assertEqual(notification_count, 1)
 
     def test_follow_creates_notification(self):
         url = reverse("follows-list")
@@ -157,7 +154,7 @@ class NotificationsTestCase(SchemaTestCase):
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(User),
                                                          notification_type=follow_type).count()
-        self.assertEquals(notification_count, 1)
+        self.assertEqual(notification_count, 1)
 
     def test_share_creates_notification(self):
         url = reverse("shares-list")
@@ -173,7 +170,7 @@ class NotificationsTestCase(SchemaTestCase):
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(Post),
                                                          notification_type=share_type).count()
-        self.assertEquals(notification_count, 1)
+        self.assertEqual(notification_count, 1)
 
     def test_like_creates_notification(self):
         url = reverse("likes-list")
@@ -188,7 +185,7 @@ class NotificationsTestCase(SchemaTestCase):
                                                          reporter=self.reporter,
                                                          content_type=ContentType.objects.get_for_model(Post),
                                                          notification_type=like_type).count()
-        self.assertEquals(notification_count, 1)
+        self.assertEqual(notification_count, 1)
 
     def test_comment_mention_creates_notification(self):
         """
@@ -208,7 +205,7 @@ class NotificationsTestCase(SchemaTestCase):
                                                          content_type=ContentType.objects.get_for_model(Post),
                                                          notification_type=mention_type).count()
 
-        self.assertEquals(notification_count, 1)
+        self.assertEqual(notification_count, 1)
 
     def test_serialization_when_content_object_deleted(self):
         mention_notification = NotificationType.objects.get(slug="mention")
@@ -268,13 +265,6 @@ class NotificationSettingsTestCase(SchemaTestCase):
         self.assertSchemaPost(create_url, "$notificationSettingRequest", "$notificationSettingResponse", data, user,
                               unauthorized=True)
         self.assertSchemaDelete(delete_url, user, unauthorized=True)
-
-    @unittest.skipIf(not memcache.Client(["127.0.0.1:11211"]).set("test", "testval"),
-                     "memcache not running")
-    def test_notification_types_are_cached(self):
-        cache.clear()
-        assert NotificationType.objects.get(slug="like").from_cache is False
-        assert NotificationType.objects.get(slug="like").from_cache is True
 
     def test_bulk_update_notification_settings(self):
         url = reverse("notification_settings-list")

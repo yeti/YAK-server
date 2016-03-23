@@ -50,7 +50,7 @@ class AuthSerializerMixin(object):
         return value
 
     def validate_password(self, value):
-        value = base64.decodestring(value)
+        value = base64.decodebytes(bytes(value, 'utf8')).decode()
         if len(value) < 6:
             raise serializers.ValidationError("Password must be at least 6 characters")
         return value
@@ -111,7 +111,8 @@ class PasswordConfirmSerializer(AuthSerializerMixin, serializers.Serializer):
 
     def validate(self, attrs):
         # first password is decoded in the `validate_password` method
-        if attrs['password'] != base64.decodestring(attrs['confirm_password']):
+        attrs['confirm_password'] = base64.decodebytes(bytes(attrs['confirm_password'], 'utf8')).decode()
+        if attrs['password'] != attrs['confirm_password']:
             raise serializers.ValidationError("Passwords did not match")
         return attrs
 

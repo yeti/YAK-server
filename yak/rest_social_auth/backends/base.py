@@ -1,11 +1,10 @@
 import abc
 
 
-class ExtraDataAbstractMixin(object):
+class ExtraDataAbstractMixin(object, metaclass=abc.ABCMeta):
     """
     Ensure that backends define these methods. Used in pipeline to save extra data on the user model.
     """
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def save_extra_data(response, user):
@@ -16,9 +15,7 @@ class ExtraDataAbstractMixin(object):
         return
 
 
-class ExtraActionsAbstractMixin(object):
-
-    __metaclass__ = abc.ABCMeta
+class ExtraActionsAbstractMixin(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def post(user_social_auth, social_obj):

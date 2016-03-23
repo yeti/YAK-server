@@ -97,7 +97,7 @@ class SocialUserViewSet(UserViewSet):
         if drf_version[0] >= 3 and drf_version[1] < 1:
             result_page = self.paginate_queryset(following)
         else:
-            paginator = FollowViewSet.pagination_class
+            paginator = FollowViewSet().paginator
             result_page = paginator.paginate_queryset(following, request)
 
         serializer = FollowSerializer(instance=result_page, many=True, context={'request': request})
@@ -111,7 +111,7 @@ class SocialUserViewSet(UserViewSet):
         if drf_version[0] >= 3 and drf_version[1] < 1:
             result_page = self.paginate_queryset(followers)
         else:
-            paginator = FollowViewSet.pagination_class
+            paginator = FollowViewSet().paginator
             result_page = paginator.paginate_queryset(followers, request)
 
         serializer = FollowSerializer(instance=result_page, many=True, context={'request': request})

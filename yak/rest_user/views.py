@@ -14,8 +14,6 @@ from yak.rest_user.serializers import SignUpSerializer, LoginSerializer, Passwor
     PasswordResetSerializer, PasswordSetSerializer
 from yak.rest_user.utils import reset_password
 
-__author__ = 'baylee'
-
 
 User = get_user_model()
 
@@ -77,7 +75,7 @@ class PasswordChangeView(views.APIView):
     permission_classes = (IsAuthenticated,)
 
     def patch(self, request, *args, **kwargs):
-        if not request.user.check_password(base64.decodestring(request.data['old_password'])):
+        if not request.user.check_password(base64.decodebytes(bytes(request.data['old_password'], 'utf8'))):
             raise AuthenticationFailed("Old password was incorrect")
         serializer = PasswordChangeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

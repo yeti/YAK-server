@@ -10,3 +10,4 @@ test_project/static
 *.egg-info
 dist
 syntax_output
+.python-version

@@ -14,13 +14,12 @@ from yak.rest_user.models import AbstractYeti
 from yak.settings import yak_settings
 
 
-class FollowableModel():
+class FollowableModel(metaclass=abc.ABCMeta):
     """
     Abstract class that used as interface
     This class makes sure that child classes have
     my_method implemented
     """
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def identifier(self):
@@ -35,13 +34,13 @@ class Tag(CoreModel):
     name = models.CharField(max_length=75, unique=True)
 
     def identifier(self):
-        return u"#{}".format(self.name)
+        return "#{}".format(self.name)
 
     def type(self):
-        return u"tag"
+        return "tag"
 
     def __unicode__(self):
-        return u"{}".format(self.name)
+        return "{}".format(self.name)
 
 FollowableModel.register(Tag)
 
@@ -61,7 +60,7 @@ def relate_tags(sender, **kwargs):
     # Get the text of the field that holds tags. If there is no field specified, use an empty string. If the field's
     # value is None, use an empty string.
     message = getattr(kwargs['instance'], sender.TAG_FIELD, '') or ''
-    for tag in re.findall(ur"#[a-zA-Z0-9_-]+", message):
+    for tag in re.findall(r"#[a-zA-Z0-9_-]+", message):
         tag_obj, created = Tag.objects.get_or_create(name=tag[1:])
         if tag_obj not in kwargs['instance'].related_tags.all():
             kwargs['instance'].related_tags.add(tag_obj)
@@ -89,7 +88,7 @@ def mentions(sender, **kwargs):
         message = getattr(kwargs['instance'], sender.TAG_FIELD, '') or ''
         content_object = getattr(kwargs['instance'], 'content_object', kwargs['instance'])
 
-        for user in re.findall(ur"@[a-zA-Z0-9_.]+", message):
+        for user in re.findall(r"@[a-zA-Z0-9_.]+", message):
             User = get_user_model()
             try:
                 receiver = User.objects.get(username=user[1:])
@@ -197,10 +196,10 @@ class AbstractSocialYeti(AbstractYeti):
         return self.user_followers().count()
 
     def identifier(self):
-        return u"{}".format(self.username)
+        return "{}".format(self.username)
 
     def type(self):
-        return u"user"
+        return "user"
 
 
 class BaseSocialModel(models.Model):
