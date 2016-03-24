@@ -18,13 +18,10 @@ setup(
         'django-model-utils>=2.4',
         'django-oauth-toolkit>=0.10.0',
         'djangorestframework>=3.1.0',
-        'facebook-sdk==0.4.0',
         'Pillow>=3.1.1',
         'pypushwoosh>=0.2.0',
-        'python-instagram>=1.3.2',
         'python-social-auth>=0.2.14',
-        'requests>=2.9.1',
-        'twython>=3.3.0'
+        'requests>=2.9.1'
     ],
     include_package_data=True,
     license='BSD License',

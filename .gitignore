@@ -11,3 +11,4 @@ test_project/static
 dist
 syntax_output
 .python-version
+.tox
