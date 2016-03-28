@@ -1,4 +1,4 @@
-[ ![Codeship Status for yeti/yak-server](https://codeship.com/projects/b3ae1210-6232-0132-25c2-3a888924fd85/status)](https://codeship.com/projects/52007)
+[![Build Status](https://travis-ci.org/yeti/YAK-server.svg?branch=master)](https://travis-ci.org/yeti/YAK-server)
 
 YAK-server
 =======================
