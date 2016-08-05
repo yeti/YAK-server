@@ -12,3 +12,6 @@ dist
 syntax_output
 .python-version
 .tox
+docs/_build
+docs/_static
+docs/_templates

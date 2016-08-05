@@ -3,8 +3,6 @@ from yak.rest_notifications.models import NotificationSetting, Notification, Pus
 from yak.rest_user.serializers import UserSerializer
 from yak.settings import yak_settings
 
-__author__ = 'baylee'
-
 
 class PushwooshTokenSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())

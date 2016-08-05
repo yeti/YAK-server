@@ -3,8 +3,6 @@ from rest_framework import serializers
 from yak.rest_social_network.models import Tag, Comment, Follow, Flag, Share, Like
 from yak.rest_user.serializers import UserSerializer
 
-__author__ = 'baylee'
-
 
 User = get_user_model()
 

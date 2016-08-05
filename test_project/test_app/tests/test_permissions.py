@@ -3,8 +3,6 @@ from test_project.test_app.models import Post
 from test_project.test_app.tests.factories import UserFactory
 from yak.rest_core.test import SchemaTestCase
 
-__author__ = 'baylee'
-
 
 class PermissionsTests(SchemaTestCase):
     def test_only_authed_user_can_create_post(self):

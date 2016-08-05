@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
+with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     README = readme.read()
 
 # allow setup.py to be run from any path
@@ -12,7 +12,7 @@ setup(
     version='0.2',
     packages=['yak'],
     install_requires=[
-        'Django>=1.7',
+        'Django>=1.8',
         'django-cache-machine>=0.9.1',
         'django-filter>=0.13',
         'django-model-utils>=2.4',
@@ -28,8 +28,8 @@ setup(
     description='Server-side implementation of Yeti App Kit built on Django',
     long_description=README,
     url='https://yeti.co/yeti-app-kit/',
-    author='Baylee Feore',
-    author_email='baylee@yeti.co',
+    author='Yeti',
+    author_email='hello@yeti.co',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
