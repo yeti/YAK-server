@@ -11,9 +11,6 @@ from yak.rest_user.views import UserViewSet
 from django.contrib.auth import get_user_model
 
 
-__author__ = 'baylee'
-
-
 User = get_user_model()
 drf_version = get_package_version(rest_framework)
 

@@ -9,8 +9,6 @@ from yak.rest_core.serializers import YAKModelSerializer
 from yak.rest_core.utils import get_package_version
 from yak.settings import yak_settings
 
-__author__ = 'baylee'
-
 
 User = get_user_model()
 oauth_toolkit_version = get_package_version(oauth2_provider)

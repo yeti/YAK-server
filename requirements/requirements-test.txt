@@ -1,3 +1,11 @@
+django-cache-machine>=0.9.1
+django-filter>=0.13
+django-model-utils>=2.4
+django-oauth-toolkit>=0.10.0
+Pillow>=3.1.1
+pypushwoosh>=0.2.0
+python-social-auth>=0.2.14
+requests>=2.9.
 celery==3.1.16
 -e git://github.com/pythonforfacebook/facebook-sdk.git@master#egg=facebook-sdk
 factory-boy==2.4.1

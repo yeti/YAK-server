@@ -12,8 +12,6 @@ from yak.rest_notifications.serializers import NotificationSettingSerializer, No
 from yak.rest_social_network.views import CommentViewSet, FollowViewSet, ShareViewSet, LikeViewSet
 from yak.settings import yak_settings
 
-__author__ = 'baylee'
-
 
 class PushwooshTokenView(generics.CreateAPIView):
     queryset = PushwooshToken.objects.all()

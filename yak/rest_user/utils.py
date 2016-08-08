@@ -7,8 +7,6 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from oauth2_provider.models import Application
 
-__author__ = 'baylee'
-
 
 def create_auth_client(sender, instance=None, created=False, **kwargs):
     """
