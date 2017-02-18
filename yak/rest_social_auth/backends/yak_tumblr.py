@@ -1,4 +1,4 @@
-from social.backends.tumblr import TumblrOAuth
+from social_core.backends.tumblr import TumblrOAuth
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 
 

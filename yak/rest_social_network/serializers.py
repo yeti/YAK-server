@@ -71,6 +71,7 @@ class ShareSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Share
+        fields = '__all__'
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -78,6 +79,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Like
+        fields = '__all__'
 
 
 class FlagSerializer(serializers.ModelSerializer):
@@ -85,3 +87,4 @@ class FlagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flag
+        fields = '__all__'

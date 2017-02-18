@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
 import facebook
-from social.backends.facebook import Facebook2OAuth2
+from social_core.backends.facebook import FacebookOAuth2
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 from yak.settings import yak_settings
 
 User = get_user_model()
 
 
-class Facebook(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, Facebook2OAuth2):
+class Facebook(ExtraActionsAbstractMixin, ExtraDataAbstractMixin, FacebookOAuth2):
     @staticmethod
     def save_extra_data(response, user):
         if 'email' in response:

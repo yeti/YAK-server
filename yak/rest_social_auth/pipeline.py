@@ -1,4 +1,4 @@
-from social.apps.django_app.default.models import UserSocialAuth
+from social_django.models import UserSocialAuth
 from urllib import request, error
 from django.core.files import File
 # from yak.rest_core.utils import retry_cloudfiles

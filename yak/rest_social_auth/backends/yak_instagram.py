@@ -1,5 +1,5 @@
 from instagram import InstagramAPI, helper
-from social.backends.instagram import InstagramOAuth2
+from social_core.backends.instagram import InstagramOAuth2
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 
 

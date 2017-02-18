@@ -11,6 +11,7 @@ class PushwooshTokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PushwooshToken
+        fields = '__all__'
 
 
 class NotificationTypeSerializer(serializers.ModelSerializer):

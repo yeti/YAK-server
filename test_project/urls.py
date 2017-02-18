@@ -15,7 +15,7 @@ api_v1 = [
 
     # Auth views
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url('^', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^', include('social_django.urls', namespace='social')),
 
     # Library views
     url(r'^', include('yak.rest_user.urls')),
@@ -30,13 +30,9 @@ admin.autodiscover()
 urlpatterns = [
     # Change the admin prefix here to use an alternate URL for the
     # admin interface, which would be marginally more secure.
-    url("^admin/", include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
 ]
 
 urlpatterns += [
-
-    # Web views
-    # url(r'^(?P<content_type>\w+)/(?P<encoded_id>[a-zA-Z0-9]+)/$', 'brochure.views.share', name='share'),
-
     url(r'^api/v1/', include(api_v1)),
 ]

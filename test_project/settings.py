@@ -86,7 +86,7 @@ INSTALLED_APPS = (
 
     'oauth2_provider',
     'rest_framework',
-    'social.apps.django_app.default',
+    'social_django',
 
     'yak.rest_user',
     'yak.rest_social_auth',

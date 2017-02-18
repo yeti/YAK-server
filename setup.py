@@ -20,7 +20,7 @@ setup(
         'djangorestframework>=3.1.0',
         'Pillow>=3.1.1',
         'pypushwoosh>=0.2.0',
-        'python-social-auth>=0.2.14',
+        'social-auth-app-django>=0.1.0',
         'requests>=2.9.1'
     ],
     include_package_data=True,

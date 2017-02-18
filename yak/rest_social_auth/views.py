@@ -6,12 +6,12 @@ from rest_framework.decorators import detail_route
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from social.apps.django_app.utils import load_strategy
-from social.apps.django_app.default.models import UserSocialAuth
-from social.apps.django_app.utils import load_backend
-from social.backends.oauth import BaseOAuth1, BaseOAuth2
-from social.backends.utils import get_backend
-from social.exceptions import AuthAlreadyAssociated
+from social_django.utils import load_strategy
+from social_django.models import UserSocialAuth
+from social_django.utils import load_backend
+from social_core.backends.oauth import BaseOAuth1, BaseOAuth2
+from social_core.backends.utils import get_backend
+from social_core.exceptions import AuthAlreadyAssociated
 from yak.rest_social_auth.serializers import SocialSignUpSerializer
 from yak.rest_social_auth.utils import post_social_media
 from yak.rest_user.serializers import UserSerializer

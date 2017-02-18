@@ -1,6 +1,6 @@
 from celery.task import task
 from django.conf import settings
-from social.backends.utils import get_backend
+from social_core.backends.utils import get_backend
 
 
 @task

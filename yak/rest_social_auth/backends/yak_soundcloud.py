@@ -1,5 +1,5 @@
 import requests
-from social.backends.soundcloud import SoundcloudOAuth2
+from social_core.backends.soundcloud import SoundcloudOAuth2
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 
 

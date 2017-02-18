@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from social.backends.twitter import TwitterOAuth
+from social_core.backends.twitter import TwitterOAuth
 from twython import Twython
 from yak.rest_social_auth.backends.base import ExtraDataAbstractMixin, ExtraActionsAbstractMixin
 import re
