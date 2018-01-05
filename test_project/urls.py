@@ -30,7 +30,7 @@ admin.autodiscover()
 urlpatterns = [
     # Change the admin prefix here to use an alternate URL for the
     # admin interface, which would be marginally more secure.
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 ]
 
 urlpatterns += [

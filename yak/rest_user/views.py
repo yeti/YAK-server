@@ -64,7 +64,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=["get"])
     def me(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             serializer = self.get_serializer(instance=request.user)
             return Response(serializer.data)
         else:

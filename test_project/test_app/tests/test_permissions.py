@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 from test_project.test_app.models import Post
 from test_project.test_app.tests.factories import UserFactory
 from yak.rest_core.test import SchemaTestCase

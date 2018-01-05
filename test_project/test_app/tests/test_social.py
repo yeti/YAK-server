@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
+
 from test_project.test_app.models import Post
 from test_project.test_app.tests.factories import UserFactory, PostFactory, CommentFactory
 from yak.rest_core.test import SchemaTestCase

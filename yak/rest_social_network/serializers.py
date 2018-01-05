@@ -10,7 +10,7 @@ User = get_user_model()
 class LikedMixin(object):
     def get_liked_id(self, obj):
         request = self.context['request']
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             try:
                 content_type = self.get_content_type(obj)
                 return Like.objects.get(content_type=content_type, user=request.user, object_id=obj.pk).pk
@@ -23,7 +23,7 @@ class FollowedMixin(object):
     def get_follow_id(self, obj):
         # Indicate whether or not the logged in user is following a given object (e.g., another user)
         # Provide the id of the follow object so it can be deleted to unfollow the object
-        if self.context['request'].user.is_authenticated():
+        if self.context['request'].user.is_authenticated:
             try:
                 content_type = self.get_content_type(obj)
                 return self.context['request'].user.following.get(content_type=content_type, object_id=obj.pk).pk
@@ -52,13 +52,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     follower = UserSerializer(read_only=True, source="user")
     following = serializers.SerializerMethodField('get_user_follow')
 
     class Meta:
         model = Follow
-        exclude = ('user',)
+        fields = ['id', 'follower', 'following', 'created', 'content_type', 'object_id']
 
     def get_user_follow(self, obj):
         user = User.objects.get(pk=obj.object_id)

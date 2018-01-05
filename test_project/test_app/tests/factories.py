@@ -1,11 +1,9 @@
 import factory
 import datetime
-import oauth2_provider
 from test_project.test_app.models import Post
 from django.utils.timezone import now
-from oauth2_provider.models import AccessToken
+from oauth2_provider.models import AccessToken, Application
 from django.contrib.auth import get_user_model
-from yak.rest_core.utils import get_package_version
 from yak.rest_social_network.models import Comment
 
 
@@ -19,23 +17,25 @@ class UserFactory(factory.DjangoModelFactory):
     email = factory.Sequence(lambda n: 'person{0}@example.com'.format(n))
     username = factory.Sequence(lambda n: 'person{0}'.format(n))
 
+    @staticmethod
+    def get_test_application():
+        application, created = Application.objects.get_or_create(
+            client_type=Application.CLIENT_PUBLIC,
+            name="Test App",
+            authorization_grant_type=Application.GRANT_PASSWORD,
+        )
+        return application
+
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         user = super(UserFactory, cls)._create(model_class, *args, **kwargs)
-        # Force save for post_save signal to create auth client
-        user.save()
-        oauth_toolkit_version = get_package_version(oauth2_provider)
-        # If we're using version 0.8.0 or higher
-        if oauth_toolkit_version[0] >= 0 and oauth_toolkit_version[1] >= 8:
-            application = user.oauth2_provider_application.first()
-        else:
-            application = user.application_set.first()
-
-        AccessToken.objects.create(user=user,
-                                   application=application,
-                                   token='token{}'.format(user.id),
-                                   expires=now() + datetime.timedelta(days=1)
-                                   )
+        application = cls.get_test_application()
+        AccessToken.objects.create(
+            user=user,
+            application=application,
+            token='token{}'.format(user.id),
+            expires=now() + datetime.timedelta(days=1)
+        )
         return user
 
 

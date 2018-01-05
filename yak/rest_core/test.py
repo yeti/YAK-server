@@ -208,7 +208,7 @@ class SchemaTestCase(APITestCaseWithAssertions):
         check unauthorized requests)
         """
         if user:
-            token = user.accesstoken_set.first()
+            token = user.oauth2_provider_accesstoken.first()
             self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token.token)
         else:
             self.client.credentials()

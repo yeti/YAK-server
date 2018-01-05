@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='share',
             name='user',
-            field=models.ForeignKey(related_name='shares', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='shares', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -33,13 +33,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='like',
             name='content_type',
-            field=models.ForeignKey(to='contenttypes.ContentType'),
+            field=models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='like',
             name='user',
-            field=models.ForeignKey(related_name='likes', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='likes', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -49,13 +49,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='follow',
             name='content_type',
-            field=models.ForeignKey(to='contenttypes.ContentType'),
+            field=models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='follow',
             name='user',
-            field=models.ForeignKey(related_name='following', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='following', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -65,13 +65,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='flag',
             name='content_type',
-            field=models.ForeignKey(to='contenttypes.ContentType'),
+            field=models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='flag',
             name='user',
-            field=models.ForeignKey(related_name='flags', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='flags', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='comment',
             name='content_type',
-            field=models.ForeignKey(to='contenttypes.ContentType'),
+            field=models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='comment',
             name='user',
-            field=models.ForeignKey(related_name='comments', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='comments', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

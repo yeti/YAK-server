@@ -6,18 +6,8 @@ python:
 sudo: false
 
 env:
-    - TOX_ENV=py34-django18-drf34
-    - TOX_ENV=py34-django18-drf35
-    - TOX_ENV=py34-django19-drf34
-    - TOX_ENV=py34-django19-drf35
-    - TOX_ENV=py34-django110-drf34
-    - TOX_ENV=py34-django110-drf35
-    - TOX_ENV=py35-django18-drf34
-    - TOX_ENV=py35-django18-drf35
-    - TOX_ENV=py35-django19-drf34
-    - TOX_ENV=py35-django19-drf35
-    - TOX_ENV=py35-django110-drf34
-    - TOX_ENV=py35-django110-drf35
+    - TOX_ENV=py34-django111-drf37
+    - TOX_ENV=py35-django20-drf37
 
 matrix:
   fast_finish: true

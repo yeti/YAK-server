@@ -13,6 +13,9 @@ from yak.rest_user.utils import create_auth_client
 class User(AbstractSocialYeti):
     notifications = GenericRelation(Notification)
 
+    class Meta:
+        ordering = ['-username']
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         resize_model_photos(self)
@@ -25,7 +28,7 @@ post_save.connect(create_notification_settings, sender=User)
 
 
 class Post(BaseSocialModel):
-    user = models.ForeignKey(User, related_name='posts')
+    user = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     thumbnail = models.ImageField(upload_to="post_photos/thumbnail/", blank=True, null=True)
