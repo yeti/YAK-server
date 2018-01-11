@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 from test_project import settings
 from test_project.test_app.models import Post, Article
 from test_project.test_app.tests.factories import PostFactory, UserFactory

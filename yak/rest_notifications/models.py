@@ -24,13 +24,14 @@ class NotificationType(CachingMixin, CoreModel):
 
 
 class NotificationSetting(CoreModel):
-    notification_type = models.ForeignKey(NotificationType, related_name="user_settings")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='notification_settings')
+    notification_type = models.ForeignKey(NotificationType, related_name="user_settings", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='notification_settings', on_delete=models.CASCADE)
     allow_push = models.BooleanField(default=True)
     allow_email = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('notification_type', 'user')
+        ordering = ['-created']
 
     def __unicode__(self):
         return "{}: {}".format(self.user, self.notification_type)
@@ -57,14 +58,16 @@ class Notification(CoreModel):
     PUSH = "push"
     EMAIL = "email"
 
-    notification_type = models.ForeignKey(NotificationType, related_name="notifications")
+    notification_type = models.ForeignKey(NotificationType, related_name="notifications", on_delete=models.CASCADE)
     template_override = models.CharField(max_length=100, blank=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_received", null=True, blank=True)
-    reporter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_sent", null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_received", null=True, blank=True,
+                             on_delete=models.CASCADE)
+    reporter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_sent", null=True, blank=True,
+                                 on_delete=models.CASCADE)
 
     # The object that the notification is about, not the social model related to it
     # E.g., if you Like a Post, the content_object for the notification is the Post, not the Like
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey()
 
@@ -136,5 +139,5 @@ def create_notification(receiver, reporter, content_object, notification_type, t
 
 
 class PushwooshToken(CoreModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="pushwoosh_tokens")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="pushwoosh_tokens", on_delete=models.CASCADE)
     token = models.CharField(max_length=120)

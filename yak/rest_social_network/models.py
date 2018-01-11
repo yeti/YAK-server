@@ -33,6 +33,9 @@ class FollowableModel(metaclass=abc.ABCMeta):
 class Tag(CoreModel):
     name = models.CharField(max_length=75, unique=True)
 
+    class Meta:
+        ordering = ['-created']
+
     def identifier(self):
         return "#{}".format(self.name)
 
@@ -101,7 +104,7 @@ def mentions(sender, **kwargs):
 
 
 class Comment(CoreModel):
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey()
 
@@ -109,7 +112,7 @@ class Comment(CoreModel):
     related_tags = models.ManyToManyField(Tag, blank=True)
 
     description = models.TextField()
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="comments")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="comments", on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['created']
@@ -120,11 +123,11 @@ post_save.connect(relate_tags, sender=Comment)
 
 # Allows a user to 'follow' objects
 class Follow(CoreModel):
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey()
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="following")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="following", on_delete=models.CASCADE)
 
     @property
     def object_type(self):
@@ -141,11 +144,11 @@ class Follow(CoreModel):
 
 
 class Like(CoreModel):
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey()
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="likes")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="likes", on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (("user", "content_type", "object_id"),)
@@ -153,23 +156,23 @@ class Like(CoreModel):
 
 # Flag an object for review
 class Flag(CoreModel):
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="flags")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="flags", on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (("user", "content_type", "object_id"),)
 
 
 class Share(CoreModel):
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
     shared_with = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='shared_with')
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="shares")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="shares", on_delete=models.CASCADE)
 
 
 class AbstractSocialYeti(AbstractYeti):

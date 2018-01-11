@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=100, null=True, blank=True)),
                 ('description', models.TextField(null=True, blank=True)),
                 ('related_tags', models.ManyToManyField(to='rest_social_network.Tag', null=True, blank=True)),
-                ('user', models.ForeignKey(related_name='posts', to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(related_name='posts', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

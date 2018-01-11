@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
 from django.core.files.images import get_image_dimensions
-from django.core.urlresolvers import reverse
+from rest_framework.reverse import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from test_project import settings
@@ -183,8 +183,8 @@ class UserTests(SchemaTestCase):
 
         url = reverse("oauth2_provider:token")
         data = {
-            "client_id": self.user.application_set.first().client_id,
-            "client_secret": self.user.application_set.first().client_secret,
+            "client_id": self.user.oauth2_provider_application.first().client_id,
+            "client_secret": self.user.oauth2_provider_application.first().client_secret,
             "grant_type": "client_credentials"
         }
         self.assertManticomPOSTResponse(url, "$tokenRequest", "$tokenResponse", data, None)

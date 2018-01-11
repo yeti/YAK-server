@@ -17,19 +17,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='pushwooshtoken',
             name='user',
-            field=models.ForeignKey(related_name='pushwoosh_tokens', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='pushwoosh_tokens', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='notificationsetting',
             name='notification_type',
-            field=models.ForeignKey(related_name='user_settings', to='rest_notifications.NotificationType'),
+            field=models.ForeignKey(related_name='user_settings', to='rest_notifications.NotificationType', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='notificationsetting',
             name='user',
-            field=models.ForeignKey(related_name='notification_settings', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='notification_settings', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -39,25 +39,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='notification',
             name='content_type',
-            field=models.ForeignKey(to='contenttypes.ContentType'),
+            field=models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='notification',
             name='notification_type',
-            field=models.ForeignKey(related_name='notifications', to='rest_notifications.NotificationType'),
+            field=models.ForeignKey(related_name='notifications', to='rest_notifications.NotificationType', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='notification',
             name='reporter',
-            field=models.ForeignKey(related_name='notifications_sent', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='notifications_sent', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='notification',
             name='user',
-            field=models.ForeignKey(related_name='notifications_received', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='notifications_received', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

@@ -46,8 +46,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     def bulk_create(self, request):
         serializer = self.get_serializer(data=request.data, many=True)
         if serializer.is_valid():
-            serializer.save()
-            # [self.perform_create(obj) for obj in serializer.validated_data]
+            serializer.save(user=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

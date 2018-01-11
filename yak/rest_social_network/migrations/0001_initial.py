@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('object_id', models.PositiveIntegerField()),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE)),
             ],
             options={
             },

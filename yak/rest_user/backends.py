@@ -30,6 +30,8 @@ class CaseInsensitiveBackend(ModelBackend):
     def authenticate(self, **kwargs):
 
         if kwargs:
+            kwargs.pop("request")
+
             if kwargs.get("username", None):
                 kwargs["username"] = kwargs.get("username", None).lower()
             if kwargs.get("email", None):
