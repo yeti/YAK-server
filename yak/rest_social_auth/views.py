@@ -35,7 +35,7 @@ class SocialSignUp(SignUp):
         provider = request.data['provider']
 
         # If this request was made with an authenticated user, try to associate this social account with it
-        authed_user = request.user if not request.user.is_anonymous() else None
+        authed_user = request.user if not request.user.is_anonymous else None
 
         strategy = load_strategy(request)
         backend = load_backend(strategy=strategy, name=provider, redirect_uri=None)

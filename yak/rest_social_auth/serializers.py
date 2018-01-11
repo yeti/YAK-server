@@ -12,5 +12,5 @@ class SocialSignUpSerializer(AuthSerializerMixin, LoginSerializer):
 
     class Meta:
         model = User
-        fields = ('fullname', 'username', 'email', 'client_id', 'client_secret')
+        fields = ('fullname', 'username', 'email')
         write_only_fields = ('access_token', 'access_token_secret')
