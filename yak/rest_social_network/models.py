@@ -45,6 +45,7 @@ class Tag(CoreModel):
     def __unicode__(self):
         return "{}".format(self.name)
 
+
 FollowableModel.register(Tag)
 
 
@@ -116,6 +117,7 @@ class Comment(CoreModel):
 
     class Meta:
         ordering = ['created']
+
 
 post_save.connect(mentions, sender=Comment)
 post_save.connect(relate_tags, sender=Comment)

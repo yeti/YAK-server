@@ -1,10 +1,10 @@
 import json
+
+from flake8.api.legacy import get_style_guide
 from rest_framework.test import APITestCase
 from django.conf import settings
 from yak.settings import yak_settings
 from django.test import TestCase
-from flake8.engine import get_style_guide
-import flake8.main
 import sys
 
 
@@ -424,13 +424,8 @@ class YAKSyntaxTest(TestCase):
         packages = settings.PACKAGES_TO_TEST
 
         # Prepare
-        config_file = getattr(yak_settings, 'FLAKE8_CONFIG', flake8.main.DEFAULT_CONFIG)
-        flake8_style = get_style_guide(config_file=config_file)
-        options = flake8_style.options
-
-        if options.install_hook:
-            from flake8.hooks import install_hook
-            install_hook()
+        config_options = getattr(yak_settings, 'FLAKE8_CONFIG', {})
+        flake8_style = get_style_guide(**config_options)
 
         # Save to file for later printing instead of printing now
         old_stdout = sys.stdout
@@ -442,11 +437,6 @@ class YAKSyntaxTest(TestCase):
         sys.stdout = old_stdout
 
         # Print the final report
-        options = flake8_style.options
-        if options.statistics:
-            report.print_statistics()
-        if options.benchmark:
-            report.print_benchmark()
         if report.total_errors:
             out.close()
             with open("syntax_output") as f:

@@ -9,9 +9,9 @@ requests>=2.9.
 celery==3.1.16
 -e git://github.com/pythonforfacebook/facebook-sdk.git@master#egg=facebook-sdk
 factory-boy==2.4.1
-flake8==2.3.0
+flake8==3.5.0
 pep8==1.5.7
-pyflakes==0.8.1
+pyflakes==1.6.0
 python-instagram>=1.3.2
 python-swiftclient==2.4.0
 twython>=3.3.0

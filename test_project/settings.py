@@ -147,7 +147,11 @@ YAK = {
         "test_project.test_app.models.Post": "test_project.test_app.api.serializers.PostSerializer",
         "test_project.test_app.models.Article": "test_project.test_app.api.serializers.ArticleSerializer"
     },
-    'FLAKE8_CONFIG': os.path.join(PROJECT_ROOT, "setup.cfg"),
+    'FLAKE8_CONFIG': {
+        'ignore': ['E123', 'E128'],
+        'max_line_length': 120,
+        'exclude': ['*/migrations/*', '*/test_project/settings.py'],
+    },
 }
 
 AUTH_USER_MODEL = "{}.{}".format(YAK['USER_APP_LABEL'], YAK['USER_MODEL'].capitalize())

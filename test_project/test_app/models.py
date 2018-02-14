@@ -16,13 +16,13 @@ class User(AbstractSocialYeti):
     class Meta:
         ordering = ['-username']
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         resize_model_photos(self)
-        super(User, self).save(force_insert=False, force_update=False, using=None,
-             update_fields=None)
+        super(User, self).save(force_insert=False, force_update=False, using=None, update_fields=None)
+
 
 FollowableModel.register(User)
+
 post_save.connect(create_auth_client, sender=User)
 post_save.connect(create_notification_settings, sender=User)
 
@@ -69,6 +69,7 @@ class Post(BaseSocialModel):
             return "{}".format(message.encode('utf-8'))
         else:
             return "{} {}".format(message.encode('utf-8'), self.url())
+
 
 post_save.connect(relate_tags, sender=Post)
 post_save.connect(mentions, sender=Post)

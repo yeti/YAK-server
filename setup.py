@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='yak-server',
-    version='0.2',
+    version='0.3',
     packages=['yak'],
     install_requires=[
         'Django>=1.11',
