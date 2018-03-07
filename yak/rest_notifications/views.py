@@ -21,9 +21,14 @@ class PushwooshTokenView(generics.CreateAPIView):
     def perform_create(self, serializer):
         hwid = serializer.validated_data.pop("hwid")
         language = serializer.validated_data.pop("language")
+        platform = serializer.validated_data.pop("platform", "ios")
+
+        platform_code = constants.PLATFORM_IOS
+        if platform == 'android':
+            platform_code = constants.PLATFORM_ANDROID
 
         push_client = client.PushwooshClient()
-        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, hwid, constants.PLATFORM_IOS,
+        command = RegisterDeviceCommand(yak_settings.PUSHWOOSH_APP_CODE, hwid, platform_code,
                                         serializer.validated_data["token"], language)
         response = push_client.invoke(command)
 

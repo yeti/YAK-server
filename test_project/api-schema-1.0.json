@@ -436,7 +436,8 @@
         "$pushwooshTokenRequest": {
             "token": "string",
             "language": "string",
-            "hwid": "string"
+            "hwid": "string",
+            "platform": "string"
         },
         "$pushwooshTokenResponse": {
             "id": "int,primarykey",

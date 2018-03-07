@@ -1,4 +1,5 @@
-from unittest.mock import MagicMock
+from unittest import mock
+from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
@@ -8,7 +9,7 @@ from test_project.test_app.models import Post, Article
 from test_project.test_app.tests.factories import PostFactory, UserFactory
 from yak.rest_core.test import SchemaTestCase
 from yak.rest_notifications.models import create_notification, Notification, NotificationSetting, NotificationType
-from yak.rest_notifications.utils import send_email_notification, send_push_notification, PushwooshClient, PushClient
+from yak.rest_notifications.utils import send_email_notification, send_push_notification
 from yak.settings import yak_settings
 
 
@@ -22,10 +23,15 @@ class NotificationsTestCase(SchemaTestCase):
         self.receiver = UserFactory()
         self.reporter = UserFactory()
         self.notification_type = NotificationType.objects.get(slug="comment")
-        PushwooshClient.invoke = MagicMock(return_value={"status_code": 200})
-        PushClient.invoke = MagicMock(return_value={"status_code": 200})
+        patcher = patch('yak.rest_notifications.utils.submit_to_pushwoosh')
+        self.addCleanup(patcher.stop)
+        self.mock_submit_to_pushwoosh = patcher.start()
+        self.mock_submit_to_pushwoosh.return_value = {"status_code": 200}
 
-    def test_create_pushwoosh_token(self):
+    @mock.patch('pypushwoosh.client.PushwooshClient.invoke')
+    def test_create_pushwoosh_token(self, mock_pushwoosh_client):
+        mock_pushwoosh_client.return_value = {"status_code": 200}
+
         url = reverse("pushwoosh_token")
         data = {
             "token": "ABC123",
@@ -77,14 +83,14 @@ class NotificationsTestCase(SchemaTestCase):
         # An email and a push are sent if allow_email and allow_push are True
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(len(PushClient.invoke.mock_calls), 1)
+        self.assertTrue(len(self.mock_submit_to_pushwoosh.mock_calls), 1)
 
         # No new email is sent if allow_email is False
         setting.allow_email = False
         setting.save()
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(len(PushClient.invoke.mock_calls), 2)
+        self.assertTrue(len(self.mock_submit_to_pushwoosh.mock_calls), 2)
 
         # If allow_push is False and allow_email True, an email is sent and a push isn't
         setting.allow_email = True
@@ -92,7 +98,7 @@ class NotificationsTestCase(SchemaTestCase):
         setting.save()
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)
         self.assertEqual(len(mail.outbox), 2)
-        self.assertTrue(len(PushClient.invoke.mock_calls), 2)
+        self.assertTrue(len(self.mock_submit_to_pushwoosh.mock_calls), 2)
 
     def test_can_only_see_own_notifications(self):
         create_notification(self.receiver, self.reporter, self.social_obj, self.notification_type)

@@ -1,23 +1,22 @@
 import json
+
+import requests
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 from pypushwoosh import constants
 from pypushwoosh.client import PushwooshClient
+
 from yak.settings import yak_settings
 
 
-class PushClient(PushwooshClient):
-    def invoke(self, request):
-        self.connection.request('POST', '/json/1.3/createMessage', request, self.headers)
-        response = self.connection.getresponse()
-        body = response.read().decode(response.headers.get_content_charset())
-        return json.loads(body)
+def submit_to_pushwoosh(request_data):
+    url = 'https://cp.pushwoosh.com/json/1.3/createMessage'
+    response = requests.post(url, data=request_data, headers=PushwooshClient.headers)
+    return response.json()
 
 
 def send_push_notification(receiver, message):
-    client = PushClient()
-
     notifications = [{
         'content': message,
         'send_date': constants.SEND_DATE_NOW,
@@ -30,9 +29,9 @@ def send_push_notification(receiver, message):
         'auth': yak_settings.PUSHWOOSH_AUTH_TOKEN,
         'application': yak_settings.PUSHWOOSH_APP_CODE
     }}
-    request = json.dumps(request)
+    request_data = json.dumps(request)
 
-    return client.invoke(request)
+    return submit_to_pushwoosh(request_data)
 
 
 def send_email_notification(receiver, message, reply_to=None):
