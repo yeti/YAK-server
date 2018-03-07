@@ -36,7 +36,8 @@ class NotificationsTestCase(SchemaTestCase):
         data = {
             "token": "ABC123",
             "language": "en",
-            "hwid": "XYZ456"
+            "hwid": "XYZ456",
+            "platform": "ios"
         }
         self.assertSchemaPost(url, "$pushwooshTokenRequest", "$pushwooshTokenResponse", data, self.receiver)
 
