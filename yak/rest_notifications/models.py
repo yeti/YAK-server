@@ -60,6 +60,7 @@ class Notification(CoreModel):
 
     notification_type = models.ForeignKey(NotificationType, related_name="notifications", on_delete=models.CASCADE)
     template_override = models.CharField(max_length=100, blank=True, null=True)
+    deep_link = models.CharField(max_length=100, blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_received", null=True, blank=True,
                              on_delete=models.CASCADE)
     reporter = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications_sent", null=True, blank=True,
@@ -115,7 +116,8 @@ class Notification(CoreModel):
 
 
 @task
-def create_notification(receiver, reporter, content_object, notification_type, template_override=None, reply_to=None):
+def create_notification(receiver, reporter, content_object, notification_type, template_override=None, reply_to=None,
+                        deep_link=None):
     # If the receiver of this notification is the same as the reporter or
     # if the user has blocked this type, then don't create
     if receiver == reporter:
@@ -125,13 +127,14 @@ def create_notification(receiver, reporter, content_object, notification_type, t
                                                reporter=reporter,
                                                content_object=content_object,
                                                notification_type=notification_type,
-                                               template_override=template_override)
+                                               template_override=template_override,
+                                               deep_link=deep_link)
     notification.save()
 
     notification_setting = NotificationSetting.objects.get(notification_type=notification_type, user=receiver)
     if notification_setting.allow_push and yak_settings.ALLOW_PUSH:
         from .utils import send_push_notification
-        send_push_notification(receiver, notification.push_message())
+        send_push_notification(receiver, notification.push_message(), deep_link=deep_link)
 
     if notification_setting.allow_email and yak_settings.ALLOW_EMAIL and receiver.email:
         from .utils import send_email_notification

@@ -16,19 +16,24 @@ def submit_to_pushwoosh(request_data):
     return response.json()
 
 
-def send_push_notification(receiver, message):
-    notifications = [{
+def send_push_notification(receiver, message, deep_link=None):
+    notification_data = {
         'content': message,
         'send_date': constants.SEND_DATE_NOW,
         'devices': [token.token for token in receiver.pushwoosh_tokens.all()],
         'ios_badges': '+1'
-    }]
+    }
+
+    if deep_link is not None:
+        notification_data['minimize_link'] = 0
+        notification_data['link'] = deep_link
 
     request = {'request': {
-        'notifications': notifications,
+        'notifications': [notification_data],
         'auth': yak_settings.PUSHWOOSH_AUTH_TOKEN,
         'application': yak_settings.PUSHWOOSH_APP_CODE
     }}
+
     request_data = json.dumps(request)
 
     return submit_to_pushwoosh(request_data)
