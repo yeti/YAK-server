@@ -143,4 +143,4 @@ def create_notification(receiver, reporter, content_object, notification_type, t
 
 class PushwooshToken(CoreModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="pushwoosh_tokens", on_delete=models.CASCADE)
-    token = models.CharField(max_length=120)
+    token = models.CharField(max_length=255)
