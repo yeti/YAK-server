@@ -21,7 +21,7 @@ class PushwooshTokenView(generics.CreateAPIView):
     def perform_create(self, serializer):
         hwid = serializer.validated_data.pop("hwid")
         language = serializer.validated_data.pop("language")
-        platform = serializer.validated_data.pop("platform", "ios")
+        platform = serializer.validated_data.pop("platform")
 
         platform_code = constants.PLATFORM_IOS
         if platform == 'android':

@@ -8,6 +8,7 @@ class PushwooshTokenSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
     hwid = serializers.CharField(write_only=True)
     language = serializers.CharField(write_only=True)
+    platform = serializers.CharField(write_only=True)
 
     class Meta:
         model = PushwooshToken
