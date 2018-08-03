@@ -12,7 +12,7 @@ setup(
     version='0.3',
     packages=['yak'],
     install_requires=[
-        'Django==2.0',
+        'Django>=2.0.0',
         'django-cache-machine>=0.9.1',
         'django-filter>=1.0.1',
         'django-model-utils>=2.4',
