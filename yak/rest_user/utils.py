@@ -36,7 +36,7 @@ def reset_password(request, email, subject_template_name='users/password_reset_s
             'email': user.email,
             'domain': domain,
             'site_name': site_name,
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             'user': user,
             'token': default_token_generator.make_token(user),
             'protocol': 'http',  # Your site can handle its own redirects

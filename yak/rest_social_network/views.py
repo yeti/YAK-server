@@ -78,8 +78,8 @@ class FlagView(generics.CreateAPIView):
     queryset = Flag.objects.all()
     serializer_class = FlagSerializer
 
-    def pre_save(self, obj):
-        obj.user = self.request.user
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class SocialUserViewSet(UserViewSet):

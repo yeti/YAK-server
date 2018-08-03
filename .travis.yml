@@ -6,7 +6,6 @@ python:
 sudo: false
 
 env:
-    - TOX_ENV=py34-django111-drf37
     - TOX_ENV=py35-django20-drf37
 
 matrix:
