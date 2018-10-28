@@ -63,6 +63,7 @@ DEFAULTS = {
     'EMAIL_NOTIFICATION_SUBJECT': 'Test Project Notification',
     'PUSHWOOSH_AUTH_TOKEN': "",
     'PUSHWOOSH_APP_CODE': "",
+    'PUSH_NOTIFICATION_HANDLER': "yak.rest_notifications.utils.send_pushwoosh_notification",
     'SOCIAL_SHARE_DELAY': 60,
     'USE_FACEBOOK_OG': False,
     'FACEBOOK_OG_NAMESPACE': "",

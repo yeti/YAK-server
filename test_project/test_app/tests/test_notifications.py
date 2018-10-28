@@ -16,6 +16,10 @@ from yak.settings import yak_settings
 User = get_user_model()
 
 
+def mockPushNotificationHandler(receiver, message, deep_link=None):
+    return {"hello": "world"}
+
+
 class NotificationsTestCase(SchemaTestCase):
     def setUp(self):
         super(NotificationsTestCase, self).setUp()
@@ -65,6 +69,14 @@ class NotificationsTestCase(SchemaTestCase):
         message = "<h1>You have a notification!</h1>"
         response = send_push_notification(self.receiver, message)
         self.assertEqual(response["status_code"], 200)
+
+    @mock.patch('yak.rest_notifications.utils.yak_settings')
+    def test_push_notification_sent_custom_handler(self, mock_settings):
+        mock_settings.PUSH_NOTIFICATION_HANDLER = "test_project.test_app.tests." \
+                                                  "test_notifications.mockPushNotificationHandler"
+        message = "<h1>You have a notification!</h1>"
+        response = send_push_notification(self.receiver, message)
+        self.assertEqual(response["hello"], "world")
 
     def test_create_notification(self):
         notification_count = Notification.objects.count()
